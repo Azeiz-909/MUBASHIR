@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>موعدك | عيادة تحدث</title>
+<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#22322C; --paper:#EFEDE6; --clay:#B8734F; --line:#DAD5C8; }
+  *{box-sizing:border-box; margin:0; padding:0; font-family:'Tajawal',sans-serif;}
+  body{background:var(--paper); color:var(--ink); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .wrap{width:100%; max-width:480px;}
+  a.back{display:inline-block; margin-bottom:16px; color:#6b7570; font-size:.88rem;}
+  .card{background:#fff; padding:36px 30px; border-radius:20px; box-shadow:0 20px 50px rgba(34,50,44,.1); text-align:center;}
+  h1{font-family:'Markazi Text',serif; font-size:1.8rem; margin-bottom:6px;}
+  p.sub{color:#6b7570; font-size:.92rem; margin-bottom:22px;}
+  .check{width:56px; height:56px; border-radius:50%; background:#e7f3ea; color:#2f8f4e; display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin:0 auto 16px;}
+  .detail-row{display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line); font-size:.92rem; text-align:right;}
+  .detail-row span:first-child{color:#6b7570;}
+  .countdown{margin:24px 0; font-size:1.05rem;}
+  .countdown b{font-family:'Markazi Text',serif; font-size:1.6rem; color:var(--clay);}
+  .join-btn{width:100%; padding:15px; border:none; border-radius:12px; font-weight:700; font-size:1rem; cursor:pointer; margin-top:10px;}
+  .join-btn.disabled{background:#DAD5C8; color:#8a8f87; cursor:not-allowed;}
+  .join-btn.enabled{background:var(--clay); color:#fff;}
+  .lookup input{width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px; margin-bottom:14px; font-size:.94rem;}
+  .lookup button{width:100%; padding:13px; background:var(--ink); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;}
+  .msg{color:#b23a3a; font-size:.85rem; margin-bottom:10px;}
+  .copy-link{font-size:.82rem; color:#6b7570; margin-top:18px; word-break:break-all; background:var(--paper); padding:10px; border-radius:8px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="/">← العودة للصفحة الرئيسية</a>
+  <div id="app"></div>
+</div>
+
+<script>
+const params = new URLSearchParams(location.search);
+const bookingId = params.get('id');
+const app = document.getElementById('app');
+
+if (!bookingId) {
+  renderLookup();
+} else {
+  loadBooking(bookingId);
+}
+
+function renderLookup(msg){
+  app.innerHTML = `
+    <div class="card lookup">
+      <h1>لديك موعد استشارة عن بُعد؟</h1>
+      <p class="sub">أدخل رقم الحجز الذي استلمته عند التأكيد للوصول إلى موعدك.</p>
+      ${msg ? `<div class="msg">${msg}</div>` : ''}
+      <input type="text" id="idInput" placeholder="رقم الحجز، مثال: a1b2c3d4e5">
+      <button id="findBtn">عرض موعدي</button>
+    </div>`;
+  document.getElementById('findBtn').addEventListener('click', ()=>{
+    const val = document.getElementById('idInput').value.trim();
+    if (!val) return;
+    location.href = '/confirm.html?id=' + encodeURIComponent(val);
+  });
+}
+
+async function loadBooking(id){
+  app.innerHTML = '<div class="card">جارٍ التحميل…</div>';
+  const res = await fetch('/api/bookings/' + encodeURIComponent(id));
+  if (!res.ok) { renderLookup('لم يتم العثور على حجز بهذا الرقم. تأكد من الرقم وحاول مجددًا.'); return; }
+  const b = await res.json();
+  const target = new Date(b.date + 'T' + b.time);
+  const joinWindowMs = (b.joinWindowMinutes || 20) * 60 * 1000;
+
+  app.innerHTML = `
+    <div class="card">
+      <div class="check">✓</div>
+      <h1>تم تأكيد موعدك</h1>
+      <p class="sub">احتفظ برقم الحجز أدناه للوصول إلى جلستك لاحقًا.</p>
+      <div class="detail-row"><span>الاسم</span><span>${escapeHtml(b.name)}</span></div>
+      <div class="detail-row"><span>المستشار</span><span>${escapeHtml(b.counselorName || 'غير محدد')}</span></div>
+      <div class="detail-row"><span>التاريخ</span><span>${escapeHtml(b.date)}</span></div>
+      <div class="detail-row"><span>الوقت</span><span>${escapeHtml(b.time)}</span></div>
+      <div class="countdown" id="countdownBox"></div>
+      <button class="join-btn disabled" id="joinBtn" disabled>دخول الجلسة</button>
+      <div class="copy-link">رقم حجزك: <strong>${b.id}</strong><br>الرابط: ${location.origin}/confirm.html?id=${b.id}</div>
+    </div>`;
+
+  function tick(){
+    const now = new Date();
+    const diff = target - now;
+    const box = document.getElementById('countdownBox');
+    const btn = document.getElementById('joinBtn');
+    if (diff <= joinWindowMs) {
+      box.textContent = diff > 0 ? 'يمكنك الآن الدخول إلى جلستك.' : 'موعدك جارٍ الآن.';
+      btn.disabled = false; btn.classList.remove('disabled'); btn.classList.add('enabled');
+    } else {
+      const mins = Math.floor(diff / 60000);
+      const hrs = Math.floor(mins / 60);
+      const days = Math.floor(hrs / 24);
+      let label = days > 0 ? `${days} يوم و${hrs % 24} ساعة` : (hrs > 0 ? `${hrs} ساعة و${mins % 60} دقيقة` : `${mins} دقيقة`);
+      box.innerHTML = `يُفتح زر الدخول قبل الموعد بـ ${b.joinWindowMinutes || 20} دقيقة — الوقت المتبقي: <b>${label}</b>`;
+      btn.disabled = true; btn.classList.add('disabled'); btn.classList.remove('enabled');
+    }
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  document.getElementById('joinBtn').addEventListener('click', ()=>{
+    if (document.getElementById('joinBtn').disabled) return;
+    alert('سيتم تفعيل غرفة الفيديو تلقائيًا في المرحلة القادمة من المشروع (ربط Daily.co).');
+  });
+}
+
+function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+</script>
+</body>
+</html>
