@@ -10,7 +10,7 @@
   body{background:var(--paper); color:var(--ink); min-height:100vh;}
   .topbar{display:flex; align-items:center; justify-content:space-between; background:#fff; padding:14px 26px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:10;}
   .topbar h1{font-family:'Markazi Text',serif; font-size:1.4rem;}
-  .save-indicator{font-size:.82rem; color:#7C8B7A; transition:opacity .3s;}
+  .save-indicator{font-size:.85rem; font-weight:700; color:#2f8f4e; transition:opacity .3s; min-width:160px;}
   .logout{background:none; border:1px solid var(--line); border-radius:10px; padding:8px 16px; cursor:pointer; font-weight:700; font-size:.85rem;}
   .logout:hover{background:#22322C; color:#fff;}
   .layout{display:flex; min-height:calc(100vh - 60px);}
@@ -51,6 +51,7 @@
   <h1>لوحة تحكم عيادة تحدث</h1>
   <div style="display:flex; align-items:center; gap:16px;">
     <span class="save-indicator" id="saveIndicator"></span>
+    <button class="btn-outline" id="saveNowBtn">💾 حفظ الآن</button>
     <button class="logout" id="logoutBtn">تسجيل الخروج</button>
   </div>
 </div>
@@ -215,12 +216,26 @@ function setPath(obj, pathStr, val){
 
 function scheduleSave(patch){
   clearTimeout(saveTimer);
-  document.getElementById('saveIndicator').textContent = 'جارٍ الحفظ…';
+  const indicator = document.getElementById('saveIndicator');
+  indicator.style.color = '#7C8B7A';
+  indicator.textContent = 'جارٍ الحفظ…';
   saveTimer = setTimeout(async ()=>{
     const res = await fetch('/api/content', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(patch) });
-    document.getElementById('saveIndicator').textContent = res.ok ? '✓ تم الحفظ' : 'تعذّر الحفظ';
-    setTimeout(()=> document.getElementById('saveIndicator').textContent='', 1800);
+    indicator.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
+    indicator.textContent = res.ok ? '✓ تم الحفظ تلقائيًا' : 'تعذّر الحفظ — تحقق من الاتصال';
+    setTimeout(()=> indicator.textContent='', 2500);
   }, 500);
+}
+
+async function saveNow(){
+  clearTimeout(saveTimer);
+  const indicator = document.getElementById('saveIndicator');
+  indicator.style.color = '#7C8B7A';
+  indicator.textContent = 'جارٍ حفظ كل التعديلات…';
+  const res = await fetch('/api/content', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(CONTENT) });
+  indicator.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
+  indicator.textContent = res.ok ? '✓ تم حفظ كل التعديلات بنجاح' : 'تعذّر الحفظ — تحقق من الاتصال';
+  setTimeout(()=> indicator.textContent='', 3500);
 }
 
 async function uploadFile(file){
@@ -255,14 +270,30 @@ async function init(){
   bindGenericFields();
 }
 
+function addCustomFontOption(name){
+  [document.getElementById('fontDisplay'), document.getElementById('fontBody')].forEach(sel => {
+    const already = Array.from(sel.options).some(o => o.value === name);
+    if (!already) {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = '🎨 ' + name + ' (الخط المخصص المرفوع)';
+      sel.appendChild(opt);
+    }
+  });
+}
+
 function fillDesign(){
   document.getElementById('colorInk').value = CONTENT.colors.ink;
   document.getElementById('colorBg').value = CONTENT.colors.background;
   document.getElementById('colorClay').value = CONTENT.colors.clay;
   document.getElementById('colorSage').value = CONTENT.colors.sage;
+
+  if (CONTENT.font.customFontName) {
+    addCustomFontOption(CONTENT.font.customFontName);
+    document.getElementById('customFontStatus').textContent = 'الخط المرفوع حاليًا: ' + CONTENT.font.customFontName + ' — يمكنك اختياره من القائمتين أعلاه.';
+  }
   document.getElementById('fontDisplay').value = CONTENT.font.display;
   document.getElementById('fontBody').value = CONTENT.font.body;
-  if (CONTENT.font.customFontName) document.getElementById('customFontStatus').textContent = 'الخط المرفوع: ' + CONTENT.font.customFontName;
 
   document.getElementById('customFontFile').addEventListener('change', async (e)=>{
     const file = e.target.files[0]; if (!file) return;
@@ -270,7 +301,8 @@ function fillDesign(){
     if (!url) return;
     const name = 'خط-مخصص-' + Date.now();
     CONTENT.font.customFontUrl = url; CONTENT.font.customFontName = name;
-    document.getElementById('customFontStatus').textContent = 'تم رفع الخط بنجاح.';
+    addCustomFontOption(name);
+    document.getElementById('customFontStatus').textContent = '✓ تم رفع الخط بنجاح — اختره الآن من قائمة "خط العناوين" أو "خط النصوص" أعلاه لتطبيقه.';
     scheduleSave({ font: { customFontUrl: url, customFontName: name } });
   });
 }
@@ -476,6 +508,8 @@ document.querySelectorAll('.sidebar button[data-panel]').forEach(btn=>{
     document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
   });
 });
+
+document.getElementById('saveNowBtn').addEventListener('click', saveNow);
 
 document.getElementById('logoutBtn').addEventListener('click', async ()=>{
   await fetch('/api/auth/logout', { method:'POST' });
