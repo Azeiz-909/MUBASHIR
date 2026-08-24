@@ -1,0 +1,35 @@
+const crypto = require('crypto');
+const { supabase } = require('../_lib/supabase');
+const { getSessionUser } = require('../_lib/auth');
+
+module.exports = async (req, res) => {
+  const user = await getSessionUser(req);
+  if (!user) return res.status(401).json({ error: 'يلزم تسجيل الدخول' });
+
+  if (req.method === 'GET') {
+    let query = supabase.from('clients').select('*').order('created_at', { ascending: false });
+    if (user.role !== 'super_admin') query = query.eq('counselor_id', user.counselor_id);
+    const { data, error } = await query;
+    if (error) return res.status(500).json({ error: 'تعذّر تحميل المراجعين' });
+    return res.status(200).json(data.map(c => ({
+      id: c.id, name: c.name, phone: c.phone, category: c.category, counselorId: c.counselor_id, createdAt: c.created_at
+    })));
+  }
+
+  if (req.method === 'POST') {
+    const { name, phone, category } = req.body || {};
+    if (!name || !phone) return res.status(400).json({ error: 'الاسم ورقم الجوال مطلوبان' });
+
+    const counselorId = user.role === 'super_admin' ? (req.body.counselorId || null) : user.counselor_id;
+    const client = {
+      id: 'cl_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex'),
+      name, phone, category: (category || 'عام').trim() || 'عام',
+      counselor_id: counselorId, created_at: Date.now()
+    };
+    const { error } = await supabase.from('clients').insert(client);
+    if (error) return res.status(500).json({ error: 'تعذّر إضافة المراجع' });
+    return res.status(200).json({ ok: true, client: { id: client.id, name: client.name, phone: client.phone, category: client.category, counselorId: client.counselor_id } });
+  }
+
+  res.status(405).json({ error: 'طريقة غير مدعومة' });
+};
