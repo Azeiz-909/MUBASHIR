@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم | عيادة تحدث</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Markazi+Text:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#22322C; --paper:#EFEDE6; --card:#F8F6F1; --clay:#B8734F; --line:#DAD5C8; }
+  *{box-sizing:border-box; margin:0; padding:0; font-family:'Tajawal',sans-serif;}
+  body{background:var(--paper); color:var(--ink); min-height:100vh;}
+  .topbar{display:flex; align-items:center; justify-content:space-between; background:#fff; padding:14px 26px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:10;}
+  .topbar h1{font-family:'Markazi Text',serif; font-size:1.4rem;}
+  .save-indicator{font-size:.85rem; font-weight:700; color:#2f8f4e; transition:opacity .3s; min-width:160px;}
+  .logout{background:none; border:1px solid var(--line); border-radius:10px; padding:8px 16px; cursor:pointer; font-weight:700; font-size:.85rem;}
+  .logout:hover{background:#22322C; color:#fff;}
+  .layout{display:flex; min-height:calc(100vh - 60px);}
+  .sidebar{width:210px; background:#fff; border-left:1px solid var(--line); padding:20px 12px; flex-shrink:0;}
+  .sidebar button{display:block; width:100%; text-align:right; background:none; border:none; padding:12px 14px; border-radius:10px; margin-bottom:4px; cursor:pointer; font-size:.92rem; font-weight:500; color:var(--ink);}
+  .sidebar button.active, .sidebar button:hover{background:var(--paper); color:var(--clay);}
+  .content{flex:1; padding:30px; max-width:900px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .field{margin-bottom:18px;}
+  .field label{display:block; font-weight:700; font-size:.88rem; margin-bottom:6px;}
+  .field input[type=text], .field input[type=email], .field input[type=tel], .field textarea, .field select{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:.92rem; background:#fff; font-family:inherit;
+  }
+  .field textarea{min-height:90px; resize:vertical;}
+  .row2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .card-box{background:#fff; border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:18px;}
+  h2.sec{font-size:1.2rem; margin-bottom:18px; font-family:'Markazi Text',serif;}
+  .color-row{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
+  .color-row input[type=color]{width:44px; height:34px; border:none; border-radius:8px; cursor:pointer;}
+  .color-row span{font-size:.88rem; font-weight:600; width:150px;}
+  .img-upload{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
+  .img-preview{width:64px; height:64px; border-radius:12px; background:var(--paper); object-fit:cover; border:1px solid var(--line);}
+  .btn{background:var(--ink); color:#fff; border:none; padding:9px 18px; border-radius:10px; cursor:pointer; font-weight:700; font-size:.85rem;}
+  .btn:hover{background:var(--clay);}
+  .btn-outline{background:none; border:1px solid var(--line); color:var(--ink); padding:9px 18px; border-radius:10px; cursor:pointer; font-weight:700; font-size:.85rem;}
+  .btn-danger{background:none; border:1px solid #d98a8a; color:#b23a3a; padding:7px 14px; border-radius:8px; cursor:pointer; font-size:.82rem;}
+  .list-row{display:flex; align-items:center; gap:12px; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--line);}
+  .tag-input-row{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;}
+  .tag{background:var(--paper); border-radius:20px; padding:6px 12px; font-size:.85rem; display:flex; align-items:center; gap:8px;}
+  .tag button{background:none; border:none; cursor:pointer; color:#b23a3a; font-weight:700;}
+  .hint{font-size:.8rem; color:#7c8b7a; margin-top:-8px; margin-bottom:16px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>لوحة تحكم عيادة تحدث</h1>
+  <div style="display:flex; align-items:center; gap:16px;">
+    <span class="save-indicator" id="saveIndicator"></span>
+    <button class="btn-outline" id="saveNowBtn">💾 حفظ الآن</button>
+    <button class="logout" id="logoutBtn">تسجيل الخروج</button>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <button data-panel="design" class="active">🎨 التصميم</button>
+    <button data-panel="content">📝 محتوى الصفحة</button>
+    <button data-panel="counselors">👥 المستشارون</button>
+    <button data-panel="accounts" id="accountsTabBtn">🔑 الحسابات</button>
+    <button data-panel="bookings">📅 المواعيد</button>
+  </div>
+
+  <div class="content">
+
+    <!-- ===== التصميم ===== -->
+    <div class="panel active" id="panel-design">
+      <div class="card-box">
+        <h2 class="sec">الألوان</h2>
+        <div class="color-row"><input type="color" id="colorInk" data-key="colors.ink"><span>لون النصوص الأساسي</span></div>
+        <div class="color-row"><input type="color" id="colorBg" data-key="colors.background"><span>لون الخلفية</span></div>
+        <div class="color-row"><input type="color" id="colorClay" data-key="colors.clay"><span>اللون البارز (الأزرار)</span></div>
+        <div class="color-row"><input type="color" id="colorSage" data-key="colors.sage"><span>اللون الثانوي</span></div>
+      </div>
+      <div class="card-box">
+        <h2 class="sec">الخطوط</h2>
+        <div class="row2">
+          <div class="field"><label>خط العناوين</label>
+            <select id="fontDisplay" data-key="font.display">
+              <option>Markazi Text</option><option>Aref Ruqaa</option><option>Amiri</option><option>Cairo</option><option>Reem Kufi</option>
+            </select>
+          </div>
+          <div class="field"><label>خط النصوص</label>
+            <select id="fontBody" data-key="font.body">
+              <option>Tajawal</option><option>Cairo</option><option>IBM Plex Sans Arabic</option><option>Almarai</option><option>Noto Kufi Arabic</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>رفع خط مخصص (اختياري)</label>
+          <input type="file" id="customFontFile" accept=".woff2,.woff,.ttf,.otf">
+          <div class="hint" id="customFontStatus">لا يوجد خط مخصص مرفوع حاليًا.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== المحتوى ===== -->
+    <div class="panel" id="panel-content">
+      <div class="card-box">
+        <h2 class="sec">القسم الرئيسي (Hero)</h2>
+        <div class="field"><label>اسم العيادة</label><input type="text" id="siteName" data-key="site.name"></div>
+        <div class="field"><label>العنوان الرئيسي</label><input type="text" id="heroTitle" data-key="hero.title"></div>
+        <div class="field"><label>الوصف</label><textarea id="heroSubtitle" data-key="hero.subtitle"></textarea></div>
+        <div class="img-upload">
+          <img class="img-preview" id="heroImgPreview" src="" style="display:none">
+          <input type="file" id="heroImgFile" accept="image/*">
+        </div>
+        <div class="hint">اختياري — إذا رفعت صورة ستحل محل الرسم التوضيحي في الصفحة الرئيسية.</div>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">السرية والخصوصية</h2>
+        <div class="field"><label>العنوان</label><input type="text" id="privacyTitle" data-key="privacy.title"></div>
+        <div class="field"><label>النص</label><textarea id="privacyBody" data-key="privacy.body"></textarea></div>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">جلستك الأولى</h2>
+        <div class="field"><label>العنوان</label><input type="text" id="firstTitle" data-key="firstSession.title"></div>
+        <div class="field"><label>النص التمهيدي</label><textarea id="firstBody" data-key="firstSession.body"></textarea></div>
+        <div class="field"><label>خطوات الجلسة (سطر لكل خطوة)</label><textarea id="firstSteps" rows="4"></textarea></div>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">الأسئلة الشائعة</h2>
+        <div id="faqEditor"></div>
+        <button class="btn-outline" id="addFaqBtn">+ إضافة سؤال</button>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">أوقات العمل</h2>
+        <div id="hoursEditor"></div>
+        <button class="btn-outline" id="addHourBtn">+ إضافة فترة</button>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">طرق الدفع</h2>
+        <div class="tag-input-row" id="paymentsTags"></div>
+        <input type="text" id="newPaymentInput" placeholder="اكتب طريقة دفع واضغط Enter">
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">الشهادات والاعتمادات</h2>
+        <div id="certsEditor"></div>
+        <button class="btn-outline" id="addCertBtn">+ إضافة شهادة</button>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">معلومات التواصل</h2>
+        <div class="row2">
+          <div class="field"><label>الهاتف</label><input type="tel" id="contactPhone" data-key="contact.phone"></div>
+          <div class="field"><label>واتساب</label><input type="tel" id="contactWhatsapp" data-key="contact.whatsapp"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>البريد الإلكتروني</label><input type="text" id="contactEmail" data-key="contact.email"></div>
+          <div class="field"><label>العنوان</label><input type="text" id="contactAddress" data-key="contact.address"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== المستشارون ===== -->
+    <div class="panel" id="panel-counselors">
+      <div class="card-box">
+        <h2 class="sec">بطاقات المستشارين</h2>
+        <div id="counselorsEditor"></div>
+        <button class="btn-outline" id="addCounselorBtn">+ إضافة مستشار</button>
+      </div>
+    </div>
+
+    <!-- ===== الحسابات ===== -->
+    <div class="panel" id="panel-accounts">
+      <div class="card-box">
+        <h2 class="sec">الحسابات الحالية</h2>
+        <div id="usersList"></div>
+      </div>
+      <div class="card-box">
+        <h2 class="sec">إضافة حساب مستشار جديد</h2>
+        <div class="row2">
+          <div class="field"><label>الاسم</label><input type="text" id="newUserName"></div>
+          <div class="field"><label>البريد الإلكتروني</label><input type="text" id="newUserEmail"></div>
+        </div>
+        <div class="field"><label>كلمة مرور مبدئية</label><input type="text" id="newUserPass" placeholder="سيُطلب من المستخدم تغييرها عند أول دخول"></div>
+        <div class="field"><label>ربط الحساب ببطاقة مستشار (اختياري)</label><select id="newUserCounselor"><option value="">— بدون ربط —</option></select></div>
+        <div class="hint" id="usersMsg"></div>
+        <button class="btn" id="addUserBtn">إنشاء الحساب</button>
+      </div>
+    </div>
+
+    <!-- ===== المواعيد ===== -->
+    <div class="panel" id="panel-bookings">
+      <div class="card-box">
+        <h2 class="sec">المواعيد المحجوزة</h2>
+        <p id="bookingsNote" style="color:#6b7570; font-size:.92rem; margin-bottom:12px;"></p>
+        <div id="bookingsList"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let CONTENT = null;
+let saveTimer = null;
+
+function byPath(obj, pathStr){ return pathStr.split('.').reduce((o,k)=>o?.[k], obj); }
+function setPath(obj, pathStr, val){
+  const keys = pathStr.split('.');
+  let cur = obj;
+  for(let i=0;i<keys.length-1;i++) cur = cur[keys[i]];
+  cur[keys[keys.length-1]] = val;
+}
+
+function scheduleSave(patch){
+  clearTimeout(saveTimer);
+  const indicator = document.getElementById('saveIndicator');
+  indicator.style.color = '#7C8B7A';
+  indicator.textContent = 'جارٍ الحفظ…';
+  saveTimer = setTimeout(async ()=>{
+    const res = await fetch('/api/content', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(patch) });
+    indicator.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
+    indicator.textContent = res.ok ? '✓ تم الحفظ تلقائيًا' : 'تعذّر الحفظ — تحقق من الاتصال';
+    setTimeout(()=> indicator.textContent='', 2500);
+  }, 500);
+}
+
+async function saveNow(){
+  clearTimeout(saveTimer);
+  const indicator = document.getElementById('saveIndicator');
+  indicator.style.color = '#7C8B7A';
+  indicator.textContent = 'جارٍ حفظ كل التعديلات…';
+  const res = await fetch('/api/content', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(CONTENT) });
+  indicator.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
+  indicator.textContent = res.ok ? '✓ تم حفظ كل التعديلات بنجاح' : 'تعذّر الحفظ — تحقق من الاتصال';
+  setTimeout(()=> indicator.textContent='', 3500);
+}
+
+async function uploadFile(file){
+  const dataBase64 = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+  const res = await fetch('/api/upload', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ filename: file.name, dataBase64 })
+  });
+  const data = await res.json();
+  if (!res.ok) { alert(data.error || 'فشل الرفع'); return null; }
+  return data.url;
+}
+
+// ---------- تحميل أولي ----------
+async function init(){
+  const meRes = await fetch('/api/me');
+  if (meRes.status === 401) { location.href = '/admin/login.html'; return; }
+  const me = await meRes.json();
+  if (me.mustChangePassword) { location.href = '/admin/change-password.html'; return; }
+  if (me.role !== 'super_admin') document.getElementById('accountsTabBtn').style.display = 'none';
+
+  const res = await fetch('/api/content');
+  CONTENT = await res.json();
+  fillDesign(); fillContent(); fillCounselors();
+  if (me.role === 'super_admin') fillUsers();
+  fillBookings();
+  bindGenericFields();
+}
+
+function addCustomFontOption(name){
+  [document.getElementById('fontDisplay'), document.getElementById('fontBody')].forEach(sel => {
+    const already = Array.from(sel.options).some(o => o.value === name);
+    if (!already) {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = '🎨 ' + name + ' (الخط المخصص المرفوع)';
+      sel.appendChild(opt);
+    }
+  });
+}
+
+function fillDesign(){
+  document.getElementById('colorInk').value = CONTENT.colors.ink;
+  document.getElementById('colorBg').value = CONTENT.colors.background;
+  document.getElementById('colorClay').value = CONTENT.colors.clay;
+  document.getElementById('colorSage').value = CONTENT.colors.sage;
+
+  if (CONTENT.font.customFontName) {
+    addCustomFontOption(CONTENT.font.customFontName);
+    document.getElementById('customFontStatus').textContent = 'الخط المرفوع حاليًا: ' + CONTENT.font.customFontName + ' — يمكنك اختياره من القائمتين أعلاه.';
+  }
+  document.getElementById('fontDisplay').value = CONTENT.font.display;
+  document.getElementById('fontBody').value = CONTENT.font.body;
+
+  document.getElementById('customFontFile').addEventListener('change', async (e)=>{
+    const file = e.target.files[0]; if (!file) return;
+    const url = await uploadFile(file);
+    if (!url) return;
+    const name = 'خط-مخصص-' + Date.now();
+    CONTENT.font.customFontUrl = url; CONTENT.font.customFontName = name;
+    addCustomFontOption(name);
+    document.getElementById('customFontStatus').textContent = '✓ تم رفع الخط بنجاح — اختره الآن من قائمة "خط العناوين" أو "خط النصوص" أعلاه لتطبيقه.';
+    scheduleSave({ font: { customFontUrl: url, customFontName: name } });
+  });
+}
+
+function fillContent(){
+  document.getElementById('siteName').value = CONTENT.site.name;
+  document.getElementById('heroTitle').value = CONTENT.hero.title;
+  document.getElementById('heroSubtitle').value = CONTENT.hero.subtitle;
+  if (CONTENT.hero.image) { document.getElementById('heroImgPreview').src = CONTENT.hero.image; document.getElementById('heroImgPreview').style.display='block'; }
+  document.getElementById('heroImgFile').addEventListener('change', async (e)=>{
+    const file = e.target.files[0]; if (!file) return;
+    const url = await uploadFile(file); if (!url) return;
+    CONTENT.hero.image = url;
+    document.getElementById('heroImgPreview').src = url; document.getElementById('heroImgPreview').style.display='block';
+    scheduleSave({ hero: { image: url } });
+  });
+
+  document.getElementById('privacyTitle').value = CONTENT.privacy.title;
+  document.getElementById('privacyBody').value = CONTENT.privacy.body;
+  document.getElementById('firstTitle').value = CONTENT.firstSession.title;
+  document.getElementById('firstBody').value = CONTENT.firstSession.body;
+  document.getElementById('firstSteps').value = CONTENT.firstSession.steps.join('\n');
+  document.getElementById('firstSteps').addEventListener('input', (e)=>{
+    CONTENT.firstSession.steps = e.target.value.split('\n').filter(s=>s.trim());
+    scheduleSave({ firstSession: { steps: CONTENT.firstSession.steps } });
+  });
+
+  renderFaq(); renderHours(); renderPayments(); renderCerts();
+
+  document.getElementById('contactPhone').value = CONTENT.contact.phone;
+  document.getElementById('contactWhatsapp').value = CONTENT.contact.whatsapp;
+  document.getElementById('contactEmail').value = CONTENT.contact.email;
+  document.getElementById('contactAddress').value = CONTENT.contact.address;
+
+  document.getElementById('addFaqBtn').addEventListener('click', ()=>{ CONTENT.faq.push({q:'سؤال جديد',a:'الإجابة هنا'}); renderFaq(); scheduleSave({faq: CONTENT.faq}); });
+  document.getElementById('addHourBtn').addEventListener('click', ()=>{ CONTENT.hours.push({label:'يوم', value:'وقت'}); renderHours(); scheduleSave({hours: CONTENT.hours}); });
+  document.getElementById('addCertBtn').addEventListener('click', ()=>{ CONTENT.certifications.push({label:'اسم الجهة', image:null}); renderCerts(); scheduleSave({certifications: CONTENT.certifications}); });
+
+  document.getElementById('newPaymentInput').addEventListener('keydown', (e)=>{
+    if (e.key === 'Enter' && e.target.value.trim()){
+      CONTENT.payments.push(e.target.value.trim()); e.target.value=''; renderPayments(); scheduleSave({payments: CONTENT.payments});
+    }
+  });
+}
+
+function renderFaq(){
+  document.getElementById('faqEditor').innerHTML = CONTENT.faq.map((f,i)=>`
+    <div class="list-row" style="flex-direction:column; align-items:stretch; gap:8px;">
+      <input type="text" value="${escAttr(f.q)}" data-faq="${i}" data-field="q" placeholder="السؤال">
+      <textarea data-faq="${i}" data-field="a" placeholder="الإجابة" style="min-height:60px;">${f.a}</textarea>
+      <button class="btn-danger" data-faq-del="${i}" style="align-self:flex-end;">حذف</button>
+    </div>`).join('');
+  document.querySelectorAll('[data-faq]').forEach(el => el.addEventListener('input', e=>{
+    const i = +e.target.dataset.faq, field = e.target.dataset.field;
+    CONTENT.faq[i][field] = e.target.value; scheduleSave({faq: CONTENT.faq});
+  }));
+  document.querySelectorAll('[data-faq-del]').forEach(el => el.addEventListener('click', e=>{
+    CONTENT.faq.splice(+e.target.dataset.faqDel,1); renderFaq(); scheduleSave({faq: CONTENT.faq});
+  }));
+}
+function renderHours(){
+  document.getElementById('hoursEditor').innerHTML = CONTENT.hours.map((h,i)=>`
+    <div class="list-row">
+      <input type="text" value="${escAttr(h.label)}" data-hour="${i}" data-field="label" style="flex:1;">
+      <input type="text" value="${escAttr(h.value)}" data-hour="${i}" data-field="value" style="flex:1;">
+      <button class="btn-danger" data-hour-del="${i}">حذف</button>
+    </div>`).join('');
+  document.querySelectorAll('[data-hour]').forEach(el => el.addEventListener('input', e=>{
+    const i = +e.target.dataset.hour, field = e.target.dataset.field;
+    CONTENT.hours[i][field] = e.target.value; scheduleSave({hours: CONTENT.hours});
+  }));
+  document.querySelectorAll('[data-hour-del]').forEach(el => el.addEventListener('click', e=>{
+    CONTENT.hours.splice(+e.target.dataset.hourDel,1); renderHours(); scheduleSave({hours: CONTENT.hours});
+  }));
+}
+function renderPayments(){
+  document.getElementById('paymentsTags').innerHTML = CONTENT.payments.map((p,i)=>`<span class="tag">${p}<button data-pay-del="${i}">×</button></span>`).join('');
+  document.querySelectorAll('[data-pay-del]').forEach(el => el.addEventListener('click', e=>{
+    CONTENT.payments.splice(+e.target.dataset.payDel,1); renderPayments(); scheduleSave({payments: CONTENT.payments});
+  }));
+}
+function renderCerts(){
+  document.getElementById('certsEditor').innerHTML = CONTENT.certifications.map((ct,i)=>`
+    <div class="img-upload">
+      <img class="img-preview" src="${ct.image || ''}" style="${ct.image?'':'display:none'}">
+      <input type="text" value="${escAttr(ct.label)}" data-cert="${i}" data-field="label" style="flex:1;">
+      <input type="file" accept="image/*" data-cert-file="${i}">
+      <button class="btn-danger" data-cert-del="${i}">حذف</button>
+    </div>`).join('');
+  document.querySelectorAll('[data-cert]').forEach(el => el.addEventListener('input', e=>{
+    const i = +e.target.dataset.cert; CONTENT.certifications[i].label = e.target.value; scheduleSave({certifications: CONTENT.certifications});
+  }));
+  document.querySelectorAll('[data-cert-file]').forEach(el => el.addEventListener('change', async e=>{
+    const i = +e.target.dataset.certFile; const file = e.target.files[0]; if(!file) return;
+    const url = await uploadFile(file); if(!url) return;
+    CONTENT.certifications[i].image = url; renderCerts(); scheduleSave({certifications: CONTENT.certifications});
+  }));
+  document.querySelectorAll('[data-cert-del]').forEach(el => el.addEventListener('click', e=>{
+    CONTENT.certifications.splice(+e.target.dataset.certDel,1); renderCerts(); scheduleSave({certifications: CONTENT.certifications});
+  }));
+}
+
+function fillCounselors(){ renderCounselors(); document.getElementById('addCounselorBtn').addEventListener('click', ()=>{
+  CONTENT.counselors.push({ id:'c'+Date.now(), name:'اسم المستشار', role:'التخصص', credentials:'المؤهلات', image:null });
+  renderCounselors(); scheduleSave({counselors: CONTENT.counselors});
+}); }
+function renderCounselors(){
+  document.getElementById('counselorsEditor').innerHTML = CONTENT.counselors.map((co,i)=>`
+    <div class="card-box">
+      <div class="img-upload">
+        <img class="img-preview" src="${co.image||''}" style="${co.image?'':'display:none'}">
+        <input type="file" accept="image/*" data-co-file="${i}">
+        <button class="btn-danger" data-co-del="${i}" style="margin-right:auto;">حذف المستشار</button>
+      </div>
+      <div class="row2">
+        <div class="field"><label>الاسم</label><input type="text" value="${escAttr(co.name)}" data-co="${i}" data-field="name"></div>
+        <div class="field"><label>التخصص</label><input type="text" value="${escAttr(co.role)}" data-co="${i}" data-field="role"></div>
+      </div>
+      <div class="field"><label>المؤهلات</label><input type="text" value="${escAttr(co.credentials)}" data-co="${i}" data-field="credentials"></div>
+    </div>`).join('');
+  document.querySelectorAll('[data-co]').forEach(el => el.addEventListener('input', e=>{
+    const i = +e.target.dataset.co, field = e.target.dataset.field;
+    CONTENT.counselors[i][field] = e.target.value; scheduleSave({counselors: CONTENT.counselors});
+  }));
+  document.querySelectorAll('[data-co-file]').forEach(el => el.addEventListener('change', async e=>{
+    const i = +e.target.dataset.coFile; const file = e.target.files[0]; if(!file) return;
+    const url = await uploadFile(file); if(!url) return;
+    CONTENT.counselors[i].image = url; renderCounselors(); scheduleSave({counselors: CONTENT.counselors});
+  }));
+  document.querySelectorAll('[data-co-del]').forEach(el => el.addEventListener('click', e=>{
+    CONTENT.counselors.splice(+e.target.dataset.coDel,1); renderCounselors(); scheduleSave({counselors: CONTENT.counselors});
+  }));
+}
+
+async function fillUsers(){
+  const counselorSelect = document.getElementById('newUserCounselor');
+  counselorSelect.innerHTML = '<option value="">— بدون ربط —</option>' + CONTENT.counselors.map(co => `<option value="${co.id}">${co.name}</option>`).join('');
+
+  const res = await fetch('/api/users'); const users = await res.json();
+  document.getElementById('usersList').innerHTML = users.map(u => `
+    <div class="list-row">
+      <div><strong>${u.name}</strong> — ${u.email} <span style="color:#7C8B7A; font-size:.82rem;">(${u.role==='super_admin'?'مدير عام':'مستشار'})</span></div>
+      ${u.role!=='super_admin' ? `<button class="btn-danger" data-user-del="${u.id}">حذف</button>` : ''}
+    </div>`).join('');
+  document.querySelectorAll('[data-user-del]').forEach(el => el.addEventListener('click', async e=>{
+    if (!confirm('تأكيد حذف هذا الحساب؟')) return;
+    await fetch('/api/users/' + e.target.dataset.userDel, { method:'DELETE' });
+    fillUsers();
+  }));
+  document.getElementById('addUserBtn').onclick = async ()=>{
+    const name = document.getElementById('newUserName').value.trim();
+    const email = document.getElementById('newUserEmail').value.trim();
+    const tempPassword = document.getElementById('newUserPass').value;
+    const counselorId = document.getElementById('newUserCounselor').value || null;
+    const msg = document.getElementById('usersMsg');
+    const res = await fetch('/api/users', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name,email,tempPassword,counselorId}) });
+    const data = await res.json();
+    if (!res.ok) { msg.textContent = data.error; msg.style.color = '#b23a3a'; return; }
+    msg.textContent = 'تم إنشاء الحساب. سيُطلب من صاحبه تغيير كلمة المرور عند أول دخول.'; msg.style.color = '#7C8B7A';
+    document.getElementById('newUserName').value=''; document.getElementById('newUserEmail').value=''; document.getElementById('newUserPass').value='';
+    fillUsers();
+  };
+}
+
+async function fillBookings(){
+  const res = await fetch('/api/bookings'); const data = await res.json();
+  const bookings = data.bookings || [];
+  document.getElementById('bookingsNote').textContent = bookings.length
+    ? `عدد المواعيد: ${bookings.length} — يُفتح زر دخول الجلسة للمراجع قبل الموعد بـ ${data.joinWindowMinutes || 20} دقيقة.`
+    : 'لا توجد مواعيد محجوزة بعد.';
+  document.getElementById('bookingsList').innerHTML = bookings.map(b => `
+    <div class="list-row" style="flex-direction:column; align-items:stretch; gap:4px;">
+      <div style="display:flex; justify-content:space-between; font-weight:700;">
+        <span>${escAttr(b.name)}</span><span style="color:#7C8B7A; font-weight:500;">${escAttr(b.date)} — ${escAttr(b.time)}</span>
+      </div>
+      <div style="font-size:.85rem; color:#6b7570;">📞 ${escAttr(b.phone)} · المستشار: ${escAttr(b.counselorName || 'غير محدد')}</div>
+      <a href="/confirm.html?id=${b.id}" target="_blank" style="font-size:.8rem; color:#B8734F;">رابط الموعد ↗</a>
+    </div>`).join('');
+}
+
+function bindGenericFields(){
+  document.querySelectorAll('[data-key]').forEach(el => {
+    el.addEventListener(el.tagName === 'SELECT' || el.type === 'color' ? 'input' : 'input', ()=>{
+      setPath(CONTENT, el.dataset.key, el.value);
+      const patch = {}; setPath(patch, el.dataset.key, el.value);
+      // إعادة بناء الكائن الجزئي بشكل صحيح متداخل
+      const keys = el.dataset.key.split('.');
+      let obj = {}; let cur = obj;
+      for(let i=0;i<keys.length-1;i++){ cur[keys[i]] = {}; cur = cur[keys[i]]; }
+      cur[keys[keys.length-1]] = el.value;
+      scheduleSave(obj);
+    });
+  });
+}
+
+function escAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
+
+document.querySelectorAll('.sidebar button[data-panel]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.sidebar button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+  });
+});
+
+document.getElementById('saveNowBtn').addEventListener('click', saveNow);
+
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+  await fetch('/api/auth/logout', { method:'POST' });
+  location.href = '/admin/login.html';
+});
+
+init();
+</script>
+</body>
+</html>
