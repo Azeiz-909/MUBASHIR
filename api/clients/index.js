@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   }
 
   if (req.method === 'POST') {
-    const { name, phone, category } = req.body || {};
+    const { name, phone, category, note } = req.body || {};
     if (!name || !phone) return res.status(400).json({ error: 'الاسم ورقم الجوال مطلوبان' });
 
     const counselorId = user.role === 'super_admin' ? (req.body.counselorId || null) : user.counselor_id;
@@ -28,6 +28,14 @@ module.exports = async (req, res) => {
     };
     const { error } = await supabase.from('clients').insert(client);
     if (error) return res.status(500).json({ error: 'تعذّر إضافة المراجع' });
+
+    if ((note || '').trim()) {
+      await supabase.from('client_notes').insert({
+        id: 'n_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex'),
+        client_id: client.id, title: 'ملاحظة عند الإضافة', body: note.trim(), created_at: Date.now()
+      });
+    }
+
     return res.status(200).json({ ok: true, client: { id: client.id, name: client.name, phone: client.phone, category: client.category, counselorId: client.counselor_id } });
   }
 

@@ -43,6 +43,15 @@
   .tag{background:var(--paper); border-radius:20px; padding:6px 12px; font-size:.85rem; display:flex; align-items:center; gap:8px;}
   .tag button{background:none; border:none; cursor:pointer; color:#b23a3a; font-weight:700;}
   .hint{font-size:.8rem; color:#7c8b7a; margin-top:-8px; margin-bottom:16px;}
+  input[type=date], input[type=time]{cursor:pointer;}
+  .day-box{margin-bottom:14px;}
+  .day-title{font-weight:700; font-size:.92rem; margin-bottom:8px;}
+  .slot-grid{display:flex; flex-wrap:wrap; gap:8px;}
+  .slot{border:1px solid var(--line); border-radius:8px; padding:7px 12px; font-size:.82rem; cursor:pointer; background:#fff; font-family:inherit;}
+  .slot.free{background:#fff; color:var(--ink);}
+  .slot.free:hover{border-color:#2f8f4e; color:#2f8f4e;}
+  .slot.blocked{background:#fbeaea; border-color:#d98a8a; color:#b23a3a;}
+  .slot.booked{background:#EFEDE6; border-color:var(--line); color:#7C8B7A; cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -64,6 +73,7 @@
     <button data-panel="clients">🗂️ المراجعون</button>
     <button data-panel="accounts" id="accountsTabBtn">🔑 الحسابات</button>
     <button data-panel="bookings">📅 المواعيد</button>
+    <button data-panel="availability" id="availabilityTabBtn">🕐 أوقات التوفر</button>
   </div>
 
   <div class="content">
@@ -189,6 +199,10 @@
             <input type="text" id="newClientCategory" list="categoryOptions" placeholder="مثال: زواج، شخصي، أسري">
             <datalist id="categoryOptions"></datalist>
           </div>
+          <div class="field">
+            <label>إضافة ملاحظة (اختياري)</label>
+            <textarea id="newClientNote" placeholder="أي ملاحظة تود تسجيلها عن هذا المراجع"></textarea>
+          </div>
           <button class="btn" id="saveClientBtn">حفظ المراجع</button>
           <span class="hint" id="clientFormMsg" style="margin-right:10px;"></span>
         </div>
@@ -221,6 +235,19 @@
         <h2 class="sec">المواعيد المحجوزة</h2>
         <p id="bookingsNote" style="color:#6b7570; font-size:.92rem; margin-bottom:12px;"></p>
         <div id="bookingsList"></div>
+      </div>
+    </div>
+
+    <!-- ===== أوقات التوفر ===== -->
+    <div class="panel" id="panel-availability">
+      <div class="card-box">
+        <h2 class="sec">أوقات التوفر</h2>
+        <p class="hint" style="margin-top:-8px;">اضغط على أي وقت لإغلاقه إن كنت مشغولًا وقتها (لن يستطيع أحد الحجز فيه)، واضغط عليه مجددًا لفتحه. الأوقات المحجوزة بموعد فعلي تظهر باللون الرمادي ولا يمكن تغييرها من هنا.</p>
+        <div class="field" id="availabilityCounselorField" style="display:none; max-width:320px;">
+          <label>المستشار</label>
+          <select id="availabilityCounselor"></select>
+        </div>
+        <div id="availabilityDays"></div>
       </div>
     </div>
 
@@ -291,16 +318,27 @@ async function init(){
 
   if (me.role === 'super_admin') {
     fillDesign(); fillContent(); fillCounselors(); fillUsers(); fillBookings();
-    bindGenericFields();
+    bindGenericFields(); fillAvailability(me);
   } else {
-    // حساب مستشار: إخفاء كل شيء ما عدا صفحة المراجعين
+    // حساب مستشار: إخفاء كل شيء ما عدا صفحة المراجعين وأوقات التوفر
     document.querySelectorAll('.sidebar button[data-panel]').forEach(btn => {
-      if (btn.dataset.panel !== 'clients') btn.style.display = 'none';
+      if (btn.dataset.panel !== 'clients' && btn.dataset.panel !== 'availability') btn.style.display = 'none';
     });
+    if (!me.counselorId) document.getElementById('availabilityTabBtn').style.display = 'none';
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-clients').classList.add('active');
+    fillAvailability(me);
   }
   fillClients();
+  enableTapToOpenPickers();
+}
+
+// اجعل الضغط في أي مكان داخل حقول التاريخ/الوقت (حتى المُضافة لاحقًا ديناميكيًا) يفتح المُنتقي مباشرة
+function enableTapToOpenPickers(){
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('input[type=date], input[type=time]');
+    if (el) { try { el.showPicker && el.showPicker(); } catch(err) {} }
+  });
 }
 
 function addCustomFontOption(name){
@@ -512,8 +550,84 @@ async function fillBookings(){
         <span>${escAttr(b.name)}</span><span style="color:#7C8B7A; font-weight:500;">${escAttr(b.date)} — ${escAttr(b.time)}</span>
       </div>
       <div style="font-size:.85rem; color:#6b7570;">📞 ${escAttr(b.phone)} · المستشار: ${escAttr(b.counselorName || 'غير محدد')}</div>
+      ${b.notes ? `<div style="font-size:.85rem; color:#4B5850; background:var(--paper); border-radius:8px; padding:8px 10px;">📝 ${escAttr(b.notes)}</div>` : ''}
       <a href="/confirm.html?id=${b.id}" target="_blank" style="font-size:.8rem; color:#B8734F;">رابط الموعد ↗</a>
     </div>`).join('');
+}
+
+// ===== أوقات التوفر =====
+let AVAIL_ME = null;
+const AVAILABILITY_HOURS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
+const AVAILABILITY_DAYS_COUNT = 14;
+const WEEKDAYS_AR = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+
+function toLocalISODate(d){
+  const p = n => String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
+}
+
+async function fillAvailability(me){
+  AVAIL_ME = me;
+  const selWrap = document.getElementById('availabilityCounselorField');
+  const sel = document.getElementById('availabilityCounselor');
+  if (me.role === 'super_admin') {
+    if (!CONTENT.counselors.length) { document.getElementById('availabilityDays').innerHTML = '<p class="hint">أضف مستشارًا أولًا من صفحة "المستشارون".</p>'; return; }
+    selWrap.style.display = 'block';
+    sel.innerHTML = CONTENT.counselors.map(co => `<option value="${co.id}">${escAttr(co.name)}</option>`).join('');
+    sel.onchange = renderAvailability;
+  }
+  renderAvailability();
+}
+
+function currentAvailabilityCounselorId(){
+  return AVAIL_ME.role === 'super_admin' ? document.getElementById('availabilityCounselor').value : AVAIL_ME.counselorId;
+}
+
+async function renderAvailability(){
+  const counselorId = currentAvailabilityCounselorId();
+  const container = document.getElementById('availabilityDays');
+  if (!counselorId) { container.innerHTML = '<p class="hint">لا يوجد مستشار مرتبط بهذا الحساب بعد.</p>'; return; }
+  container.innerHTML = 'جارٍ التحميل…';
+
+  const res = await fetch('/api/bookings?availability=1&counselorId=' + encodeURIComponent(counselorId));
+  if (!res.ok) { container.innerHTML = '<p class="hint">تعذّر تحميل بيانات التوفر.</p>'; return; }
+  const data = await res.json();
+  const blockedSet = new Set(data.blocked.map(b => b.date + '|' + b.time));
+  const bookedSet = new Set(data.booked.map(b => b.date + '|' + b.time));
+
+  const days = [];
+  const today = new Date();
+  for (let i=0; i<AVAILABILITY_DAYS_COUNT; i++){
+    const d = new Date(today); d.setDate(d.getDate() + i);
+    days.push({ iso: toLocalISODate(d), label: `${WEEKDAYS_AR[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}` });
+  }
+
+  container.innerHTML = days.map(day => `
+    <div class="day-box">
+      <div class="day-title">${day.label}</div>
+      <div class="slot-grid">
+        ${AVAILABILITY_HOURS.map(h => {
+          const key = day.iso + '|' + h;
+          let cls = 'free', label = h;
+          if (bookedSet.has(key)) { cls = 'booked'; label = h + ' 🔒'; }
+          else if (blockedSet.has(key)) { cls = 'blocked'; label = h + ' ✕'; }
+          return `<button type="button" class="slot ${cls}" data-date="${day.iso}" data-time="${h}" ${cls==='booked'?'disabled':''}>${label}</button>`;
+        }).join('')}
+      </div>
+    </div>`).join('');
+
+  container.querySelectorAll('.slot:not(.booked)').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const isBlocked = btn.classList.contains('blocked');
+      btn.disabled = true;
+      const res2 = await fetch('/api/bookings', {
+        method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ counselorId, date: btn.dataset.date, time: btn.dataset.time, action: isBlocked ? 'unblock' : 'block' })
+      });
+      if (!res2.ok) { const d2 = await res2.json(); alert(d2.error || 'تعذّر التنفيذ'); btn.disabled = false; return; }
+      renderAvailability();
+    });
+  });
 }
 
 function bindGenericFields(){
@@ -546,14 +660,16 @@ async function fillClients(){
     const name = document.getElementById('newClientName').value.trim();
     const phone = document.getElementById('newClientPhone').value.trim();
     const category = document.getElementById('newClientCategory').value.trim();
+    const note = document.getElementById('newClientNote').value.trim();
     const msg = document.getElementById('clientFormMsg');
     if (!name || !phone) { msg.textContent = 'الاسم ورقم الجوال مطلوبان'; msg.style.color = '#b23a3a'; return; }
-    const res = await fetch('/api/clients', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, category }) });
+    const res = await fetch('/api/clients', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, category, note }) });
     const data = await res.json();
     if (!res.ok) { msg.textContent = data.error; msg.style.color = '#b23a3a'; return; }
     document.getElementById('newClientName').value = '';
     document.getElementById('newClientPhone').value = '';
     document.getElementById('newClientCategory').value = '';
+    document.getElementById('newClientNote').value = '';
     document.getElementById('addClientForm').style.display = 'none';
     msg.textContent = '';
     fillClients();

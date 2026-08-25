@@ -14,8 +14,10 @@
   h1{font-family:'Markazi Text',serif; font-size:1.9rem; margin-bottom:6px;}
   p.sub{color:#6b7570; font-size:.92rem; margin-bottom:26px;}
   label{display:block; font-weight:700; font-size:.88rem; margin-bottom:6px;}
-  input, select{width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px; margin-bottom:16px; font-size:.94rem; font-family:inherit; background:#fff;}
-  input:focus, select:focus{outline:2px solid var(--clay); border-color:transparent;}
+  input, select, textarea{width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px; margin-bottom:16px; font-size:.94rem; font-family:inherit; background:#fff;}
+  textarea{resize:vertical;}
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--clay); border-color:transparent;}
+  input[type=date], input[type=time]{cursor:pointer;}
   button{width:100%; padding:14px; background:var(--ink); color:#fff; border:none; border-radius:10px; font-weight:700; font-size:.98rem; cursor:pointer;}
   button:hover{background:var(--clay);}
   .msg{color:#b23a3a; font-size:.85rem; margin-bottom:14px; min-height:18px;}
@@ -48,6 +50,9 @@
     <input type="time" id="time" required>
     <div class="hint" id="hoursHint"></div>
 
+    <label for="notes">ملاحظة (اختياري)</label>
+    <textarea id="notes" rows="3" placeholder="أي تفاصيل تود إخبارنا بها قبل الجلسة"></textarea>
+
     <button type="submit">تأكيد الحجز</button>
   </form>
 </div>
@@ -63,6 +68,12 @@ let COUNSELORS = [];
   document.getElementById('hoursHint').textContent = 'أوقات العمل: ' + (c.hours||[]).map(h=>`${h.label} (${h.value})`).join(' — ');
 })();
 
+// اجعل الضغط في أي مكان داخل حقل التاريخ/الوقت يفتح المُنتقي مباشرة، دون الحاجة للضغط على الأيقونة فقط
+['date','time'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener('click', () => { try { el.showPicker && el.showPicker(); } catch(err) {} });
+});
+
 document.getElementById('bookingForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const msg = document.getElementById('msg'); msg.textContent = '';
@@ -71,6 +82,7 @@ document.getElementById('bookingForm').addEventListener('submit', async (e)=>{
     phone: document.getElementById('phone').value.trim(),
     date: document.getElementById('date').value,
     time: document.getElementById('time').value,
+    notes: document.getElementById('notes').value.trim(),
     counselorId: COUNSELORS.length > 1 ? document.getElementById('counselor').value : (COUNSELORS[0]?.id || null)
   };
   const res = await fetch('/api/bookings', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
