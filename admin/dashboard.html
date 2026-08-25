@@ -61,6 +61,7 @@
     <button data-panel="design" class="active">🎨 التصميم</button>
     <button data-panel="content">📝 محتوى الصفحة</button>
     <button data-panel="counselors">👥 المستشارون</button>
+    <button data-panel="clients">🗂️ المراجعون</button>
     <button data-panel="accounts" id="accountsTabBtn">🔑 الحسابات</button>
     <button data-panel="bookings">📅 المواعيد</button>
   </div>
@@ -171,6 +172,30 @@
       </div>
     </div>
 
+    <!-- ===== المراجعون ===== -->
+    <div class="panel" id="panel-clients">
+      <div class="card-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <h2 class="sec" style="margin:0;">المراجعون</h2>
+          <button class="btn" id="addClientBtn">+ إضافة مراجع</button>
+        </div>
+        <div id="addClientForm" style="display:none; margin-bottom:20px; padding:16px; background:var(--paper); border-radius:12px;">
+          <div class="row2">
+            <div class="field"><label>الاسم</label><input type="text" id="newClientName"></div>
+            <div class="field"><label>رقم الجوال</label><input type="tel" id="newClientPhone"></div>
+          </div>
+          <div class="field">
+            <label>التصنيف</label>
+            <input type="text" id="newClientCategory" list="categoryOptions" placeholder="مثال: زواج، شخصي، أسري">
+            <datalist id="categoryOptions"></datalist>
+          </div>
+          <button class="btn" id="saveClientBtn">حفظ المراجع</button>
+          <span class="hint" id="clientFormMsg" style="margin-right:10px;"></span>
+        </div>
+        <div id="clientsByCategory"></div>
+      </div>
+    </div>
+
     <!-- ===== الحسابات ===== -->
     <div class="panel" id="panel-accounts">
       <div class="card-box">
@@ -260,14 +285,22 @@ async function init(){
   if (meRes.status === 401) { location.href = '/admin/login.html'; return; }
   const me = await meRes.json();
   if (me.mustChangePassword) { location.href = '/admin/change-password.html'; return; }
-  if (me.role !== 'super_admin') document.getElementById('accountsTabBtn').style.display = 'none';
 
   const res = await fetch('/api/content');
   CONTENT = await res.json();
-  fillDesign(); fillContent(); fillCounselors();
-  if (me.role === 'super_admin') fillUsers();
-  fillBookings();
-  bindGenericFields();
+
+  if (me.role === 'super_admin') {
+    fillDesign(); fillContent(); fillCounselors(); fillUsers(); fillBookings();
+    bindGenericFields();
+  } else {
+    // حساب مستشار: إخفاء كل شيء ما عدا صفحة المراجعين
+    document.querySelectorAll('.sidebar button[data-panel]').forEach(btn => {
+      if (btn.dataset.panel !== 'clients') btn.style.display = 'none';
+    });
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-clients').classList.add('active');
+  }
+  fillClients();
 }
 
 function addCustomFontOption(name){
@@ -496,6 +529,147 @@ function bindGenericFields(){
       scheduleSave(obj);
     });
   });
+}
+
+// ===== المراجعون =====
+let CLIENTS = [];
+
+async function fillClients(){
+  const res = await fetch('/api/clients');
+  CLIENTS = await res.json();
+  renderClientCategories();
+
+  document.getElementById('addClientBtn').onclick = () => {
+    document.getElementById('addClientForm').style.display = 'block';
+  };
+  document.getElementById('saveClientBtn').onclick = async () => {
+    const name = document.getElementById('newClientName').value.trim();
+    const phone = document.getElementById('newClientPhone').value.trim();
+    const category = document.getElementById('newClientCategory').value.trim();
+    const msg = document.getElementById('clientFormMsg');
+    if (!name || !phone) { msg.textContent = 'الاسم ورقم الجوال مطلوبان'; msg.style.color = '#b23a3a'; return; }
+    const res = await fetch('/api/clients', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, category }) });
+    const data = await res.json();
+    if (!res.ok) { msg.textContent = data.error; msg.style.color = '#b23a3a'; return; }
+    document.getElementById('newClientName').value = '';
+    document.getElementById('newClientPhone').value = '';
+    document.getElementById('newClientCategory').value = '';
+    document.getElementById('addClientForm').style.display = 'none';
+    msg.textContent = '';
+    fillClients();
+  };
+}
+
+function renderClientCategories(){
+  const categories = {};
+  CLIENTS.forEach(c => { (categories[c.category] ||= []).push(c); });
+  document.getElementById('categoryOptions').innerHTML = Object.keys(categories).map(cat => `<option value="${escAttr(cat)}">`).join('');
+
+  const container = document.getElementById('clientsByCategory');
+  const catNames = Object.keys(categories);
+  if (!catNames.length) { container.innerHTML = '<p class="hint">لا يوجد مراجعون بعد.</p>'; return; }
+
+  container.innerHTML = catNames.map((cat, ci) => `
+    <div class="card-box" style="padding:0; overflow:hidden;">
+      <div data-cat-toggle="${ci}" style="cursor:pointer; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; font-weight:700;">
+        <span>${escAttr(cat)} <span style="color:#7C8B7A; font-weight:500;">(${categories[cat].length})</span></span>
+        <span id="arrow-${ci}">▾</span>
+      </div>
+      <div id="catbody-${ci}" style="display:none; padding:0 20px 16px;">
+        ${categories[cat].map(clientRowHtml).join('')}
+      </div>
+    </div>`).join('');
+
+  catNames.forEach((_, ci) => {
+    document.querySelector(`[data-cat-toggle="${ci}"]`).addEventListener('click', () => {
+      const body = document.getElementById(`catbody-${ci}`);
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      document.getElementById(`arrow-${ci}`).textContent = open ? '▾' : '▴';
+    });
+  });
+
+  bindClientRowEvents();
+}
+
+function clientRowHtml(c){
+  return `
+    <div style="border-top:1px solid var(--line); padding:14px 0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <strong>${escAttr(c.name)}</strong>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <span title="${escAttr(c.phone)}">📱 ${escAttr(c.phone)}</span>
+          <a href="tel:${escAttr(c.phone)}" title="اتصال" style="text-decoration:none; font-size:1.1rem;">📞</a>
+          <button class="btn-outline" data-toggle-notes="${c.id}" style="padding:6px 12px; font-size:.78rem;">📝 الملاحظات</button>
+          <button class="btn-outline" data-toggle-book="${c.id}" style="padding:6px 12px; font-size:.78rem;">📅 حجز موعد</button>
+          <button class="btn-danger" data-del-client="${c.id}">حذف</button>
+        </div>
+      </div>
+      <div id="notes-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;"></div>
+      <div id="book-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;">
+        <div class="row2">
+          <div class="field"><label>التاريخ</label><input type="date" id="bookdate-${c.id}"></div>
+          <div class="field"><label>الوقت</label><input type="time" id="booktime-${c.id}"></div>
+        </div>
+        <button class="btn" data-confirm-book="${c.id}">تأكيد الحجز</button>
+        <span class="hint" id="bookmsg-${c.id}" style="margin-right:10px;"></span>
+      </div>
+    </div>`;
+}
+
+function bindClientRowEvents(){
+  document.querySelectorAll('[data-toggle-notes]').forEach(btn => btn.onclick = () => toggleNotes(btn.dataset.toggleNotes));
+  document.querySelectorAll('[data-toggle-book]').forEach(btn => btn.onclick = () => {
+    const box = document.getElementById('book-' + btn.dataset.toggleBook);
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  });
+  document.querySelectorAll('[data-confirm-book]').forEach(btn => btn.onclick = () => confirmBooking(btn.dataset.confirmBook));
+  document.querySelectorAll('[data-del-client]').forEach(btn => btn.onclick = async () => {
+    if (!confirm('تأكيد حذف هذا المراجع؟ سيُحذف مع كل ملاحظاته.')) return;
+    await fetch('/api/clients/' + btn.dataset.delClient, { method:'DELETE' });
+    fillClients();
+  });
+}
+
+async function toggleNotes(clientId){
+  const box = document.getElementById('notes-' + clientId);
+  if (box.style.display !== 'none') { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  await loadNotesInto(clientId);
+}
+
+async function loadNotesInto(clientId){
+  const box = document.getElementById('notes-' + clientId);
+  box.innerHTML = 'جارٍ التحميل…';
+  const res = await fetch('/api/clients/' + clientId + '/notes');
+  const notes = await res.json();
+  box.innerHTML = `
+    ${notes.length ? notes.map(n => `
+      <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);">
+        <strong>${escAttr(n.title)}</strong>
+        <div style="font-size:.88rem; color:#4B5850; margin-top:4px;">${escAttr(n.body)}</div>
+      </div>`).join('') : '<p class="hint" style="margin:0 0 10px;">لا توجد ملاحظات بعد.</p>'}
+    <input type="text" id="notetitle-${clientId}" placeholder="عنوان الملاحظة">
+    <textarea id="notebody-${clientId}" placeholder="نص الملاحظة" style="min-height:60px; margin-top:8px;"></textarea>
+    <button class="btn" data-add-note="${clientId}" style="margin-top:8px;">إضافة ملاحظة</button>`;
+  document.querySelector(`[data-add-note="${clientId}"]`).onclick = async () => {
+    const title = document.getElementById('notetitle-' + clientId).value.trim();
+    const body = document.getElementById('notebody-' + clientId).value.trim();
+    if (!title || !body) return;
+    await fetch('/api/clients/' + clientId + '/notes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, body }) });
+    loadNotesInto(clientId);
+  };
+}
+
+async function confirmBooking(clientId){
+  const date = document.getElementById('bookdate-' + clientId).value;
+  const time = document.getElementById('booktime-' + clientId).value;
+  const msg = document.getElementById('bookmsg-' + clientId);
+  if (!date || !time) { msg.style.color = '#b23a3a'; msg.textContent = 'حدد التاريخ والوقت'; return; }
+  const res = await fetch('/api/clients/' + clientId + '/book', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ date, time }) });
+  const data = await res.json();
+  msg.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
+  msg.textContent = res.ok ? '✓ تم حجز الموعد بنجاح.' : (data.error || 'تعذّر الحجز');
 }
 
 function escAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
