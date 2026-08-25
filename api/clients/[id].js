@@ -7,9 +7,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'DELETE') return res.status(405).json({ error: 'طريقة غير مدعومة' });
 
   const { id } = req.query;
-  let query = supabase.from('clients').delete().eq('id', id);
-  if (user.role !== 'super_admin') query = query.eq('counselor_id', user.counselor_id);
-  const { error } = await query;
+  const { error } = await supabase.from('clients').delete().eq('id', id);
   if (error) return res.status(500).json({ error: 'تعذّر حذف المراجع' });
   res.status(200).json({ ok: true });
 };

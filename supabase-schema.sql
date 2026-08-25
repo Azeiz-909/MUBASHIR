@@ -105,6 +105,48 @@ values (
 on conflict (email) do nothing;
 
 -- ============================================================
+-- تحديثات إضافية (نفّذ هذا الجزء أيضًا حتى لو كانت قاعدة البيانات
+-- منشأة مسبقًا — كل الأوامر آمنة ولن تكرر أو تحذف أي بيانات موجودة)
+-- ============================================================
+
+-- أعمدة إضافية على جدول الحجوزات: ربط الحجز بمراجع محدد + ملاحظة عند الحجز
+alter table bookings add column if not exists client_id text;
+alter table bookings add column if not exists notes text;
+
+-- جدول المراجعين (العملاء) الخاصين بكل مستشار
+create table if not exists clients (
+  id text primary key,
+  name text not null,
+  phone text not null,
+  category text not null default 'عام',
+  counselor_id text,
+  created_at bigint not null
+);
+
+-- جدول ملاحظات المراجعين
+create table if not exists client_notes (
+  id text primary key,
+  client_id text not null references clients(id) on delete cascade,
+  title text not null,
+  body text not null,
+  created_at bigint not null
+);
+
+-- جدول أوقات إغلاق/انشغال المستشار (تُستخدم لمنع الحجز في هذه الأوقات)
+create table if not exists availability_blocks (
+  id text primary key,
+  counselor_id text not null,
+  date text not null,
+  time text not null,
+  created_at bigint not null,
+  unique (counselor_id, date, time)
+);
+
+alter table clients enable row level security;
+alter table client_notes enable row level security;
+alter table availability_blocks enable row level security;
+
+-- ============================================================
 -- بعد تنفيذ هذا الملف، اذهب إلى: Storage → Create bucket
 -- اسم الـ bucket: uploads   |  فعّل خيار "Public bucket"
 -- ============================================================

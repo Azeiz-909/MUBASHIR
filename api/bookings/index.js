@@ -26,13 +26,35 @@ module.exports = async (req, res) => {
     const check = await checkSlotAvailable(counselor ? counselor.id : null, date, time);
     if (!check.ok) return res.status(409).json({ error: check.error });
 
+    const trimmedNotes = (notes || '').trim() || null;
+
+    // إيجاد/إنشاء "مراجع" مرتبط برقم الجوال، ليظهر تلقائيًا في صفحة "المراجعين" عند كل الأطباء
+    let clientId = null;
+    const { data: existingClient } = await supabase.from('clients').select('id').eq('phone', phone).limit(1).maybeSingle();
+    if (existingClient) {
+      clientId = existingClient.id;
+    } else {
+      clientId = 'cl_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex');
+      await supabase.from('clients').insert({
+        id: clientId, name, phone, category: 'حجوزات جديدة',
+        counselor_id: counselor ? counselor.id : null, created_at: Date.now()
+      });
+    }
+    if (trimmedNotes) {
+      await supabase.from('client_notes').insert({
+        id: 'n_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex'),
+        client_id: clientId, title: 'ملاحظة من الحجز', body: trimmedNotes, created_at: Date.now()
+      });
+    }
+
     const booking = {
       id: crypto.randomBytes(5).toString('hex'),
       name, phone,
       counselor_id: counselor ? counselor.id : null,
       counselor_name: counselor ? counselor.name : 'غير محدد',
       date, time,
-      notes: (notes || '').trim() || null,
+      notes: trimmedNotes,
+      client_id: clientId,
       created_at: Date.now(),
       status: 'confirmed'
     };

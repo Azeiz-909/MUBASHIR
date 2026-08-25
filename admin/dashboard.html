@@ -712,11 +712,11 @@ function clientRowHtml(c){
   return `
     <div style="border-top:1px solid var(--line); padding:14px 0;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-        <strong>${escAttr(c.name)}</strong>
+        <strong data-open-client="${c.id}" style="cursor:pointer;" title="اضغط لعرض الملاحظات ونقل التصنيف">${escAttr(c.name)}</strong>
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <span title="${escAttr(c.phone)}">📱 ${escAttr(c.phone)}</span>
           <a href="tel:${escAttr(c.phone)}" title="اتصال" style="text-decoration:none; font-size:1.1rem;">📞</a>
-          <button class="btn-outline" data-toggle-notes="${c.id}" style="padding:6px 12px; font-size:.78rem;">📝 الملاحظات</button>
+          <button class="btn-outline" data-toggle-notes="${c.id}" style="padding:6px 12px; font-size:.78rem;">📝 الملاحظات والتصنيف</button>
           <button class="btn-outline" data-toggle-book="${c.id}" style="padding:6px 12px; font-size:.78rem;">📅 حجز موعد</button>
           <button class="btn-danger" data-del-client="${c.id}">حذف</button>
         </div>
@@ -735,6 +735,7 @@ function clientRowHtml(c){
 
 function bindClientRowEvents(){
   document.querySelectorAll('[data-toggle-notes]').forEach(btn => btn.onclick = () => toggleNotes(btn.dataset.toggleNotes));
+  document.querySelectorAll('[data-open-client]').forEach(el => el.onclick = () => toggleNotes(el.dataset.openClient));
   document.querySelectorAll('[data-toggle-book]').forEach(btn => btn.onclick = () => {
     const box = document.getElementById('book-' + btn.dataset.toggleBook);
     box.style.display = box.style.display === 'none' ? 'block' : 'none';
@@ -757,9 +758,16 @@ async function toggleNotes(clientId){
 async function loadNotesInto(clientId){
   const box = document.getElementById('notes-' + clientId);
   box.innerHTML = 'جارٍ التحميل…';
+  const client = CLIENTS.find(c => c.id === clientId);
   const res = await fetch('/api/clients/' + clientId + '/notes');
   const notes = await res.json();
   box.innerHTML = `
+    <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--line); flex-wrap:wrap;">
+      <label style="font-weight:700; font-size:.85rem;">نقل إلى تصنيف:</label>
+      <input type="text" id="movecat-${clientId}" list="categoryOptions" value="${escAttr(client ? client.category : '')}" style="flex:1; min-width:140px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-family:inherit;">
+      <button class="btn-outline" data-move-cat="${clientId}" style="padding:7px 14px; font-size:.8rem;">نقل</button>
+      <span class="hint" id="movecatmsg-${clientId}" style="margin:0;"></span>
+    </div>
     ${notes.length ? notes.map(n => `
       <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);">
         <strong>${escAttr(n.title)}</strong>
@@ -774,6 +782,16 @@ async function loadNotesInto(clientId){
     if (!title || !body) return;
     await fetch('/api/clients/' + clientId + '/notes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, body }) });
     loadNotesInto(clientId);
+  };
+  document.querySelector(`[data-move-cat="${clientId}"]`).onclick = async () => {
+    const category = document.getElementById('movecat-' + clientId).value.trim();
+    const msg = document.getElementById('movecatmsg-' + clientId);
+    if (!category) { msg.style.color = '#b23a3a'; msg.textContent = 'اكتب اسم التصنيف'; return; }
+    const res2 = await fetch('/api/clients/' + clientId + '/category', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ category }) });
+    const data2 = await res2.json();
+    if (!res2.ok) { msg.style.color = '#b23a3a'; msg.textContent = data2.error || 'تعذّر النقل'; return; }
+    msg.style.color = '#2f8f4e'; msg.textContent = '✓ تم النقل';
+    fillClients();
   };
 }
 

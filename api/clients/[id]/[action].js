@@ -12,8 +12,15 @@ module.exports = async (req, res) => {
 
   const { data: client } = await supabase.from('clients').select('*').eq('id', id).single();
   if (!client) return res.status(404).json({ error: 'المراجع غير موجود' });
-  if (user.role !== 'super_admin' && client.counselor_id !== user.counselor_id) {
-    return res.status(403).json({ error: 'صلاحية غير كافية' });
+  // كل الحسابات المسجّلة (المدير العام وكل الأطباء) لها صلاحية التعامل مع كل مراجع — المراجعون مشتركون بين الجميع
+
+  if (action === 'category') {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'طريقة غير مدعومة' });
+    const { category } = req.body || {};
+    if (!category || !category.trim()) return res.status(400).json({ error: 'التصنيف مطلوب' });
+    const { error } = await supabase.from('clients').update({ category: category.trim() }).eq('id', id);
+    if (error) return res.status(500).json({ error: 'تعذّر نقل المراجع' });
+    return res.status(200).json({ ok: true, category: category.trim() });
   }
 
   if (action === 'notes') {
