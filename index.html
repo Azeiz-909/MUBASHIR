@@ -38,14 +38,13 @@
   .hero-text{flex:1.1;}
   .hero-text h1{font-size:3.1rem; color:var(--ink); margin-bottom:22px;}
   .hero-text p{font-size:1.15rem; color:#4B5850; max-width:520px;}
-  .hero-visual{flex:1; position:relative; display:flex; justify-content:center; align-items:center; min-height:280px;}
-  .hero-visual::before{content:""; position:absolute; width:380px; height:380px; max-width:80%; aspect-ratio:1/1; background:radial-gradient(circle, rgba(184,115,79,.16) 0%, rgba(124,139,122,.13) 45%, rgba(124,139,122,0) 72%); border-radius:50%; filter:blur(2px); z-index:0;}
-  .hero-visual img{position:relative; z-index:1; width:100%; max-width:460px; max-height:340px; object-fit:contain; -webkit-mask-image:radial-gradient(ellipse 60% 60% at center, #000 58%, transparent 100%); mask-image:radial-gradient(ellipse 60% 60% at center, #000 58%, transparent 100%);}
+  .hero-visual{flex:1; position:relative; display:flex; justify-content:center; align-items:center; min-height:260px;}
+  .hero-visual img{position:relative; z-index:1; width:100%; max-width:480px; max-height:320px; object-fit:contain; -webkit-mask-image:radial-gradient(ellipse 60% 60% at center, #000 20%, rgba(0,0,0,.5) 48%, transparent 78%); mask-image:radial-gradient(ellipse 60% 60% at center, #000 20%, rgba(0,0,0,.5) 48%, transparent 78%);}
   .hero-visual .dot{position:absolute; border-radius:50%; z-index:2; animation:heroFloat 4.5s ease-in-out infinite;}
   .hero-visual .dot.d1{width:14px; height:14px; background:var(--clay); top:10%; right:10%;}
   .hero-visual .dot.d2{width:10px; height:10px; background:var(--sage); bottom:14%; left:8%; animation-duration:5.5s; animation-direction:reverse;}
   @keyframes heroFloat{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
-  @media(max-width:700px){ .hero-visual{min-height:auto;} .hero-visual::before{width:260px; height:260px;} .hero-visual img{max-height:230px;} .hero-visual .dot{transform:scale(.8);} }
+  @media(max-width:700px){ .hero-visual{min-height:auto;} .hero-visual img{max-height:210px;} .hero-visual .dot{transform:scale(.8);} }
   @media(max-width:900px){ .hero .container{flex-direction:column; text-align:center;} .hero-text p{margin:0 auto;} .hero-text h1{font-size:2.3rem;} }
   .cta-duo{padding:0 0 90px;}
   .cta-duo .container{display:flex; align-items:center; justify-content:center; gap:22px; flex-wrap:wrap;}
@@ -105,6 +104,10 @@
   .footer-col h4{color:#fff; font-size:1.05rem; margin-bottom:16px; font-family:var(--font-display);}
   .footer-col a{display:block; color:#C9CFC7; margin-bottom:10px; font-size:.92rem;}
   .footer-bottom{border-top:1px solid rgba(255,255,255,0.1); padding-top:22px; text-align:center; font-size:.85rem; color:#8B9389;}
+  /* ===== حركة الظهور التدريجي عند التمرير ===== */
+  [data-reveal]{opacity:0; transform:translateY(22px); transition:opacity .6s ease, transform .6s ease;}
+  [data-reveal].revealed{opacity:1; transform:translateY(0);}
+  @media(prefers-reduced-motion: reduce){ [data-reveal]{transition:none; opacity:1; transform:none;} }
 </style>
 </head>
 <body>
@@ -146,7 +149,7 @@
 
 <section id="counselors" data-section="counselors">
   <div class="container">
-    <div class="section-head">
+    <div class="section-head" data-reveal>
       <div class="eyebrow" style="justify-content:center">فريقنا</div>
       <h2>مستشارون معتمدون بخبرة أسرية</h2>
     </div>
@@ -156,12 +159,12 @@
 
 <section class="info-alt" id="privacy" data-section="privacy">
   <div class="container info-flex">
-    <div class="col">
+    <div class="col" data-reveal>
       <div class="badge-lock">🔒</div>
       <h2 id="privacyTitle"></h2>
       <p id="privacyBody"></p>
     </div>
-    <div class="col privacy-visual">
+    <div class="col privacy-visual" data-reveal style="transition-delay:.1s">
       <img id="privacyVisual" src="/assets/privacy.jpg" alt="خصوصية وسرية تامة لكل استشارة">
     </div>
   </div>
@@ -169,13 +172,13 @@
 
 <section id="firstSession" data-section="firstSession">
   <div class="container info-flex reverse">
-    <div class="col">
+    <div class="col" data-reveal>
       <div class="eyebrow">قبل أول موعد</div>
       <h2 id="firstTitle"></h2>
       <p id="firstBody"></p>
       <ul class="steps-list" id="stepsList"></ul>
     </div>
-    <div class="col">
+    <div class="col" data-reveal style="transition-delay:.1s">
       <svg viewBox="0 0 300 220" width="100%" aria-hidden="true">
         <circle cx="100" cy="110" r="46" fill="#F8F6F1" stroke="#DAD5C8"/><circle cx="200" cy="110" r="46" fill="#EFEDE6" stroke="#DAD5C8"/>
         <path d="M60 170 Q150 200 240 170" stroke="#B8734F" stroke-width="3" fill="none" stroke-dasharray="6 6"/>
@@ -186,31 +189,31 @@
 
 <section class="info-alt" id="faq" data-section="faq">
   <div class="container" style="max-width:800px;">
-    <div class="section-head"><div class="eyebrow" style="justify-content:center">الأسئلة الشائعة</div><h2>كل ما تحتاج معرفته قبل الحجز</h2></div>
+    <div class="section-head" data-reveal><div class="eyebrow" style="justify-content:center">الأسئلة الشائعة</div><h2>كل ما تحتاج معرفته قبل الحجز</h2></div>
     <div class="faq-list" id="faqList"></div>
   </div>
 </section>
 
 <section class="info-alt2" id="hours" data-section="hours">
   <div class="container hp-grid">
-    <div><h3>أوقات العمل</h3><div id="hoursList"></div></div>
-    <div><h3>طرق الدفع المقبولة</h3><div class="pay-tags" id="paymentsList"></div></div>
+    <div data-reveal><h3>أوقات العمل</h3><div id="hoursList"></div></div>
+    <div data-reveal style="transition-delay:.1s"><h3>طرق الدفع المقبولة</h3><div class="pay-tags" id="paymentsList"></div></div>
   </div>
 </section>
 
 <section id="certifications" data-section="certifications">
   <div class="container">
-    <div class="section-head"><h2>الشهادات والاعتمادات</h2></div>
+    <div class="section-head" data-reveal><h2>الشهادات والاعتمادات</h2></div>
     <div class="certs-row" id="certsRow"></div>
   </div>
 </section>
 
 <section class="info-alt" id="contact" data-section="contact">
   <div class="container">
-    <div class="section-head"><h2>تواصل معنا</h2></div>
+    <div class="section-head" data-reveal><h2>تواصل معنا</h2></div>
     <div class="contact-grid">
       <ul class="contact-list" id="contactList"></ul>
-      <div class="map-box">[موضع الخريطة التفاعلية — يُدرج لاحقًا]</div>
+      <div class="map-box" data-reveal style="transition-delay:.15s">[موضع الخريطة التفاعلية — يُدرج لاحقًا]</div>
     </div>
   </div>
 </section>
@@ -268,14 +271,14 @@ async function loadContent(){
   document.getElementById('firstBody').textContent = c.firstSession.body;
   document.getElementById('stepsList').innerHTML = c.firstSession.steps.map((s,i)=>`<li><span class="num">${i+1}</span>${s}</li>`).join('');
 
-  document.getElementById('counselorsGrid').innerHTML = c.counselors.map(co => `
-    <div class="counselor-card">
+  document.getElementById('counselorsGrid').innerHTML = c.counselors.map((co,i) => `
+    <div class="counselor-card" data-reveal style="transition-delay:${(i%3)*0.08}s">
       <div class="avatar">${co.image ? `<img src="${co.image}" alt="${co.name}">` : co.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
       <h3>${co.name}</h3><div class="counselor-role">${co.role}</div><div class="counselor-cred">${co.credentials}</div>
     </div>`).join('');
 
   document.getElementById('faqList').innerHTML = c.faq.map((f,i) => `
-    <div class="faq-item ${i===0?'open':''}">
+    <div class="faq-item ${i===0?'open':''}" data-reveal style="transition-delay:${Math.min(i,5)*0.06}s">
       <div class="faq-q"><span>${f.q}</span><span class="icon">＋</span></div>
       <div class="faq-a">${f.a}</div>
     </div>`).join('');
@@ -288,13 +291,13 @@ async function loadContent(){
 
   document.getElementById('hoursList').innerHTML = c.hours.map(h => `<div class="hours-row"><span>${h.label}</span><span>${h.value}</span></div>`).join('');
   document.getElementById('paymentsList').innerHTML = c.payments.map(p => `<span class="pay-tag">${p}</span>`).join('');
-  document.getElementById('certsRow').innerHTML = c.certifications.map(ct => `<span class="cert-chip">${ct.image?`<img src="${ct.image}">`:'✅'} ${ct.label}</span>`).join('');
+  document.getElementById('certsRow').innerHTML = c.certifications.map((ct,i) => `<span class="cert-chip" data-reveal style="transition-delay:${(i%4)*0.07}s">${ct.image?`<img src="${ct.image}">`:'✅'} ${ct.label}</span>`).join('');
 
   document.getElementById('contactList').innerHTML = `
-    <li><span class="ic">📞</span> ${c.contact.phone}</li>
-    <li><span class="ic">💬</span> واتساب: ${c.contact.whatsapp}</li>
-    <li><span class="ic">✉️</span> ${c.contact.email}</li>
-    <li><span class="ic">📍</span> ${c.contact.address}</li>`;
+    <li data-reveal><span class="ic">📞</span> ${c.contact.phone}</li>
+    <li data-reveal style="transition-delay:.06s"><span class="ic">💬</span> واتساب: ${c.contact.whatsapp}</li>
+    <li data-reveal style="transition-delay:.12s"><span class="ic">✉️</span> ${c.contact.email}</li>
+    <li data-reveal style="transition-delay:.18s"><span class="ic">📍</span> ${c.contact.address}</li>`;
   document.getElementById('footerPhone').textContent = c.contact.phone;
   document.getElementById('footerEmail').textContent = c.contact.email;
   document.getElementById('fabWhatsapp').href = 'https://wa.me/' + c.contact.whatsapp.replace(/[^0-9]/g,'');
@@ -307,6 +310,14 @@ async function loadContent(){
     document.querySelectorAll(`[data-section="${key}"]`).forEach(el => el.style.display = visible ? '' : 'none');
     document.querySelectorAll(`[data-section-link="${key}"]`).forEach(el => el.style.display = visible ? '' : 'none');
   });
+
+  // تفعيل حركة الظهور التدريجي عند التمرير لكل العناصر التي أُضيفت للتو
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('revealed'); revealObserver.unobserve(entry.target); }
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
 }
 loadContent();
 </script>
