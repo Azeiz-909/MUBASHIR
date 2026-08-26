@@ -43,63 +43,6 @@
   .tag{background:var(--paper); border-radius:20px; padding:6px 12px; font-size:.85rem; display:flex; align-items:center; gap:8px;}
   .tag button{background:none; border:none; cursor:pointer; color:#b23a3a; font-weight:700;}
   .hint{font-size:.8rem; color:#7c8b7a; margin-top:-8px; margin-bottom:16px;}
-  input[type=date], input[type=time]{cursor:pointer;}
-  .day-box{margin-bottom:16px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
-  .day-title-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;}
-  .day-title{font-weight:700; font-size:.92rem;}
-  .day-toggle-all{background:none; border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:.76rem; font-weight:700; cursor:pointer; color:#7C8B7A; font-family:inherit;}
-  .day-toggle-all:hover{background:var(--paper); color:var(--clay-dark);}
-  .slot-grid{display:flex; flex-wrap:wrap; gap:8px;}
-  .slot{border:1px solid var(--line); border-radius:20px; padding:7px 14px; font-size:.8rem; cursor:pointer; background:#fff; font-family:inherit; font-weight:600;}
-  .slot.free{background:#fff; color:var(--ink);}
-  .slot.free:hover{border-color:#2f8f4e; color:#2f8f4e;}
-  .slot.blocked{background:#fbeaea; border-color:#d98a8a; color:#b23a3a;}
-  .slot.booked{background:#EFEDE6; border-color:var(--line); color:#7C8B7A; cursor:not-allowed;}
-
-  /* ===== بطاقات المراجعين (تصميم عصري) ===== */
-  .client-card{border:1px solid var(--line); border-radius:12px; margin-bottom:10px; overflow:hidden; background:#fff; transition:box-shadow .15s;}
-  .client-card:hover{box-shadow:0 3px 14px rgba(34,50,44,.07);}
-  .client-head{display:flex; align-items:center; gap:12px; padding:13px 16px; cursor:pointer;}
-  .client-avatar{width:38px; height:38px; border-radius:50%; background:var(--paper); color:var(--clay-dark); display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; font-size:.95rem;}
-  .client-info{flex:1; min-width:0;}
-  .client-name{font-weight:700; font-size:.95rem;}
-  .client-phone{font-size:.8rem; color:#7C8B7A; margin-top:2px; direction:ltr; text-align:right;}
-  .client-quick-actions{display:flex; align-items:center; gap:6px; flex-shrink:0;}
-  .icon-btn{width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:var(--paper); text-decoration:none; border:none; cursor:pointer; font-size:.95rem; color:var(--ink);}
-  .icon-btn:hover{background:var(--line);}
-  .icon-btn.danger{color:#b23a3a;}
-  .chevron{font-size:.75rem; color:#7C8B7A; width:18px; text-align:center;}
-  .client-detail{border-top:1px solid var(--line); background:var(--paper); padding:16px;}
-  .detail-tabs{display:flex; gap:6px; margin-bottom:14px;}
-  .detail-tab{background:#fff; border:1px solid var(--line); padding:8px 16px; border-radius:8px; font-size:.8rem; font-weight:700; cursor:pointer; color:#7C8B7A; font-family:inherit;}
-  .detail-tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
-  .category-row{display:flex; align-items:center; gap:8px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px dashed var(--line); flex-wrap:wrap;}
-  .category-row label{font-weight:700; font-size:.83rem; white-space:nowrap;}
-  .category-row input{flex:1; min-width:140px; padding:9px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; background:#fff;}
-  .note-card{background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:8px;}
-  .note-card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
-  .note-title{font-weight:700; font-size:.87rem;}
-  .note-body{font-size:.85rem; color:#4B5850; margin-top:4px; white-space:pre-wrap; line-height:1.6;}
-  .note-date{font-size:.72rem; color:#A9B3A6; margin-top:8px;}
-  .note-card-actions{display:flex; gap:2px; flex-shrink:0;}
-  .note-card-actions button{background:none; border:none; cursor:pointer; font-size:.9rem; padding:4px 6px; border-radius:6px; color:#7C8B7A;}
-  .note-card-actions button:hover{background:var(--paper); color:var(--clay-dark);}
-  .note-form{background:#fff; border:1px dashed var(--line); border-radius:10px; padding:14px; margin-top:12px;}
-  .note-form-title{font-weight:700; font-size:.82rem; color:#7C8B7A; margin-bottom:10px;}
-  .note-form input, .note-form textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; margin-bottom:10px; font-size:.88rem;}
-  .note-form textarea{min-height:70px; resize:vertical;}
-  .note-form-actions{display:flex; gap:8px; align-items:center;}
-
-  /* ===== مفاتيح إظهار/إخفاء الأقسام ===== */
-  .toggle-row{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:13px 0; border-bottom:1px solid var(--line);}
-  .toggle-row:last-child{border-bottom:none;}
-  .toggle-row .toggle-label{font-weight:700; font-size:.9rem;}
-  .switch{position:relative; display:inline-block; width:46px; height:26px; flex-shrink:0;}
-  .switch input{opacity:0; width:0; height:0;}
-  .switch .slider{position:absolute; cursor:pointer; inset:0; background:#DAD5C8; border-radius:26px; transition:.2s;}
-  .switch .slider:before{content:""; position:absolute; height:20px; width:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s;}
-  .switch input:checked + .slider{background:#2f8f4e;}
-  .switch input:checked + .slider:before{transform:translateX(20px);}
 </style>
 </head>
 <body>
@@ -119,10 +62,9 @@
     <button data-panel="content">📝 محتوى الصفحة</button>
     <button data-panel="counselors">👥 المستشارون</button>
     <button data-panel="clients">🗂️ المراجعون</button>
-    <button data-panel="inactive" id="inactiveTabBtn">🗄️ غير النشطين</button>
-    <button data-panel="availability" id="availabilityTabBtn">🕐 التواريخ</button>
+    <button data-panel="schedule">🗓️ المواعيد</button>
     <button data-panel="accounts" id="accountsTabBtn">🔑 الحسابات</button>
-    <button data-panel="bookings">📅 المواعيد</button>
+    <button data-panel="bookings">📋 الحجوزات</button>
   </div>
 
   <div class="content">
@@ -161,12 +103,6 @@
     <!-- ===== المحتوى ===== -->
     <div class="panel" id="panel-content">
       <div class="card-box">
-        <h2 class="sec">🙈 إظهار / إخفاء أقسام الصفحة</h2>
-        <p class="hint" style="margin-top:-8px;">أخفِ أي قسم لا تريده على الموقع الآن — يختفي القسم نفسه وكل الروابط السريعة التي تشير إليه (من القائمة العلوية والفوتر) فورًا، ويمكنك إظهاره مجددًا في أي وقت.</p>
-        <div id="sectionsToggles"></div>
-      </div>
-
-      <div class="card-box">
         <h2 class="sec">القسم الرئيسي (Hero)</h2>
         <div class="field"><label>اسم العيادة</label><input type="text" id="siteName" data-key="site.name"></div>
         <div class="field"><label>العنوان الرئيسي</label><input type="text" id="heroTitle" data-key="hero.title"></div>
@@ -182,11 +118,6 @@
         <h2 class="sec">السرية والخصوصية</h2>
         <div class="field"><label>العنوان</label><input type="text" id="privacyTitle" data-key="privacy.title"></div>
         <div class="field"><label>النص</label><textarea id="privacyBody" data-key="privacy.body"></textarea></div>
-        <div class="img-upload">
-          <img class="img-preview" id="privacyImgPreview" src="" style="display:none">
-          <input type="file" id="privacyImgFile" accept="image/*">
-        </div>
-        <div class="hint">اختياري — إذا رفعت صورة ستحل محل الصورة الحالية في قسم "السرية والخصوصية".</div>
       </div>
 
       <div class="card-box">
@@ -259,10 +190,7 @@
             <input type="text" id="newClientCategory" list="categoryOptions" placeholder="مثال: زواج، شخصي، أسري">
             <datalist id="categoryOptions"></datalist>
           </div>
-          <div class="field">
-            <label>إضافة ملاحظة (اختياري)</label>
-            <textarea id="newClientNote" placeholder="أي ملاحظة تود تسجيلها عن هذا المراجع"></textarea>
-          </div>
+          <div class="field"><label>ملاحظة (اختياري)</label><textarea id="newClientNote" placeholder="أي ملاحظة إضافية عن هذا المراجع" style="min-height:60px;"></textarea></div>
           <button class="btn" id="saveClientBtn">حفظ المراجع</button>
           <span class="hint" id="clientFormMsg" style="margin-right:10px;"></span>
         </div>
@@ -270,12 +198,21 @@
       </div>
     </div>
 
-    <!-- ===== غير النشطين ===== -->
-    <div class="panel" id="panel-inactive">
+    <!-- ===== المواعيد (جدول الأوقات) ===== -->
+    <div class="panel" id="panel-schedule">
       <div class="card-box">
-        <h2 class="sec">المراجعون غير النشطين</h2>
-        <p class="hint" style="margin-top:-8px;">المراجعون المنقولون هنا لا يظهرون في القائمة الرئيسية، لكن تبقى بياناتهم وملاحظاتهم محفوظة، ويمكنك إعادة تنشيطهم في أي وقت.</p>
-        <div id="inactiveClientsByCategory"></div>
+        <h2 class="sec">المواعيد</h2>
+        <div class="row2">
+          <div class="field" id="scheduleCounselorField" style="display:none;">
+            <label>المستشار</label><select id="scheduleCounselor"></select>
+          </div>
+          <div class="field"><label>التاريخ</label><input type="date" id="scheduleDate"></div>
+        </div>
+        <p class="hint">اضغط على أي وقت لتحديده "مشغول" فتُمنع إتاحته للحجز، واضغط عليه مجددًا لإعادة إتاحته. الأوقات المحجوزة فعليًا بموعد مؤكد لا يمكن تعديلها من هنا.</p>
+        <div style="display:flex; gap:16px; margin:14px 0 18px; font-size:.85rem;">
+          <span>⬜ متاح</span><span>🟨 محجوب يدويًا</span><span>🟥 محجوز (موعد فعلي)</span>
+        </div>
+        <div id="scheduleGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(92px,1fr)); gap:8px;"></div>
       </div>
     </div>
 
@@ -304,19 +241,6 @@
         <h2 class="sec">المواعيد المحجوزة</h2>
         <p id="bookingsNote" style="color:#6b7570; font-size:.92rem; margin-bottom:12px;"></p>
         <div id="bookingsList"></div>
-      </div>
-    </div>
-
-    <!-- ===== التواريخ (أوقات التوفر) ===== -->
-    <div class="panel" id="panel-availability">
-      <div class="card-box">
-        <h2 class="sec">التواريخ وأوقات التوفر</h2>
-        <p class="hint" style="margin-top:-8px;">اضغط على أي وقت لإغلاقه إن كنت مشغولًا وقتها (لن يستطيع أحد الحجز فيه)، واضغط عليه مجددًا لفتحه. يمكنك أيضًا إغلاق يوم كامل بضغطة واحدة. الأوقات المحجوزة بموعد فعلي تظهر باللون الرمادي ولا يمكن تغييرها من هنا.</p>
-        <div class="field" id="availabilityCounselorField" style="display:none; max-width:320px;">
-          <label>المستشار</label>
-          <select id="availabilityCounselor"></select>
-        </div>
-        <div id="availabilityDays"></div>
       </div>
     </div>
 
@@ -387,26 +311,17 @@ async function init(){
 
   if (me.role === 'super_admin') {
     fillDesign(); fillContent(); fillCounselors(); fillUsers(); fillBookings();
-    bindGenericFields(); fillAvailability(me);
+    bindGenericFields();
   } else {
-    // حساب مستشار: إخفاء كل شيء ما عدا صفحة المراجعين وأوقات التوفر
+    // حساب مستشار: إخفاء كل شيء ما عدا المراجعين والمواعيد
     document.querySelectorAll('.sidebar button[data-panel]').forEach(btn => {
-      if (!['clients', 'inactive', 'availability'].includes(btn.dataset.panel)) btn.style.display = 'none';
+      if (!['clients','schedule'].includes(btn.dataset.panel)) btn.style.display = 'none';
     });
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-clients').classList.add('active');
-    fillAvailability(me);
   }
   fillClients();
-  enableTapToOpenPickers();
-}
-
-// اجعل الضغط في أي مكان داخل حقول التاريخ/الوقت (حتى المُضافة لاحقًا ديناميكيًا) يفتح المُنتقي مباشرة
-function enableTapToOpenPickers(){
-  document.addEventListener('click', (e) => {
-    const el = e.target.closest('input[type=date], input[type=time]');
-    if (el) { try { el.showPicker && el.showPicker(); } catch(err) {} }
-  });
+  fillSchedule(me);
 }
 
 function addCustomFontOption(name){
@@ -446,43 +361,7 @@ function fillDesign(){
   });
 }
 
-const SECTION_LABELS = {
-  counselors: 'المستشارون (فريقنا)',
-  privacy: 'السرية والخصوصية',
-  firstSession: 'جلستك الأولى',
-  faq: 'الأسئلة الشائعة',
-  hours: 'أوقات العمل وطرق الدفع',
-  certifications: 'الشهادات والاعتمادات',
-  contact: 'تواصل معنا'
-};
-
-function fillSectionsToggles(){
-  if (!CONTENT.sections) CONTENT.sections = {};
-  const box = document.getElementById('sectionsToggles');
-  box.innerHTML = Object.keys(SECTION_LABELS).map(key => {
-    const visible = CONTENT.sections[key] !== false;
-    return `
-      <div class="toggle-row">
-        <span class="toggle-label">${SECTION_LABELS[key]}</span>
-        <label class="switch">
-          <input type="checkbox" data-section-toggle="${key}" ${visible ? 'checked' : ''}>
-          <span class="slider"></span>
-        </label>
-      </div>`;
-  }).join('');
-
-  document.querySelectorAll('[data-section-toggle]').forEach(input => {
-    input.addEventListener('change', () => {
-      const key = input.dataset.sectionToggle;
-      CONTENT.sections[key] = input.checked;
-      scheduleSave({ sections: { [key]: input.checked } });
-    });
-  });
-}
-
 function fillContent(){
-  fillSectionsToggles();
-
   document.getElementById('siteName').value = CONTENT.site.name;
   document.getElementById('heroTitle').value = CONTENT.hero.title;
   document.getElementById('heroSubtitle').value = CONTENT.hero.subtitle;
@@ -497,14 +376,6 @@ function fillContent(){
 
   document.getElementById('privacyTitle').value = CONTENT.privacy.title;
   document.getElementById('privacyBody').value = CONTENT.privacy.body;
-  if (CONTENT.privacy.image) { document.getElementById('privacyImgPreview').src = CONTENT.privacy.image; document.getElementById('privacyImgPreview').style.display='block'; }
-  document.getElementById('privacyImgFile').addEventListener('change', async (e)=>{
-    const file = e.target.files[0]; if (!file) return;
-    const url = await uploadFile(file); if (!url) return;
-    CONTENT.privacy.image = url;
-    document.getElementById('privacyImgPreview').src = url; document.getElementById('privacyImgPreview').style.display='block';
-    scheduleSave({ privacy: { image: url } });
-  });
   document.getElementById('firstTitle').value = CONTENT.firstSession.title;
   document.getElementById('firstBody').value = CONTENT.firstSession.body;
   document.getElementById('firstSteps').value = CONTENT.firstSession.steps.join('\n');
@@ -626,15 +497,33 @@ async function fillUsers(){
 
   const res = await fetch('/api/users'); const users = await res.json();
   document.getElementById('usersList').innerHTML = users.map(u => `
-    <div class="list-row">
-      <div><strong>${u.name}</strong> — ${u.email} <span style="color:#7C8B7A; font-size:.82rem;">(${u.role==='super_admin'?'مدير عام':'مستشار'})</span></div>
-      ${u.role!=='super_admin' ? `<button class="btn-danger" data-user-del="${u.id}">حذف</button>` : ''}
+    <div class="list-row" style="flex-direction:column; align-items:stretch; gap:8px;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div><strong>${u.name}</strong> — ${u.email} <span style="color:#7C8B7A; font-size:.82rem;">(${u.role==='super_admin'?'مدير عام':'مستشار'})</span></div>
+        ${u.role!=='super_admin' ? `<button class="btn-danger" data-user-del="${u.id}">حذف</button>` : ''}
+      </div>
+      ${u.role!=='super_admin' ? `
+      <div style="display:flex; gap:8px; align-items:center;">
+        <select data-user-link="${u.id}" style="flex:1;">
+          <option value="">— بدون ربط —</option>
+          ${CONTENT.counselors.map(co=>`<option value="${co.id}" ${co.id===u.counselorId?'selected':''}>${co.name}</option>`).join('')}
+        </select>
+        <button class="btn-outline" data-user-save-link="${u.id}">حفظ الربط</button>
+      </div>` : ''}
     </div>`).join('');
   document.querySelectorAll('[data-user-del]').forEach(el => el.addEventListener('click', async e=>{
     if (!confirm('تأكيد حذف هذا الحساب؟')) return;
     await fetch('/api/users/' + e.target.dataset.userDel, { method:'DELETE' });
     fillUsers();
   }));
+  document.querySelectorAll('[data-user-save-link]').forEach(btn => btn.onclick = async () => {
+    const uid = btn.dataset.userSaveLink;
+    const counselorId = document.querySelector(`[data-user-link="${uid}"]`).value || null;
+    const res = await fetch('/api/users/' + uid, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ counselorId }) });
+    const original = btn.textContent;
+    btn.textContent = res.ok ? '✓ تم الربط' : 'تعذّر';
+    setTimeout(()=> btn.textContent = original, 1800);
+  });
   document.getElementById('addUserBtn').onclick = async ()=>{
     const name = document.getElementById('newUserName').value.trim();
     const email = document.getElementById('newUserEmail').value.trim();
@@ -662,108 +551,8 @@ async function fillBookings(){
         <span>${escAttr(b.name)}</span><span style="color:#7C8B7A; font-weight:500;">${escAttr(b.date)} — ${escAttr(b.time)}</span>
       </div>
       <div style="font-size:.85rem; color:#6b7570;">📞 ${escAttr(b.phone)} · المستشار: ${escAttr(b.counselorName || 'غير محدد')}</div>
-      ${b.notes ? `<div style="font-size:.85rem; color:#4B5850; background:var(--paper); border-radius:8px; padding:8px 10px;">📝 ${escAttr(b.notes)}</div>` : ''}
       <a href="/confirm.html?id=${b.id}" target="_blank" style="font-size:.8rem; color:#B8734F;">رابط الموعد ↗</a>
     </div>`).join('');
-}
-
-// ===== أوقات التوفر =====
-let AVAIL_ME = null;
-const AVAILABILITY_HOURS = ['09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00'];
-const AVAILABILITY_DAYS_COUNT = 14;
-const WEEKDAYS_AR = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
-
-function toLocalISODate(d){
-  const p = n => String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;
-}
-
-async function fillAvailability(me){
-  AVAIL_ME = me;
-  const selWrap = document.getElementById('availabilityCounselorField');
-  const sel = document.getElementById('availabilityCounselor');
-  if (me.role === 'super_admin') {
-    if (!CONTENT.counselors.length) { document.getElementById('availabilityDays').innerHTML = '<p class="hint">أضف مستشارًا أولًا من صفحة "المستشارون".</p>'; return; }
-    selWrap.style.display = 'block';
-    sel.innerHTML = CONTENT.counselors.map(co => `<option value="${co.id}">${escAttr(co.name)}</option>`).join('');
-    sel.onchange = renderAvailability;
-  }
-  renderAvailability();
-}
-
-function currentAvailabilityCounselorId(){
-  return AVAIL_ME.role === 'super_admin' ? document.getElementById('availabilityCounselor').value : AVAIL_ME.counselorId;
-}
-
-async function renderAvailability(){
-  const counselorId = currentAvailabilityCounselorId();
-  const container = document.getElementById('availabilityDays');
-  if (!counselorId) { container.innerHTML = '<p class="hint">حسابك غير مرتبط ببطاقة مستشار بعد. الرجاء التواصل مع المدير لربط حسابك ببطاقتك حتى تتمكن من تحديد أوقات توفرك بنفسك.</p>'; return; }
-  container.innerHTML = 'جارٍ التحميل…';
-
-  const res = await fetch('/api/bookings?availability=1&counselorId=' + encodeURIComponent(counselorId));
-  if (!res.ok) { container.innerHTML = '<p class="hint">تعذّر تحميل بيانات التوفر.</p>'; return; }
-  const data = await res.json();
-  const blockedSet = new Set(data.blocked.map(b => b.date + '|' + b.time));
-  const bookedSet = new Set(data.booked.map(b => b.date + '|' + b.time));
-
-  const days = [];
-  const today = new Date();
-  for (let i=0; i<AVAILABILITY_DAYS_COUNT; i++){
-    const d = new Date(today); d.setDate(d.getDate() + i);
-    days.push({ iso: toLocalISODate(d), label: `${WEEKDAYS_AR[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}` });
-  }
-
-  container.innerHTML = days.map(day => {
-    const dayFreeSlots = AVAILABILITY_HOURS.filter(h => !bookedSet.has(day.iso + '|' + h));
-    const dayAllBlocked = dayFreeSlots.length > 0 && dayFreeSlots.every(h => blockedSet.has(day.iso + '|' + h));
-    return `
-    <div class="day-box">
-      <div class="day-title-row">
-        <div class="day-title">${day.label}</div>
-        <button type="button" class="day-toggle-all" data-day-toggle="${day.iso}" data-day-action="${dayAllBlocked ? 'unblock' : 'block'}">
-          ${dayAllBlocked ? '↺ فتح اليوم كامل' : '✕ إغلاق اليوم كامل'}
-        </button>
-      </div>
-      <div class="slot-grid">
-        ${AVAILABILITY_HOURS.map(h => {
-          const key = day.iso + '|' + h;
-          let cls = 'free', label = h;
-          if (bookedSet.has(key)) { cls = 'booked'; label = h + ' 🔒'; }
-          else if (blockedSet.has(key)) { cls = 'blocked'; label = h + ' ✕'; }
-          return `<button type="button" class="slot ${cls}" data-date="${day.iso}" data-time="${h}" ${cls==='booked'?'disabled':''}>${label}</button>`;
-        }).join('')}
-      </div>
-    </div>`;
-  }).join('');
-
-  container.querySelectorAll('[data-day-toggle]').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const dayIso = btn.dataset.dayToggle;
-      const action = btn.dataset.dayAction;
-      const freeTimes = AVAILABILITY_HOURS.filter(h => !bookedSet.has(dayIso + '|' + h));
-      btn.disabled = true;
-      const r = await fetch('/api/bookings', {
-        method:'PUT', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ counselorId, date: dayIso, times: freeTimes, action })
-      });
-      if (!r.ok) { const d = await r.json(); alert(d.error || 'تعذّر التنفيذ'); btn.disabled = false; return; }
-      renderAvailability();
-    });
-  });
-
-  container.querySelectorAll('.slot:not(.booked)').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const isBlocked = btn.classList.contains('blocked');
-      btn.disabled = true;
-      const res2 = await fetch('/api/bookings', {
-        method:'PUT', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ counselorId, date: btn.dataset.date, time: btn.dataset.time, action: isBlocked ? 'unblock' : 'block' })
-      });
-      if (!res2.ok) { const d2 = await res2.json(); alert(d2.error || 'تعذّر التنفيذ'); btn.disabled = false; return; }
-      renderAvailability();
-    });
-  });
 }
 
 function bindGenericFields(){
@@ -788,7 +577,6 @@ async function fillClients(){
   const res = await fetch('/api/clients');
   CLIENTS = await res.json();
   renderClientCategories();
-  renderInactiveClients();
 
   document.getElementById('addClientBtn').onclick = () => {
     document.getElementById('addClientForm').style.display = 'block';
@@ -814,9 +602,8 @@ async function fillClients(){
 }
 
 function renderClientCategories(){
-  const activeClients = CLIENTS.filter(c => c.active !== false);
   const categories = {};
-  activeClients.forEach(c => { (categories[c.category] ||= []).push(c); });
+  CLIENTS.forEach(c => { (categories[c.category] ||= []).push(c); });
   document.getElementById('categoryOptions').innerHTML = Object.keys(categories).map(cat => `<option value="${escAttr(cat)}">`).join('');
 
   const container = document.getElementById('clientsByCategory');
@@ -826,10 +613,10 @@ function renderClientCategories(){
   container.innerHTML = catNames.map((cat, ci) => `
     <div class="card-box" style="padding:0; overflow:hidden;">
       <div data-cat-toggle="${ci}" style="cursor:pointer; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; font-weight:700;">
-        <span>🏷️ ${escAttr(cat)} <span style="color:#7C8B7A; font-weight:500;">(${categories[cat].length})</span></span>
+        <span>${escAttr(cat)} <span style="color:#7C8B7A; font-weight:500;">(${categories[cat].length})</span></span>
         <span id="arrow-${ci}">▾</span>
       </div>
-      <div id="catbody-${ci}" style="display:none; padding:0 16px 16px;">
+      <div id="catbody-${ci}" style="display:none; padding:0 20px 16px;">
         ${categories[cat].map(clientRowHtml).join('')}
       </div>
     </div>`).join('');
@@ -846,82 +633,38 @@ function renderClientCategories(){
   bindClientRowEvents();
 }
 
-function renderInactiveClients(){
-  const inactiveClients = CLIENTS.filter(c => c.active === false);
-  const container = document.getElementById('inactiveClientsByCategory');
-  if (!inactiveClients.length) { container.innerHTML = '<p class="hint">لا يوجد مراجعون غير نشطين حاليًا.</p>'; return; }
-
-  const categories = {};
-  inactiveClients.forEach(c => { (categories[c.category] ||= []).push(c); });
-  const catNames = Object.keys(categories);
-
-  container.innerHTML = catNames.map((cat, ci) => `
-    <div class="card-box" style="padding:0; overflow:hidden;">
-      <div data-inactive-cat-toggle="${ci}" style="cursor:pointer; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; font-weight:700;">
-        <span>🏷️ ${escAttr(cat)} <span style="color:#7C8B7A; font-weight:500;">(${categories[cat].length})</span></span>
-        <span id="inactive-arrow-${ci}">▾</span>
-      </div>
-      <div id="inactive-catbody-${ci}" style="display:none; padding:0 16px 16px;">
-        ${categories[cat].map(clientRowHtml).join('')}
-      </div>
-    </div>`).join('');
-
-  catNames.forEach((_, ci) => {
-    document.querySelector(`[data-inactive-cat-toggle="${ci}"]`).addEventListener('click', () => {
-      const body = document.getElementById(`inactive-catbody-${ci}`);
-      const open = body.style.display !== 'none';
-      body.style.display = open ? 'none' : 'block';
-      document.getElementById(`inactive-arrow-${ci}`).textContent = open ? '▾' : '▴';
-    });
-  });
-
-  bindClientRowEvents();
-}
-
 function clientRowHtml(c){
-  const initial = (c.name || '؟').trim().charAt(0);
   return `
-    <div class="client-card">
-      <div class="client-head" data-open-client="${c.id}">
-        <div class="client-avatar">${escAttr(initial)}</div>
-        <div class="client-info">
-          <div class="client-name">${escAttr(c.name)}</div>
-          <div class="client-phone">📱 ${escAttr(c.phone)}</div>
-        </div>
-        <div class="client-quick-actions">
-          <a href="tel:${escAttr(c.phone)}" class="icon-btn" title="اتصال" onclick="event.stopPropagation()">📞</a>
-          <button type="button" class="icon-btn danger" data-del-client="${c.id}" title="حذف" onclick="event.stopPropagation()">🗑️</button>
-          <span class="chevron" id="chev-${c.id}">˅</span>
+    <div style="border-top:1px solid var(--line); padding:14px 0;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <strong>${escAttr(c.name)}</strong>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <span title="${escAttr(c.phone)}">📱 ${escAttr(c.phone)}</span>
+          <a href="tel:${escAttr(c.phone)}" title="اتصال" style="text-decoration:none; font-size:1.1rem;">📞</a>
+          <button class="btn-outline" data-toggle-notes="${c.id}" style="padding:6px 12px; font-size:.78rem;">📝 الملاحظات</button>
+          <button class="btn-outline" data-toggle-book="${c.id}" style="padding:6px 12px; font-size:.78rem;">📅 حجز موعد</button>
+          <button class="btn-danger" data-del-client="${c.id}">حذف</button>
         </div>
       </div>
-      <div class="client-detail" id="detail-${c.id}" style="display:none;">
-        <div class="detail-tabs">
-          <button type="button" class="detail-tab active" data-tab-btn="notes" data-tab-client="${c.id}">📝 الملاحظات والتصنيف</button>
-          <button type="button" class="detail-tab" data-tab-btn="book" data-tab-client="${c.id}">📅 حجز موعد</button>
+      <div id="notes-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;"></div>
+      <div id="book-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;">
+        <div class="row2">
+          <div class="field"><label>التاريخ</label><input type="date" id="bookdate-${c.id}"></div>
+          <div class="field"><label>الوقت</label><input type="time" id="booktime-${c.id}"></div>
         </div>
-        <div class="detail-body" id="notes-${c.id}"></div>
-        <div class="detail-body" id="book-${c.id}" style="display:none;">
-          <div class="row2">
-            <div class="field"><label>التاريخ</label><input type="date" id="bookdate-${c.id}"></div>
-            <div class="field"><label>الوقت</label><input type="time" id="booktime-${c.id}"></div>
-          </div>
-          <button class="btn" data-confirm-book="${c.id}">تأكيد الحجز</button>
-          <span class="hint" id="bookmsg-${c.id}" style="margin-right:10px;"></span>
-        </div>
+        <button class="btn" data-confirm-book="${c.id}">تأكيد الحجز</button>
+        <span class="hint" id="bookmsg-${c.id}" style="margin-right:10px;"></span>
       </div>
     </div>`;
 }
 
 function bindClientRowEvents(){
-  document.querySelectorAll('[data-open-client]').forEach(el => el.onclick = () => toggleClientDetail(el.dataset.openClient));
-  document.querySelectorAll('[data-tab-btn]').forEach(btn => btn.onclick = (e) => {
-    e.stopPropagation();
-    const clientId = btn.dataset.tabClient, tab = btn.dataset.tabBtn;
-    document.querySelectorAll(`[data-tab-client="${clientId}"]`).forEach(b => b.classList.toggle('active', b === btn));
-    document.getElementById('notes-' + clientId).style.display = tab === 'notes' ? 'block' : 'none';
-    document.getElementById('book-' + clientId).style.display = tab === 'book' ? 'block' : 'none';
+  document.querySelectorAll('[data-toggle-notes]').forEach(btn => btn.onclick = () => toggleNotes(btn.dataset.toggleNotes));
+  document.querySelectorAll('[data-toggle-book]').forEach(btn => btn.onclick = () => {
+    const box = document.getElementById('book-' + btn.dataset.toggleBook);
+    box.style.display = box.style.display === 'none' ? 'block' : 'none';
   });
-  document.querySelectorAll('[data-confirm-book]').forEach(btn => btn.onclick = (e) => { e.stopPropagation(); confirmBooking(btn.dataset.confirmBook); });
+  document.querySelectorAll('[data-confirm-book]').forEach(btn => btn.onclick = () => confirmBooking(btn.dataset.confirmBook));
   document.querySelectorAll('[data-del-client]').forEach(btn => btn.onclick = async () => {
     if (!confirm('تأكيد حذف هذا المراجع؟ سيُحذف مع كل ملاحظاته.')) return;
     await fetch('/api/clients/' + btn.dataset.delClient, { method:'DELETE' });
@@ -929,105 +672,33 @@ function bindClientRowEvents(){
   });
 }
 
-async function toggleClientDetail(clientId){
-  const box = document.getElementById('detail-' + clientId);
-  const chev = document.getElementById('chev-' + clientId);
-  const open = box.style.display !== 'none';
-  box.style.display = open ? 'none' : 'block';
-  chev.textContent = open ? '˅' : '˄';
-  if (!open) await loadNotesInto(clientId);
+async function toggleNotes(clientId){
+  const box = document.getElementById('notes-' + clientId);
+  if (box.style.display !== 'none') { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  await loadNotesInto(clientId);
 }
 
-async function loadNotesInto(clientId, editingNote){
+async function loadNotesInto(clientId){
   const box = document.getElementById('notes-' + clientId);
   box.innerHTML = 'جارٍ التحميل…';
-  const client = CLIENTS.find(c => c.id === clientId);
   const res = await fetch('/api/clients/' + clientId + '/notes');
   const notes = await res.json();
-
-  const noteCardsHtml = notes.length ? notes.map(n => `
-    <div class="note-card">
-      <div class="note-card-head">
-        <div style="min-width:0;">
-          <div class="note-title">${escAttr(n.title)}</div>
-          <div class="note-body">${escAttr(n.body)}</div>
-          <div class="note-date">🕒 ${new Date(n.createdAt).toLocaleString('ar-SA')}</div>
-        </div>
-        <div class="note-card-actions">
-          <button type="button" data-edit-note="${n.id}" title="تعديل">✏️</button>
-          <button type="button" data-del-note="${n.id}" title="حذف">🗑️</button>
-        </div>
-      </div>
-    </div>`).join('') : '<p class="hint" style="margin:0 0 10px;">لا توجد ملاحظات بعد.</p>';
-
-  const isInactive = client && client.active === false;
   box.innerHTML = `
-    <div class="category-row">
-      <label>🏷️ نقل إلى تصنيف:</label>
-      <input type="text" id="movecat-${clientId}" list="categoryOptions" value="${escAttr(client ? client.category : '')}">
-      <button class="btn-outline" data-move-cat="${clientId}" style="padding:8px 16px; font-size:.8rem;">نقل</button>
-      <span class="hint" id="movecatmsg-${clientId}" style="margin:0;"></span>
-    </div>
-    <div class="category-row">
-      <label>${isInactive ? '🗄️ هذا المراجع غير نشط حاليًا' : '📌 حالة المراجع: نشط'}</label>
-      <button class="btn-outline" data-toggle-active="${clientId}" data-currently-inactive="${isInactive ? '1' : '0'}" style="padding:8px 16px; font-size:.8rem;">${isInactive ? '↺ إعادة تنشيط' : '🗄️ نقل إلى غير نشطين'}</button>
-    </div>
-    <div id="notecards-${clientId}">${noteCardsHtml}</div>
-    <div class="note-form">
-      <div class="note-form-title">${editingNote ? '✏️ تعديل ملاحظة' : '➕ ملاحظة جديدة'}</div>
-      <input type="text" id="notetitle-${clientId}" placeholder="عنوان الملاحظة" value="${editingNote ? escAttr(editingNote.title) : ''}">
-      <textarea id="notebody-${clientId}" placeholder="نص الملاحظة">${editingNote ? escAttr(editingNote.body) : ''}</textarea>
-      <div class="note-form-actions">
-        <button class="btn" data-save-note="${clientId}" data-editing="${editingNote ? editingNote.id : ''}">💾 ${editingNote ? 'حفظ التعديل' : 'حفظ الملاحظة'}</button>
-        ${editingNote ? `<button class="btn-outline" data-cancel-edit="${clientId}" style="padding:9px 18px; font-size:.85rem;">إلغاء</button>` : ''}
-      </div>
-    </div>`;
-
-  document.querySelector(`[data-save-note="${clientId}"]`).onclick = async () => {
+    ${notes.length ? notes.map(n => `
+      <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);">
+        <strong>${escAttr(n.title)}</strong>
+        <div style="font-size:.88rem; color:#4B5850; margin-top:4px;">${escAttr(n.body)}</div>
+      </div>`).join('') : '<p class="hint" style="margin:0 0 10px;">لا توجد ملاحظات بعد.</p>'}
+    <input type="text" id="notetitle-${clientId}" placeholder="عنوان الملاحظة">
+    <textarea id="notebody-${clientId}" placeholder="نص الملاحظة" style="min-height:60px; margin-top:8px;"></textarea>
+    <button class="btn" data-add-note="${clientId}" style="margin-top:8px;">إضافة ملاحظة</button>`;
+  document.querySelector(`[data-add-note="${clientId}"]`).onclick = async () => {
     const title = document.getElementById('notetitle-' + clientId).value.trim();
     const body = document.getElementById('notebody-' + clientId).value.trim();
     if (!title || !body) return;
-    const editingId = document.querySelector(`[data-save-note="${clientId}"]`).dataset.editing;
-    if (editingId) {
-      await fetch('/api/clients/' + clientId + '/notes', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ noteId: editingId, title, body }) });
-    } else {
-      await fetch('/api/clients/' + clientId + '/notes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, body }) });
-    }
+    await fetch('/api/clients/' + clientId + '/notes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, body }) });
     loadNotesInto(clientId);
-  };
-  const cancelBtn = document.querySelector(`[data-cancel-edit="${clientId}"]`);
-  if (cancelBtn) cancelBtn.onclick = () => loadNotesInto(clientId);
-
-  document.querySelectorAll('[data-edit-note]').forEach(btn => btn.onclick = () => {
-    const n = notes.find(x => x.id === btn.dataset.editNote);
-    if (n) loadNotesInto(clientId, n);
-  });
-  document.querySelectorAll('[data-del-note]').forEach(btn => btn.onclick = async () => {
-    if (!confirm('حذف هذه الملاحظة؟')) return;
-    await fetch('/api/clients/' + clientId + '/notes?noteId=' + btn.dataset.delNote, { method:'DELETE' });
-    loadNotesInto(clientId);
-  });
-
-  document.querySelector(`[data-move-cat="${clientId}"]`).onclick = async () => {
-    const category = document.getElementById('movecat-' + clientId).value.trim();
-    const msg = document.getElementById('movecatmsg-' + clientId);
-    if (!category) { msg.style.color = '#b23a3a'; msg.textContent = 'اكتب اسم التصنيف'; return; }
-    const res2 = await fetch('/api/clients/' + clientId + '/category', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ category }) });
-    const data2 = await res2.json();
-    if (!res2.ok) { msg.style.color = '#b23a3a'; msg.textContent = data2.error || 'تعذّر النقل'; return; }
-    msg.style.color = '#2f8f4e'; msg.textContent = '✓ تم النقل';
-    fillClients();
-  };
-
-  document.querySelector(`[data-toggle-active="${clientId}"]`).onclick = async () => {
-    const btn = document.querySelector(`[data-toggle-active="${clientId}"]`);
-    const currentlyInactive = btn.dataset.currentlyInactive === '1';
-    const newActive = currentlyInactive; // إن كان غير نشط الآن، سننشّطه (active=true)، والعكس
-    if (!currentlyInactive && !confirm('نقل هذا المراجع إلى غير النشطين؟ ستبقى بياناته وملاحظاته محفوظة ويمكنك إعادة تنشيطه لاحقًا.')) return;
-    btn.disabled = true;
-    const res3 = await fetch('/api/clients/' + clientId + '/active', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active: newActive }) });
-    if (!res3.ok) { const d3 = await res3.json(); alert(d3.error || 'تعذّر التنفيذ'); btn.disabled = false; return; }
-    fillClients();
   };
 }
 
@@ -1041,6 +712,88 @@ async function confirmBooking(clientId){
   msg.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
   msg.textContent = res.ok ? '✓ تم حجز الموعد بنجاح.' : (data.error || 'تعذّر الحجز');
 }
+
+// ===== المواعيد (جدول الأوقات) =====
+let SCHEDULE_ME = null;
+
+function generateTimeSlots(){
+  const slots = [];
+  for (let h = 8; h <= 21; h++){
+    slots.push(String(h).padStart(2,'0') + ':00');
+    slots.push(String(h).padStart(2,'0') + ':30');
+  }
+  return slots;
+}
+
+async function fillSchedule(me){
+  SCHEDULE_ME = me;
+  const dateInput = document.getElementById('scheduleDate');
+  dateInput.value = new Date().toISOString().slice(0,10);
+  dateInput.addEventListener('change', loadScheduleGrid);
+
+  if (me.role === 'super_admin') {
+    document.getElementById('scheduleCounselorField').style.display = 'block';
+    const sel = document.getElementById('scheduleCounselor');
+    sel.innerHTML = CONTENT.counselors.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    sel.addEventListener('change', loadScheduleGrid);
+  }
+  loadScheduleGrid();
+}
+
+function currentScheduleCounselorId(){
+  if (SCHEDULE_ME.role === 'super_admin') {
+    const sel = document.getElementById('scheduleCounselor');
+    return sel ? sel.value : null;
+  }
+  return SCHEDULE_ME.counselorId;
+}
+
+async function loadScheduleGrid(){
+  const counselorId = currentScheduleCounselorId();
+  const date = document.getElementById('scheduleDate').value;
+  const grid = document.getElementById('scheduleGrid');
+  if (!counselorId) { grid.innerHTML = '<p class="hint">لا يوجد مستشار مرتبط بهذا الحساب بعد.</p>'; return; }
+  if (!date) return;
+  grid.innerHTML = 'جارٍ التحميل…';
+  const res = await fetch(`/api/availability?counselorId=${encodeURIComponent(counselorId)}&date=${encodeURIComponent(date)}`);
+  const data = await res.json();
+  if (!res.ok) { grid.innerHTML = `<p class="hint">${data.error||'تعذّر التحميل'}</p>`; return; }
+  const bookedSet = new Set((data.bookings||[]).map(b=>b.time));
+  const blockedSet = new Set((data.blocks||[]).map(b=>b.time));
+
+  grid.innerHTML = generateTimeSlots().map(t => {
+    let status='free', label='⬜';
+    if (bookedSet.has(t)) { status='booked'; label='🟥'; }
+    else if (blockedSet.has(t)) { status='blocked'; label='🟨'; }
+    const disabled = status === 'booked';
+    return `<button type="button" class="btn-outline" data-slot-time="${t}" data-slot-status="${status}" ${disabled?'disabled':''} style="padding:9px 4px; font-size:.8rem; ${disabled?'opacity:.55; cursor:not-allowed;':''}">${label} ${t}</button>`;
+  }).join('');
+
+  document.querySelectorAll('[data-slot-time]').forEach(btn => {
+    if (btn.dataset.slotStatus === 'booked') return;
+    btn.onclick = () => toggleScheduleSlot(btn.dataset.slotTime, btn.dataset.slotStatus);
+  });
+}
+
+async function toggleScheduleSlot(time, status){
+  const counselorId = currentScheduleCounselorId();
+  const date = document.getElementById('scheduleDate').value;
+  const action = status === 'blocked' ? 'unblock' : 'block';
+  const res = await fetch('/api/availability', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ counselorId, date, time, action })
+  });
+  if (!res.ok) { const d = await res.json(); alert(d.error || 'تعذّر تحديث الجدول'); }
+  loadScheduleGrid();
+}
+
+// فتح منتقي التاريخ/الوقت بضغطة واحدة بأي مكان في الحقل، بدل الإجبار على أيقونة التقويم
+document.addEventListener('click', (e) => {
+  const t = e.target;
+  if (t.tagName === 'INPUT' && (t.type === 'date' || t.type === 'time') && typeof t.showPicker === 'function') {
+    try { t.showPicker(); } catch (err) {}
+  }
+});
 
 function escAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
 
