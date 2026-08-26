@@ -44,14 +44,51 @@
   .tag button{background:none; border:none; cursor:pointer; color:#b23a3a; font-weight:700;}
   .hint{font-size:.8rem; color:#7c8b7a; margin-top:-8px; margin-bottom:16px;}
   input[type=date], input[type=time]{cursor:pointer;}
-  .day-box{margin-bottom:14px;}
-  .day-title{font-weight:700; font-size:.92rem; margin-bottom:8px;}
+  .day-box{margin-bottom:16px; background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 16px;}
+  .day-title-row{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;}
+  .day-title{font-weight:700; font-size:.92rem;}
+  .day-toggle-all{background:none; border:1px solid var(--line); border-radius:8px; padding:6px 12px; font-size:.76rem; font-weight:700; cursor:pointer; color:#7C8B7A; font-family:inherit;}
+  .day-toggle-all:hover{background:var(--paper); color:var(--clay-dark);}
   .slot-grid{display:flex; flex-wrap:wrap; gap:8px;}
-  .slot{border:1px solid var(--line); border-radius:8px; padding:7px 12px; font-size:.82rem; cursor:pointer; background:#fff; font-family:inherit;}
+  .slot{border:1px solid var(--line); border-radius:20px; padding:7px 14px; font-size:.8rem; cursor:pointer; background:#fff; font-family:inherit; font-weight:600;}
   .slot.free{background:#fff; color:var(--ink);}
   .slot.free:hover{border-color:#2f8f4e; color:#2f8f4e;}
   .slot.blocked{background:#fbeaea; border-color:#d98a8a; color:#b23a3a;}
   .slot.booked{background:#EFEDE6; border-color:var(--line); color:#7C8B7A; cursor:not-allowed;}
+
+  /* ===== بطاقات المراجعين (تصميم عصري) ===== */
+  .client-card{border:1px solid var(--line); border-radius:12px; margin-bottom:10px; overflow:hidden; background:#fff; transition:box-shadow .15s;}
+  .client-card:hover{box-shadow:0 3px 14px rgba(34,50,44,.07);}
+  .client-head{display:flex; align-items:center; gap:12px; padding:13px 16px; cursor:pointer;}
+  .client-avatar{width:38px; height:38px; border-radius:50%; background:var(--paper); color:var(--clay-dark); display:flex; align-items:center; justify-content:center; font-weight:700; flex-shrink:0; font-size:.95rem;}
+  .client-info{flex:1; min-width:0;}
+  .client-name{font-weight:700; font-size:.95rem;}
+  .client-phone{font-size:.8rem; color:#7C8B7A; margin-top:2px; direction:ltr; text-align:right;}
+  .client-quick-actions{display:flex; align-items:center; gap:6px; flex-shrink:0;}
+  .icon-btn{width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:var(--paper); text-decoration:none; border:none; cursor:pointer; font-size:.95rem; color:var(--ink);}
+  .icon-btn:hover{background:var(--line);}
+  .icon-btn.danger{color:#b23a3a;}
+  .chevron{font-size:.75rem; color:#7C8B7A; width:18px; text-align:center;}
+  .client-detail{border-top:1px solid var(--line); background:var(--paper); padding:16px;}
+  .detail-tabs{display:flex; gap:6px; margin-bottom:14px;}
+  .detail-tab{background:#fff; border:1px solid var(--line); padding:8px 16px; border-radius:8px; font-size:.8rem; font-weight:700; cursor:pointer; color:#7C8B7A; font-family:inherit;}
+  .detail-tab.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+  .category-row{display:flex; align-items:center; gap:8px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px dashed var(--line); flex-wrap:wrap;}
+  .category-row label{font-weight:700; font-size:.83rem; white-space:nowrap;}
+  .category-row input{flex:1; min-width:140px; padding:9px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; background:#fff;}
+  .note-card{background:#fff; border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin-bottom:8px;}
+  .note-card-head{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .note-title{font-weight:700; font-size:.87rem;}
+  .note-body{font-size:.85rem; color:#4B5850; margin-top:4px; white-space:pre-wrap; line-height:1.6;}
+  .note-date{font-size:.72rem; color:#A9B3A6; margin-top:8px;}
+  .note-card-actions{display:flex; gap:2px; flex-shrink:0;}
+  .note-card-actions button{background:none; border:none; cursor:pointer; font-size:.9rem; padding:4px 6px; border-radius:6px; color:#7C8B7A;}
+  .note-card-actions button:hover{background:var(--paper); color:var(--clay-dark);}
+  .note-form{background:#fff; border:1px dashed var(--line); border-radius:10px; padding:14px; margin-top:12px;}
+  .note-form-title{font-weight:700; font-size:.82rem; color:#7C8B7A; margin-bottom:10px;}
+  .note-form input, .note-form textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; margin-bottom:10px; font-size:.88rem;}
+  .note-form textarea{min-height:70px; resize:vertical;}
+  .note-form-actions{display:flex; gap:8px; align-items:center;}
 </style>
 </head>
 <body>
@@ -71,9 +108,9 @@
     <button data-panel="content">📝 محتوى الصفحة</button>
     <button data-panel="counselors">👥 المستشارون</button>
     <button data-panel="clients">🗂️ المراجعون</button>
+    <button data-panel="availability" id="availabilityTabBtn">🕐 التواريخ</button>
     <button data-panel="accounts" id="accountsTabBtn">🔑 الحسابات</button>
     <button data-panel="bookings">📅 المواعيد</button>
-    <button data-panel="availability" id="availabilityTabBtn">🕐 أوقات التوفر</button>
   </div>
 
   <div class="content">
@@ -238,11 +275,11 @@
       </div>
     </div>
 
-    <!-- ===== أوقات التوفر ===== -->
+    <!-- ===== التواريخ (أوقات التوفر) ===== -->
     <div class="panel" id="panel-availability">
       <div class="card-box">
-        <h2 class="sec">أوقات التوفر</h2>
-        <p class="hint" style="margin-top:-8px;">اضغط على أي وقت لإغلاقه إن كنت مشغولًا وقتها (لن يستطيع أحد الحجز فيه)، واضغط عليه مجددًا لفتحه. الأوقات المحجوزة بموعد فعلي تظهر باللون الرمادي ولا يمكن تغييرها من هنا.</p>
+        <h2 class="sec">التواريخ وأوقات التوفر</h2>
+        <p class="hint" style="margin-top:-8px;">اضغط على أي وقت لإغلاقه إن كنت مشغولًا وقتها (لن يستطيع أحد الحجز فيه)، واضغط عليه مجددًا لفتحه. يمكنك أيضًا إغلاق يوم كامل بضغطة واحدة. الأوقات المحجوزة بموعد فعلي تظهر باللون الرمادي ولا يمكن تغييرها من هنا.</p>
         <div class="field" id="availabilityCounselorField" style="display:none; max-width:320px;">
           <label>المستشار</label>
           <select id="availabilityCounselor"></select>
@@ -602,9 +639,17 @@ async function renderAvailability(){
     days.push({ iso: toLocalISODate(d), label: `${WEEKDAYS_AR[d.getDay()]} ${d.getDate()}/${d.getMonth()+1}` });
   }
 
-  container.innerHTML = days.map(day => `
+  container.innerHTML = days.map(day => {
+    const dayFreeSlots = AVAILABILITY_HOURS.filter(h => !bookedSet.has(day.iso + '|' + h));
+    const dayAllBlocked = dayFreeSlots.length > 0 && dayFreeSlots.every(h => blockedSet.has(day.iso + '|' + h));
+    return `
     <div class="day-box">
-      <div class="day-title">${day.label}</div>
+      <div class="day-title-row">
+        <div class="day-title">${day.label}</div>
+        <button type="button" class="day-toggle-all" data-day-toggle="${day.iso}" data-day-action="${dayAllBlocked ? 'unblock' : 'block'}">
+          ${dayAllBlocked ? '↺ فتح اليوم كامل' : '✕ إغلاق اليوم كامل'}
+        </button>
+      </div>
       <div class="slot-grid">
         ${AVAILABILITY_HOURS.map(h => {
           const key = day.iso + '|' + h;
@@ -614,7 +659,23 @@ async function renderAvailability(){
           return `<button type="button" class="slot ${cls}" data-date="${day.iso}" data-time="${h}" ${cls==='booked'?'disabled':''}>${label}</button>`;
         }).join('')}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('[data-day-toggle]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const dayIso = btn.dataset.dayToggle;
+      const action = btn.dataset.dayAction;
+      const freeTimes = AVAILABILITY_HOURS.filter(h => !bookedSet.has(dayIso + '|' + h));
+      btn.disabled = true;
+      const r = await fetch('/api/bookings', {
+        method:'PUT', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ counselorId, date: dayIso, times: freeTimes, action })
+      });
+      if (!r.ok) { const d = await r.json(); alert(d.error || 'تعذّر التنفيذ'); btn.disabled = false; return; }
+      renderAvailability();
+    });
+  });
 
   container.querySelectorAll('.slot:not(.booked)').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -688,10 +749,10 @@ function renderClientCategories(){
   container.innerHTML = catNames.map((cat, ci) => `
     <div class="card-box" style="padding:0; overflow:hidden;">
       <div data-cat-toggle="${ci}" style="cursor:pointer; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; font-weight:700;">
-        <span>${escAttr(cat)} <span style="color:#7C8B7A; font-weight:500;">(${categories[cat].length})</span></span>
+        <span>🏷️ ${escAttr(cat)} <span style="color:#7C8B7A; font-weight:500;">(${categories[cat].length})</span></span>
         <span id="arrow-${ci}">▾</span>
       </div>
-      <div id="catbody-${ci}" style="display:none; padding:0 20px 16px;">
+      <div id="catbody-${ci}" style="display:none; padding:0 16px 16px;">
         ${categories[cat].map(clientRowHtml).join('')}
       </div>
     </div>`).join('');
@@ -709,38 +770,49 @@ function renderClientCategories(){
 }
 
 function clientRowHtml(c){
+  const initial = (c.name || '؟').trim().charAt(0);
   return `
-    <div style="border-top:1px solid var(--line); padding:14px 0;">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-        <strong data-open-client="${c.id}" style="cursor:pointer;" title="اضغط لعرض الملاحظات ونقل التصنيف">${escAttr(c.name)}</strong>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <span title="${escAttr(c.phone)}">📱 ${escAttr(c.phone)}</span>
-          <a href="tel:${escAttr(c.phone)}" title="اتصال" style="text-decoration:none; font-size:1.1rem;">📞</a>
-          <button class="btn-outline" data-toggle-notes="${c.id}" style="padding:6px 12px; font-size:.78rem;">📝 الملاحظات والتصنيف</button>
-          <button class="btn-outline" data-toggle-book="${c.id}" style="padding:6px 12px; font-size:.78rem;">📅 حجز موعد</button>
-          <button class="btn-danger" data-del-client="${c.id}">حذف</button>
+    <div class="client-card">
+      <div class="client-head" data-open-client="${c.id}">
+        <div class="client-avatar">${escAttr(initial)}</div>
+        <div class="client-info">
+          <div class="client-name">${escAttr(c.name)}</div>
+          <div class="client-phone">📱 ${escAttr(c.phone)}</div>
+        </div>
+        <div class="client-quick-actions">
+          <a href="tel:${escAttr(c.phone)}" class="icon-btn" title="اتصال" onclick="event.stopPropagation()">📞</a>
+          <button type="button" class="icon-btn danger" data-del-client="${c.id}" title="حذف" onclick="event.stopPropagation()">🗑️</button>
+          <span class="chevron" id="chev-${c.id}">˅</span>
         </div>
       </div>
-      <div id="notes-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;"></div>
-      <div id="book-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;">
-        <div class="row2">
-          <div class="field"><label>التاريخ</label><input type="date" id="bookdate-${c.id}"></div>
-          <div class="field"><label>الوقت</label><input type="time" id="booktime-${c.id}"></div>
+      <div class="client-detail" id="detail-${c.id}" style="display:none;">
+        <div class="detail-tabs">
+          <button type="button" class="detail-tab active" data-tab-btn="notes" data-tab-client="${c.id}">📝 الملاحظات والتصنيف</button>
+          <button type="button" class="detail-tab" data-tab-btn="book" data-tab-client="${c.id}">📅 حجز موعد</button>
         </div>
-        <button class="btn" data-confirm-book="${c.id}">تأكيد الحجز</button>
-        <span class="hint" id="bookmsg-${c.id}" style="margin-right:10px;"></span>
+        <div class="detail-body" id="notes-${c.id}"></div>
+        <div class="detail-body" id="book-${c.id}" style="display:none;">
+          <div class="row2">
+            <div class="field"><label>التاريخ</label><input type="date" id="bookdate-${c.id}"></div>
+            <div class="field"><label>الوقت</label><input type="time" id="booktime-${c.id}"></div>
+          </div>
+          <button class="btn" data-confirm-book="${c.id}">تأكيد الحجز</button>
+          <span class="hint" id="bookmsg-${c.id}" style="margin-right:10px;"></span>
+        </div>
       </div>
     </div>`;
 }
 
 function bindClientRowEvents(){
-  document.querySelectorAll('[data-toggle-notes]').forEach(btn => btn.onclick = () => toggleNotes(btn.dataset.toggleNotes));
-  document.querySelectorAll('[data-open-client]').forEach(el => el.onclick = () => toggleNotes(el.dataset.openClient));
-  document.querySelectorAll('[data-toggle-book]').forEach(btn => btn.onclick = () => {
-    const box = document.getElementById('book-' + btn.dataset.toggleBook);
-    box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  document.querySelectorAll('[data-open-client]').forEach(el => el.onclick = () => toggleClientDetail(el.dataset.openClient));
+  document.querySelectorAll('[data-tab-btn]').forEach(btn => btn.onclick = (e) => {
+    e.stopPropagation();
+    const clientId = btn.dataset.tabClient, tab = btn.dataset.tabBtn;
+    document.querySelectorAll(`[data-tab-client="${clientId}"]`).forEach(b => b.classList.toggle('active', b === btn));
+    document.getElementById('notes-' + clientId).style.display = tab === 'notes' ? 'block' : 'none';
+    document.getElementById('book-' + clientId).style.display = tab === 'book' ? 'block' : 'none';
   });
-  document.querySelectorAll('[data-confirm-book]').forEach(btn => btn.onclick = () => confirmBooking(btn.dataset.confirmBook));
+  document.querySelectorAll('[data-confirm-book]').forEach(btn => btn.onclick = (e) => { e.stopPropagation(); confirmBooking(btn.dataset.confirmBook); });
   document.querySelectorAll('[data-del-client]').forEach(btn => btn.onclick = async () => {
     if (!confirm('تأكيد حذف هذا المراجع؟ سيُحذف مع كل ملاحظاته.')) return;
     await fetch('/api/clients/' + btn.dataset.delClient, { method:'DELETE' });
@@ -748,41 +820,80 @@ function bindClientRowEvents(){
   });
 }
 
-async function toggleNotes(clientId){
-  const box = document.getElementById('notes-' + clientId);
-  if (box.style.display !== 'none') { box.style.display = 'none'; return; }
-  box.style.display = 'block';
-  await loadNotesInto(clientId);
+async function toggleClientDetail(clientId){
+  const box = document.getElementById('detail-' + clientId);
+  const chev = document.getElementById('chev-' + clientId);
+  const open = box.style.display !== 'none';
+  box.style.display = open ? 'none' : 'block';
+  chev.textContent = open ? '˅' : '˄';
+  if (!open) await loadNotesInto(clientId);
 }
 
-async function loadNotesInto(clientId){
+async function loadNotesInto(clientId, editingNote){
   const box = document.getElementById('notes-' + clientId);
   box.innerHTML = 'جارٍ التحميل…';
   const client = CLIENTS.find(c => c.id === clientId);
   const res = await fetch('/api/clients/' + clientId + '/notes');
   const notes = await res.json();
+
+  const noteCardsHtml = notes.length ? notes.map(n => `
+    <div class="note-card">
+      <div class="note-card-head">
+        <div style="min-width:0;">
+          <div class="note-title">${escAttr(n.title)}</div>
+          <div class="note-body">${escAttr(n.body)}</div>
+          <div class="note-date">🕒 ${new Date(n.createdAt).toLocaleString('ar-SA')}</div>
+        </div>
+        <div class="note-card-actions">
+          <button type="button" data-edit-note="${n.id}" title="تعديل">✏️</button>
+          <button type="button" data-del-note="${n.id}" title="حذف">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('') : '<p class="hint" style="margin:0 0 10px;">لا توجد ملاحظات بعد.</p>';
+
   box.innerHTML = `
-    <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--line); flex-wrap:wrap;">
-      <label style="font-weight:700; font-size:.85rem;">نقل إلى تصنيف:</label>
-      <input type="text" id="movecat-${clientId}" list="categoryOptions" value="${escAttr(client ? client.category : '')}" style="flex:1; min-width:140px; padding:8px 10px; border:1px solid var(--line); border-radius:8px; font-family:inherit;">
-      <button class="btn-outline" data-move-cat="${clientId}" style="padding:7px 14px; font-size:.8rem;">نقل</button>
+    <div class="category-row">
+      <label>🏷️ نقل إلى تصنيف:</label>
+      <input type="text" id="movecat-${clientId}" list="categoryOptions" value="${escAttr(client ? client.category : '')}">
+      <button class="btn-outline" data-move-cat="${clientId}" style="padding:8px 16px; font-size:.8rem;">نقل</button>
       <span class="hint" id="movecatmsg-${clientId}" style="margin:0;"></span>
     </div>
-    ${notes.length ? notes.map(n => `
-      <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);">
-        <strong>${escAttr(n.title)}</strong>
-        <div style="font-size:.88rem; color:#4B5850; margin-top:4px;">${escAttr(n.body)}</div>
-      </div>`).join('') : '<p class="hint" style="margin:0 0 10px;">لا توجد ملاحظات بعد.</p>'}
-    <input type="text" id="notetitle-${clientId}" placeholder="عنوان الملاحظة">
-    <textarea id="notebody-${clientId}" placeholder="نص الملاحظة" style="min-height:60px; margin-top:8px;"></textarea>
-    <button class="btn" data-add-note="${clientId}" style="margin-top:8px;">إضافة ملاحظة</button>`;
-  document.querySelector(`[data-add-note="${clientId}"]`).onclick = async () => {
+    <div id="notecards-${clientId}">${noteCardsHtml}</div>
+    <div class="note-form">
+      <div class="note-form-title">${editingNote ? '✏️ تعديل ملاحظة' : '➕ ملاحظة جديدة'}</div>
+      <input type="text" id="notetitle-${clientId}" placeholder="عنوان الملاحظة" value="${editingNote ? escAttr(editingNote.title) : ''}">
+      <textarea id="notebody-${clientId}" placeholder="نص الملاحظة">${editingNote ? escAttr(editingNote.body) : ''}</textarea>
+      <div class="note-form-actions">
+        <button class="btn" data-save-note="${clientId}" data-editing="${editingNote ? editingNote.id : ''}">💾 ${editingNote ? 'حفظ التعديل' : 'حفظ الملاحظة'}</button>
+        ${editingNote ? `<button class="btn-outline" data-cancel-edit="${clientId}" style="padding:9px 18px; font-size:.85rem;">إلغاء</button>` : ''}
+      </div>
+    </div>`;
+
+  document.querySelector(`[data-save-note="${clientId}"]`).onclick = async () => {
     const title = document.getElementById('notetitle-' + clientId).value.trim();
     const body = document.getElementById('notebody-' + clientId).value.trim();
     if (!title || !body) return;
-    await fetch('/api/clients/' + clientId + '/notes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, body }) });
+    const editingId = document.querySelector(`[data-save-note="${clientId}"]`).dataset.editing;
+    if (editingId) {
+      await fetch('/api/clients/' + clientId + '/notes', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ noteId: editingId, title, body }) });
+    } else {
+      await fetch('/api/clients/' + clientId + '/notes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, body }) });
+    }
     loadNotesInto(clientId);
   };
+  const cancelBtn = document.querySelector(`[data-cancel-edit="${clientId}"]`);
+  if (cancelBtn) cancelBtn.onclick = () => loadNotesInto(clientId);
+
+  document.querySelectorAll('[data-edit-note]').forEach(btn => btn.onclick = () => {
+    const n = notes.find(x => x.id === btn.dataset.editNote);
+    if (n) loadNotesInto(clientId, n);
+  });
+  document.querySelectorAll('[data-del-note]').forEach(btn => btn.onclick = async () => {
+    if (!confirm('حذف هذه الملاحظة؟')) return;
+    await fetch('/api/clients/' + clientId + '/notes?noteId=' + btn.dataset.delNote, { method:'DELETE' });
+    loadNotesInto(clientId);
+  });
+
   document.querySelector(`[data-move-cat="${clientId}"]`).onclick = async () => {
     const category = document.getElementById('movecat-' + clientId).value.trim();
     const msg = document.getElementById('movecatmsg-' + clientId);

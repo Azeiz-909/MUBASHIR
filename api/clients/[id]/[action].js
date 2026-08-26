@@ -37,6 +37,20 @@ module.exports = async (req, res) => {
       if (error) return res.status(500).json({ error: 'تعذّر إضافة الملاحظة' });
       return res.status(200).json({ ok: true, note: { id: note.id, title: note.title, body: note.body, createdAt: note.created_at } });
     }
+    if (req.method === 'PUT') {
+      const { noteId, title, body } = req.body || {};
+      if (!noteId || !title || !body) return res.status(400).json({ error: 'بيانات الملاحظة غير مكتملة' });
+      const { error } = await supabase.from('client_notes').update({ title, body }).eq('id', noteId).eq('client_id', id);
+      if (error) return res.status(500).json({ error: 'تعذّر تعديل الملاحظة' });
+      return res.status(200).json({ ok: true });
+    }
+    if (req.method === 'DELETE') {
+      const { noteId } = req.query;
+      if (!noteId) return res.status(400).json({ error: 'معرّف الملاحظة مطلوب' });
+      const { error } = await supabase.from('client_notes').delete().eq('id', noteId).eq('client_id', id);
+      if (error) return res.status(500).json({ error: 'تعذّر حذف الملاحظة' });
+      return res.status(200).json({ ok: true });
+    }
     return res.status(405).json({ error: 'طريقة غير مدعومة' });
   }
 

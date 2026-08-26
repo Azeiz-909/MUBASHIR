@@ -101,31 +101,34 @@ module.exports = async (req, res) => {
     return res.status(200).json({ bookings, joinWindowMinutes: JOIN_WINDOW_MINUTES });
   }
 
-  // ----- إغلاق/فتح وقت من جدول توفر المستشار -----
+  // ----- إغلاق/فتح وقت (أو يوم كامل) من جدول توفر المستشار -----
   if (req.method === 'PUT') {
     const user = await getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'يلزم تسجيل الدخول' });
 
-    const { date, time, action } = req.body || {};
-    if (!date || !time || !['block', 'unblock'].includes(action)) {
+    const { date, time, times, action } = req.body || {};
+    if (!date || (!time && !Array.isArray(times)) || !['block', 'unblock'].includes(action)) {
       return res.status(400).json({ error: 'بيانات غير مكتملة' });
     }
     const counselorId = user.role === 'super_admin' ? (req.body.counselorId || null) : user.counselor_id;
     if (!counselorId) return res.status(400).json({ error: 'الرجاء تحديد المستشار' });
 
-    if (action === 'block') {
-      const { data: existing } = await supabase.from('bookings').select('id')
-        .eq('counselor_id', counselorId).eq('date', date).eq('time', time).neq('status', 'cancelled');
-      if (existing && existing.length) return res.status(409).json({ error: 'هذا الوقت لديه موعد محجوز بالفعل' });
+    const slotTimes = Array.isArray(times) && times.length ? times : [time];
 
-      const { error } = await supabase.from('availability_blocks').upsert({
-        id: 'ab_' + crypto.createHash('md5').update(counselorId + date + time).digest('hex'),
-        counselor_id: counselorId, date, time, created_at: Date.now()
-      }, { onConflict: 'counselor_id,date,time' });
+    if (action === 'block') {
+      const { data: existing } = await supabase.from('bookings').select('id,time')
+        .eq('counselor_id', counselorId).eq('date', date).in('time', slotTimes).neq('status', 'cancelled');
+      if (existing && existing.length) return res.status(409).json({ error: 'يوجد موعد محجوز بالفعل ضمن هذه الأوقات' });
+
+      const rows = slotTimes.map(t => ({
+        id: 'ab_' + crypto.createHash('md5').update(counselorId + date + t).digest('hex'),
+        counselor_id: counselorId, date, time: t, created_at: Date.now()
+      }));
+      const { error } = await supabase.from('availability_blocks').upsert(rows, { onConflict: 'counselor_id,date,time' });
       if (error) return res.status(500).json({ error: 'تعذّر إغلاق الوقت' });
     } else {
       const { error } = await supabase.from('availability_blocks').delete()
-        .eq('counselor_id', counselorId).eq('date', date).eq('time', time);
+        .eq('counselor_id', counselorId).eq('date', date).in('time', slotTimes);
       if (error) return res.status(500).json({ error: 'تعذّر فتح الوقت' });
     }
 
