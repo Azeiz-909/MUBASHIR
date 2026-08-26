@@ -89,6 +89,17 @@
   .note-form input, .note-form textarea{width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; margin-bottom:10px; font-size:.88rem;}
   .note-form textarea{min-height:70px; resize:vertical;}
   .note-form-actions{display:flex; gap:8px; align-items:center;}
+
+  /* ===== مفاتيح إظهار/إخفاء الأقسام ===== */
+  .toggle-row{display:flex; align-items:center; justify-content:space-between; gap:16px; padding:13px 0; border-bottom:1px solid var(--line);}
+  .toggle-row:last-child{border-bottom:none;}
+  .toggle-row .toggle-label{font-weight:700; font-size:.9rem;}
+  .switch{position:relative; display:inline-block; width:46px; height:26px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .switch .slider{position:absolute; cursor:pointer; inset:0; background:#DAD5C8; border-radius:26px; transition:.2s;}
+  .switch .slider:before{content:""; position:absolute; height:20px; width:20px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.2s;}
+  .switch input:checked + .slider{background:#2f8f4e;}
+  .switch input:checked + .slider:before{transform:translateX(20px);}
 </style>
 </head>
 <body>
@@ -108,6 +119,7 @@
     <button data-panel="content">📝 محتوى الصفحة</button>
     <button data-panel="counselors">👥 المستشارون</button>
     <button data-panel="clients">🗂️ المراجعون</button>
+    <button data-panel="inactive" id="inactiveTabBtn">🗄️ غير النشطين</button>
     <button data-panel="availability" id="availabilityTabBtn">🕐 التواريخ</button>
     <button data-panel="accounts" id="accountsTabBtn">🔑 الحسابات</button>
     <button data-panel="bookings">📅 المواعيد</button>
@@ -149,6 +161,12 @@
     <!-- ===== المحتوى ===== -->
     <div class="panel" id="panel-content">
       <div class="card-box">
+        <h2 class="sec">🙈 إظهار / إخفاء أقسام الصفحة</h2>
+        <p class="hint" style="margin-top:-8px;">أخفِ أي قسم لا تريده على الموقع الآن — يختفي القسم نفسه وكل الروابط السريعة التي تشير إليه (من القائمة العلوية والفوتر) فورًا، ويمكنك إظهاره مجددًا في أي وقت.</p>
+        <div id="sectionsToggles"></div>
+      </div>
+
+      <div class="card-box">
         <h2 class="sec">القسم الرئيسي (Hero)</h2>
         <div class="field"><label>اسم العيادة</label><input type="text" id="siteName" data-key="site.name"></div>
         <div class="field"><label>العنوان الرئيسي</label><input type="text" id="heroTitle" data-key="hero.title"></div>
@@ -164,6 +182,11 @@
         <h2 class="sec">السرية والخصوصية</h2>
         <div class="field"><label>العنوان</label><input type="text" id="privacyTitle" data-key="privacy.title"></div>
         <div class="field"><label>النص</label><textarea id="privacyBody" data-key="privacy.body"></textarea></div>
+        <div class="img-upload">
+          <img class="img-preview" id="privacyImgPreview" src="" style="display:none">
+          <input type="file" id="privacyImgFile" accept="image/*">
+        </div>
+        <div class="hint">اختياري — إذا رفعت صورة ستحل محل الصورة الحالية في قسم "السرية والخصوصية".</div>
       </div>
 
       <div class="card-box">
@@ -244,6 +267,15 @@
           <span class="hint" id="clientFormMsg" style="margin-right:10px;"></span>
         </div>
         <div id="clientsByCategory"></div>
+      </div>
+    </div>
+
+    <!-- ===== غير النشطين ===== -->
+    <div class="panel" id="panel-inactive">
+      <div class="card-box">
+        <h2 class="sec">المراجعون غير النشطين</h2>
+        <p class="hint" style="margin-top:-8px;">المراجعون المنقولون هنا لا يظهرون في القائمة الرئيسية، لكن تبقى بياناتهم وملاحظاتهم محفوظة، ويمكنك إعادة تنشيطهم في أي وقت.</p>
+        <div id="inactiveClientsByCategory"></div>
       </div>
     </div>
 
@@ -359,9 +391,8 @@ async function init(){
   } else {
     // حساب مستشار: إخفاء كل شيء ما عدا صفحة المراجعين وأوقات التوفر
     document.querySelectorAll('.sidebar button[data-panel]').forEach(btn => {
-      if (btn.dataset.panel !== 'clients' && btn.dataset.panel !== 'availability') btn.style.display = 'none';
+      if (!['clients', 'inactive', 'availability'].includes(btn.dataset.panel)) btn.style.display = 'none';
     });
-    if (!me.counselorId) document.getElementById('availabilityTabBtn').style.display = 'none';
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-clients').classList.add('active');
     fillAvailability(me);
@@ -415,7 +446,43 @@ function fillDesign(){
   });
 }
 
+const SECTION_LABELS = {
+  counselors: 'المستشارون (فريقنا)',
+  privacy: 'السرية والخصوصية',
+  firstSession: 'جلستك الأولى',
+  faq: 'الأسئلة الشائعة',
+  hours: 'أوقات العمل وطرق الدفع',
+  certifications: 'الشهادات والاعتمادات',
+  contact: 'تواصل معنا'
+};
+
+function fillSectionsToggles(){
+  if (!CONTENT.sections) CONTENT.sections = {};
+  const box = document.getElementById('sectionsToggles');
+  box.innerHTML = Object.keys(SECTION_LABELS).map(key => {
+    const visible = CONTENT.sections[key] !== false;
+    return `
+      <div class="toggle-row">
+        <span class="toggle-label">${SECTION_LABELS[key]}</span>
+        <label class="switch">
+          <input type="checkbox" data-section-toggle="${key}" ${visible ? 'checked' : ''}>
+          <span class="slider"></span>
+        </label>
+      </div>`;
+  }).join('');
+
+  document.querySelectorAll('[data-section-toggle]').forEach(input => {
+    input.addEventListener('change', () => {
+      const key = input.dataset.sectionToggle;
+      CONTENT.sections[key] = input.checked;
+      scheduleSave({ sections: { [key]: input.checked } });
+    });
+  });
+}
+
 function fillContent(){
+  fillSectionsToggles();
+
   document.getElementById('siteName').value = CONTENT.site.name;
   document.getElementById('heroTitle').value = CONTENT.hero.title;
   document.getElementById('heroSubtitle').value = CONTENT.hero.subtitle;
@@ -430,6 +497,14 @@ function fillContent(){
 
   document.getElementById('privacyTitle').value = CONTENT.privacy.title;
   document.getElementById('privacyBody').value = CONTENT.privacy.body;
+  if (CONTENT.privacy.image) { document.getElementById('privacyImgPreview').src = CONTENT.privacy.image; document.getElementById('privacyImgPreview').style.display='block'; }
+  document.getElementById('privacyImgFile').addEventListener('change', async (e)=>{
+    const file = e.target.files[0]; if (!file) return;
+    const url = await uploadFile(file); if (!url) return;
+    CONTENT.privacy.image = url;
+    document.getElementById('privacyImgPreview').src = url; document.getElementById('privacyImgPreview').style.display='block';
+    scheduleSave({ privacy: { image: url } });
+  });
   document.getElementById('firstTitle').value = CONTENT.firstSession.title;
   document.getElementById('firstBody').value = CONTENT.firstSession.body;
   document.getElementById('firstSteps').value = CONTENT.firstSession.steps.join('\n');
@@ -623,7 +698,7 @@ function currentAvailabilityCounselorId(){
 async function renderAvailability(){
   const counselorId = currentAvailabilityCounselorId();
   const container = document.getElementById('availabilityDays');
-  if (!counselorId) { container.innerHTML = '<p class="hint">لا يوجد مستشار مرتبط بهذا الحساب بعد.</p>'; return; }
+  if (!counselorId) { container.innerHTML = '<p class="hint">حسابك غير مرتبط ببطاقة مستشار بعد. الرجاء التواصل مع المدير لربط حسابك ببطاقتك حتى تتمكن من تحديد أوقات توفرك بنفسك.</p>'; return; }
   container.innerHTML = 'جارٍ التحميل…';
 
   const res = await fetch('/api/bookings?availability=1&counselorId=' + encodeURIComponent(counselorId));
@@ -713,6 +788,7 @@ async function fillClients(){
   const res = await fetch('/api/clients');
   CLIENTS = await res.json();
   renderClientCategories();
+  renderInactiveClients();
 
   document.getElementById('addClientBtn').onclick = () => {
     document.getElementById('addClientForm').style.display = 'block';
@@ -738,8 +814,9 @@ async function fillClients(){
 }
 
 function renderClientCategories(){
+  const activeClients = CLIENTS.filter(c => c.active !== false);
   const categories = {};
-  CLIENTS.forEach(c => { (categories[c.category] ||= []).push(c); });
+  activeClients.forEach(c => { (categories[c.category] ||= []).push(c); });
   document.getElementById('categoryOptions').innerHTML = Object.keys(categories).map(cat => `<option value="${escAttr(cat)}">`).join('');
 
   const container = document.getElementById('clientsByCategory');
@@ -763,6 +840,38 @@ function renderClientCategories(){
       const open = body.style.display !== 'none';
       body.style.display = open ? 'none' : 'block';
       document.getElementById(`arrow-${ci}`).textContent = open ? '▾' : '▴';
+    });
+  });
+
+  bindClientRowEvents();
+}
+
+function renderInactiveClients(){
+  const inactiveClients = CLIENTS.filter(c => c.active === false);
+  const container = document.getElementById('inactiveClientsByCategory');
+  if (!inactiveClients.length) { container.innerHTML = '<p class="hint">لا يوجد مراجعون غير نشطين حاليًا.</p>'; return; }
+
+  const categories = {};
+  inactiveClients.forEach(c => { (categories[c.category] ||= []).push(c); });
+  const catNames = Object.keys(categories);
+
+  container.innerHTML = catNames.map((cat, ci) => `
+    <div class="card-box" style="padding:0; overflow:hidden;">
+      <div data-inactive-cat-toggle="${ci}" style="cursor:pointer; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; font-weight:700;">
+        <span>🏷️ ${escAttr(cat)} <span style="color:#7C8B7A; font-weight:500;">(${categories[cat].length})</span></span>
+        <span id="inactive-arrow-${ci}">▾</span>
+      </div>
+      <div id="inactive-catbody-${ci}" style="display:none; padding:0 16px 16px;">
+        ${categories[cat].map(clientRowHtml).join('')}
+      </div>
+    </div>`).join('');
+
+  catNames.forEach((_, ci) => {
+    document.querySelector(`[data-inactive-cat-toggle="${ci}"]`).addEventListener('click', () => {
+      const body = document.getElementById(`inactive-catbody-${ci}`);
+      const open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      document.getElementById(`inactive-arrow-${ci}`).textContent = open ? '▾' : '▴';
     });
   });
 
@@ -851,12 +960,17 @@ async function loadNotesInto(clientId, editingNote){
       </div>
     </div>`).join('') : '<p class="hint" style="margin:0 0 10px;">لا توجد ملاحظات بعد.</p>';
 
+  const isInactive = client && client.active === false;
   box.innerHTML = `
     <div class="category-row">
       <label>🏷️ نقل إلى تصنيف:</label>
       <input type="text" id="movecat-${clientId}" list="categoryOptions" value="${escAttr(client ? client.category : '')}">
       <button class="btn-outline" data-move-cat="${clientId}" style="padding:8px 16px; font-size:.8rem;">نقل</button>
       <span class="hint" id="movecatmsg-${clientId}" style="margin:0;"></span>
+    </div>
+    <div class="category-row">
+      <label>${isInactive ? '🗄️ هذا المراجع غير نشط حاليًا' : '📌 حالة المراجع: نشط'}</label>
+      <button class="btn-outline" data-toggle-active="${clientId}" data-currently-inactive="${isInactive ? '1' : '0'}" style="padding:8px 16px; font-size:.8rem;">${isInactive ? '↺ إعادة تنشيط' : '🗄️ نقل إلى غير نشطين'}</button>
     </div>
     <div id="notecards-${clientId}">${noteCardsHtml}</div>
     <div class="note-form">
@@ -902,6 +1016,17 @@ async function loadNotesInto(clientId, editingNote){
     const data2 = await res2.json();
     if (!res2.ok) { msg.style.color = '#b23a3a'; msg.textContent = data2.error || 'تعذّر النقل'; return; }
     msg.style.color = '#2f8f4e'; msg.textContent = '✓ تم النقل';
+    fillClients();
+  };
+
+  document.querySelector(`[data-toggle-active="${clientId}"]`).onclick = async () => {
+    const btn = document.querySelector(`[data-toggle-active="${clientId}"]`);
+    const currentlyInactive = btn.dataset.currentlyInactive === '1';
+    const newActive = currentlyInactive; // إن كان غير نشط الآن، سننشّطه (active=true)، والعكس
+    if (!currentlyInactive && !confirm('نقل هذا المراجع إلى غير النشطين؟ ستبقى بياناته وملاحظاته محفوظة ويمكنك إعادة تنشيطه لاحقًا.')) return;
+    btn.disabled = true;
+    const res3 = await fetch('/api/clients/' + clientId + '/active', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active: newActive }) });
+    if (!res3.ok) { const d3 = await res3.json(); alert(d3.error || 'تعذّر التنفيذ'); btn.disabled = false; return; }
     fillClients();
   };
 }
