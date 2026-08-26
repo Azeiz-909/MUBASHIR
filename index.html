@@ -33,21 +33,27 @@
   .nav-links a:hover{color:var(--clay-dark);}
   .burger{display:none; font-size:1.6rem; background:none; border:none; color:var(--ink);}
   @media(max-width:820px){ .nav-links{display:none;} .burger{display:block;} }
-  .hero{position:relative; padding:100px 0 60px;}
-  .hero .container{display:flex; align-items:center; gap:60px;}
-  .hero-text{flex:1.1;}
+  .hero{position:relative; padding:100px 0 90px; overflow:hidden;}
+  .hero .container{display:flex; align-items:center; gap:0;}
+  .hero-text{flex:1.15; position:relative; z-index:2; margin-inline-end:-70px;}
   .hero-text h1{font-size:3.1rem; color:var(--ink); margin-bottom:22px;}
   .hero-text p{font-size:1.15rem; color:#4B5850; max-width:520px;}
-  .hero-visual{flex:1; position:relative; display:flex; justify-content:center; align-items:center; min-height:260px;}
+  .hero-ctas{display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:34px;}
+  .hero-visual{flex:1; position:relative; z-index:1; display:flex; justify-content:center; align-items:center; min-height:260px;}
   .hero-visual img{position:relative; z-index:1; width:100%; max-width:480px; max-height:320px; object-fit:contain; -webkit-mask-image:radial-gradient(ellipse 60% 60% at center, #000 20%, rgba(0,0,0,.5) 48%, transparent 78%); mask-image:radial-gradient(ellipse 60% 60% at center, #000 20%, rgba(0,0,0,.5) 48%, transparent 78%);}
   .hero-visual .dot{position:absolute; border-radius:50%; z-index:2; animation:heroFloat 4.5s ease-in-out infinite;}
   .hero-visual .dot.d1{width:14px; height:14px; background:var(--clay); top:10%; right:10%;}
   .hero-visual .dot.d2{width:10px; height:10px; background:var(--sage); bottom:14%; left:8%; animation-duration:5.5s; animation-direction:reverse;}
   @keyframes heroFloat{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
   @media(max-width:700px){ .hero-visual{min-height:auto;} .hero-visual img{max-height:210px;} .hero-visual .dot{transform:scale(.8);} }
-  @media(max-width:900px){ .hero .container{flex-direction:column; text-align:center;} .hero-text p{margin:0 auto;} .hero-text h1{font-size:2.3rem;} }
-  .cta-duo{padding:0 0 90px;}
-  .cta-duo .container{display:flex; align-items:center; justify-content:center; gap:22px; flex-wrap:wrap;}
+  @media(max-width:900px){
+    .hero{padding:70px 0 60px;}
+    .hero .container{flex-direction:column; text-align:center; gap:0;}
+    .hero-text{margin-inline-end:0; margin-bottom:-46px;}
+    .hero-text p{margin:0 auto;}
+    .hero-text h1{font-size:2.3rem;}
+    .hero-ctas{justify-content:center;}
+  }
   .btn-primary, .btn-secondary{display:inline-flex; align-items:center; gap:10px; border-radius:16px; font-weight:700; border:none; transition:transform .15s;}
   .btn-primary{background:var(--clay); color:var(--white); font-size:1.15rem; padding:22px 46px; box-shadow:var(--shadow);}
   .btn-primary:hover{transform:translateY(-2px);}
@@ -131,19 +137,16 @@
       <div class="eyebrow">استشارات أسرية سرّية وموثوقة</div>
       <h1 id="heroTitle">مساحة آمنة… ليبدأ الحديث</h1>
       <p id="heroSubtitle"></p>
+      <div class="hero-ctas" id="booking">
+        <a href="/booking.html" class="btn-primary">احجز استشارتك</a>
+        <a href="/confirm.html" class="btn-secondary">لديك موعد استشارة عن بُعد؟ اضغط هنا</a>
+      </div>
     </div>
     <div class="hero-visual" id="heroVisual">
       <span class="dot d1"></span>
       <span class="dot d2"></span>
       <img src="/assets/hero.jpg" alt="عيادة تحدث - استشارات أسرية آمنة">
     </div>
-  </div>
-</section>
-
-<section class="cta-duo" id="booking">
-  <div class="container">
-    <a href="/booking.html" class="btn-primary">احجز استشارتك</a>
-    <a href="/confirm.html" class="btn-secondary">لديك موعد استشارة عن بُعد؟ اضغط هنا</a>
   </div>
 </section>
 
