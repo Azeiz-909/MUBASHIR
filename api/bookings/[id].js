@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
 
   res.status(200).json({
     id: b.id, name: b.name, phone: b.phone, counselorId: b.counselor_id, counselorName: b.counselor_name,
-    date: b.date, time: b.time, status: b.status, joinWindowMinutes: JOIN_WINDOW_MINUTES
+    date: b.date, time: b.time, status: b.status, videoRoomUrl: b.video_room_url || null,
+    joinWindowMinutes: JOIN_WINDOW_MINUTES
   });
 };
