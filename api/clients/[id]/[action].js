@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const { supabase } = require('../../_lib/supabase');
 const { getSessionUser } = require('../../_lib/auth');
+const { createDailyRoomForBooking } = require('../../_lib/daily');
 
 const JOIN_WINDOW_MINUTES = 20;
 
@@ -51,6 +52,13 @@ module.exports = async (req, res) => {
     };
     const { error } = await supabase.from('bookings').insert(booking);
     if (error) return res.status(500).json({ error: 'تعذّر إنشاء الحجز' });
+
+    const startMs = new Date(date + 'T' + time).getTime();
+    const videoRoomUrl = await createDailyRoomForBooking(booking.id, startMs);
+    if (videoRoomUrl) {
+      await supabase.from('bookings').update({ video_room_url: videoRoomUrl }).eq('id', booking.id);
+    }
+
     return res.status(200).json({ ok: true, booking: { id: booking.id, date, time }, joinWindowMinutes: JOIN_WINDOW_MINUTES });
   }
 
