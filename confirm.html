@@ -79,6 +79,9 @@ async function loadBooking(id){
       <div class="detail-row"><span>الوقت</span><span>${escapeHtml(b.time)}</span></div>
       <div class="countdown" id="countdownBox"></div>
       <button class="join-btn disabled" id="joinBtn" disabled>دخول الجلسة</button>
+      <div id="videoContainer" style="display:none; margin-top:16px;">
+        <iframe id="videoFrame" style="width:100%; height:480px; border:0; border-radius:12px;" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>
+      </div>
       <div class="copy-link">رقم حجزك: <strong>${b.id}</strong><br>الرابط: ${location.origin}/confirm.html?id=${b.id}</div>
     </div>`;
 
@@ -104,7 +107,11 @@ async function loadBooking(id){
 
   document.getElementById('joinBtn').addEventListener('click', ()=>{
     if (document.getElementById('joinBtn').disabled) return;
-    alert('سيتم تفعيل غرفة الفيديو تلقائيًا في المرحلة القادمة من المشروع (ربط Daily.co).');
+    if (!b.videoRoomUrl) { alert('لم تُنشأ غرفة الفيديو بعد. حدّث الصفحة بعد قليل، أو تواصل مع العيادة إن استمرت المشكلة.'); return; }
+    document.getElementById('joinBtn').style.display = 'none';
+    const container = document.getElementById('videoContainer');
+    container.style.display = 'block';
+    document.getElementById('videoFrame').src = b.videoRoomUrl;
   });
 }
 
