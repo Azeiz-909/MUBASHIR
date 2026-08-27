@@ -310,17 +310,18 @@ async function init(){
   CONTENT = await res.json();
 
   if (me.role === 'super_admin') {
-    fillDesign(); fillContent(); fillCounselors(); fillUsers(); fillBookings();
+    fillDesign(); fillContent(); fillCounselors(); fillUsers();
     bindGenericFields();
   } else {
-    // حساب مستشار: إخفاء كل شيء ما عدا المراجعين والمواعيد
+    // حساب مستشار: إخفاء كل شيء ما عدا المراجعين والمواعيد والحجوزات
     document.querySelectorAll('.sidebar button[data-panel]').forEach(btn => {
-      if (!['clients','schedule'].includes(btn.dataset.panel)) btn.style.display = 'none';
+      if (!['clients','schedule','bookings'].includes(btn.dataset.panel)) btn.style.display = 'none';
     });
     document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
     document.getElementById('panel-clients').classList.add('active');
   }
   fillClients();
+  fillBookings();
   fillSchedule(me);
 }
 
