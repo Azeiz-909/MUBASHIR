@@ -7,6 +7,7 @@
 <style>
   :root{ --ink:#22322C; --paper:#EFEDE6; --card:#F8F6F1; --clay:#B8734F; --line:#DAD5C8; }
   *{box-sizing:border-box; margin:0; padding:0; font-family:'Tajawal',sans-serif;}
+  body{opacity:0; transition:opacity .25s ease;}
   body{background:var(--paper); color:var(--ink); min-height:100vh;}
   .topbar{display:flex; align-items:center; justify-content:space-between; background:#fff; padding:14px 26px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:10;}
   .topbar h1{font-family:'Markazi Text',serif; font-size:1.4rem;}
@@ -323,6 +324,7 @@ async function init(){
   fillClients();
   fillBookings();
   fillSchedule(me);
+  document.body.style.opacity = 1;
 }
 
 function addCustomFontOption(name){
@@ -540,6 +542,15 @@ async function fillUsers(){
   };
 }
 
+function formatTimeAr(t){
+  if (!t) return '';
+  const [hStr, mStr] = t.split(':');
+  let h = parseInt(hStr, 10);
+  const period = h >= 12 ? 'م' : 'ص';
+  let h12 = h % 12; if (h12 === 0) h12 = 12;
+  return `${String(h12).padStart(2,'0')}:${mStr} ${period}`;
+}
+
 async function fillBookings(){
   const res = await fetch('/api/bookings'); const data = await res.json();
   const bookings = data.bookings || [];
@@ -549,7 +560,7 @@ async function fillBookings(){
   document.getElementById('bookingsList').innerHTML = bookings.map(b => `
     <div class="list-row" style="flex-direction:column; align-items:stretch; gap:4px;">
       <div style="display:flex; justify-content:space-between; font-weight:700;">
-        <span>${escAttr(b.name)}</span><span style="color:#7C8B7A; font-weight:500;">${escAttr(b.date)} — ${escAttr(b.time)}</span>
+        <span>${escAttr(b.name)}</span><span style="color:#7C8B7A; font-weight:500;">${escAttr(b.date)} — ${formatTimeAr(b.time)}</span>
       </div>
       <div style="font-size:.85rem; color:#6b7570;">📞 ${escAttr(b.phone)} · المستشار: ${escAttr(b.counselorName || 'غير محدد')}</div>
       <a href="/confirm.html?id=${b.id}" target="_blank" style="font-size:.8rem; color:#B8734F;">رابط الموعد ↗</a>
@@ -603,31 +614,43 @@ async function fillClients(){
 }
 
 function renderClientCategories(){
+  const activeClients = CLIENTS.filter(c => c.active !== false);
+  const inactiveClients = CLIENTS.filter(c => c.active === false);
+
   const categories = {};
-  CLIENTS.forEach(c => { (categories[c.category] ||= []).push(c); });
+  activeClients.forEach(c => { (categories[c.category] ||= []).push(c); });
   document.getElementById('categoryOptions').innerHTML = Object.keys(categories).map(cat => `<option value="${escAttr(cat)}">`).join('');
+
+  function section(key, title, list, muted){
+    return `
+    <div class="card-box" style="padding:0; overflow:hidden; margin-bottom:14px;">
+      <div data-cat-toggle="${key}" style="cursor:pointer; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; font-weight:700; ${muted?'color:#8a8f87;':''}">
+        <span>${title} <span style="font-weight:500; color:#7C8B7A;">(${list.length})</span></span>
+        <span data-arrow="${key}">▾</span>
+      </div>
+      <div data-body="${key}" style="display:none; padding:0 20px 16px;">
+        ${list.length ? list.map(clientRowHtml).join('') : '<p class="hint">لا يوجد.</p>'}
+      </div>
+    </div>`;
+  }
 
   const container = document.getElementById('clientsByCategory');
   const catNames = Object.keys(categories);
-  if (!catNames.length) { container.innerHTML = '<p class="hint">لا يوجد مراجعون بعد.</p>'; return; }
+  let html = '';
+  html += catNames.length
+    ? catNames.map(cat => section('cat-'+cat, escAttr(cat), categories[cat], false)).join('')
+    : '<p class="hint">لا يوجد مراجعون نشطون حاليًا.</p>';
+  html += section('inactive', '🚫 مستخدمون غير نشيطين', inactiveClients, true);
+  container.innerHTML = html;
 
-  container.innerHTML = catNames.map((cat, ci) => `
-    <div class="card-box" style="padding:0; overflow:hidden;">
-      <div data-cat-toggle="${ci}" style="cursor:pointer; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; font-weight:700;">
-        <span>${escAttr(cat)} <span style="color:#7C8B7A; font-weight:500;">(${categories[cat].length})</span></span>
-        <span id="arrow-${ci}">▾</span>
-      </div>
-      <div id="catbody-${ci}" style="display:none; padding:0 20px 16px;">
-        ${categories[cat].map(clientRowHtml).join('')}
-      </div>
-    </div>`).join('');
-
-  catNames.forEach((_, ci) => {
-    document.querySelector(`[data-cat-toggle="${ci}"]`).addEventListener('click', () => {
-      const body = document.getElementById(`catbody-${ci}`);
+  document.querySelectorAll('[data-cat-toggle]').forEach(header => {
+    header.addEventListener('click', () => {
+      const key = header.dataset.catToggle;
+      const body = document.querySelector(`[data-body="${key}"]`);
+      const arrow = document.querySelector(`[data-arrow="${key}"]`);
       const open = body.style.display !== 'none';
       body.style.display = open ? 'none' : 'block';
-      document.getElementById(`arrow-${ci}`).textContent = open ? '▾' : '▴';
+      arrow.textContent = open ? '▾' : '▴';
     });
   });
 
@@ -635,6 +658,7 @@ function renderClientCategories(){
 }
 
 function clientRowHtml(c){
+  const isActive = c.active !== false;
   return `
     <div style="border-top:1px solid var(--line); padding:14px 0;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
@@ -642,11 +666,17 @@ function clientRowHtml(c){
         <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
           <span title="${escAttr(c.phone)}">📱 ${escAttr(c.phone)}</span>
           <a href="tel:${escAttr(c.phone)}" title="اتصال" style="text-decoration:none; font-size:1.1rem;">📞</a>
-          <button class="btn-outline" data-toggle-notes="${c.id}" style="padding:6px 12px; font-size:.78rem;">📝 الملاحظات</button>
-          <button class="btn-outline" data-toggle-book="${c.id}" style="padding:6px 12px; font-size:.78rem;">📅 حجز موعد</button>
-          <button class="btn-danger" data-del-client="${c.id}">حذف</button>
+          ${isActive ? `
+            <button class="btn-outline" data-toggle-notes="${c.id}" style="padding:6px 12px; font-size:.78rem;">📝 الملاحظات</button>
+            <button class="btn-outline" data-toggle-book="${c.id}" style="padding:6px 12px; font-size:.78rem;">📅 حجز موعد</button>
+            <button class="btn-outline" data-set-inactive="${c.id}" style="padding:6px 12px; font-size:.78rem;">🚫 نقل لغير النشطين</button>
+          ` : `
+            <button class="btn" data-set-active="${c.id}" style="padding:6px 12px; font-size:.78rem;">↩️ إعادة تنشيط</button>
+          `}
+          <button class="btn-danger" data-del-client="${c.id}">حذف نهائي</button>
         </div>
       </div>
+      ${isActive ? `
       <div id="notes-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;"></div>
       <div id="book-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;">
         <div class="row2">
@@ -655,7 +685,7 @@ function clientRowHtml(c){
         </div>
         <button class="btn" data-confirm-book="${c.id}">تأكيد الحجز</button>
         <span class="hint" id="bookmsg-${c.id}" style="margin-right:10px;"></span>
-      </div>
+      </div>` : ''}
     </div>`;
 }
 
@@ -667,8 +697,18 @@ function bindClientRowEvents(){
   });
   document.querySelectorAll('[data-confirm-book]').forEach(btn => btn.onclick = () => confirmBooking(btn.dataset.confirmBook));
   document.querySelectorAll('[data-del-client]').forEach(btn => btn.onclick = async () => {
-    if (!confirm('تأكيد حذف هذا المراجع؟ سيُحذف مع كل ملاحظاته.')) return;
+    if (!confirm('تأكيد حذف هذا المراجع نهائيًا؟ سيُحذف مع كل ملاحظاته.')) return;
     await fetch('/api/clients/' + btn.dataset.delClient, { method:'DELETE' });
+    fillClients();
+  });
+  document.querySelectorAll('[data-set-inactive]').forEach(btn => btn.onclick = async () => {
+    if (!confirm('نقل هذا المراجع لغير النشطين سيحذف كل حجوزاته المقبلة تلقائيًا. متابعة؟')) return;
+    await fetch('/api/clients/' + btn.dataset.setInactive, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active:false }) });
+    fillClients();
+    fillBookings();
+  });
+  document.querySelectorAll('[data-set-active]').forEach(btn => btn.onclick = async () => {
+    await fetch('/api/clients/' + btn.dataset.setActive, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active:true }) });
     fillClients();
   });
 }
