@@ -16,7 +16,11 @@
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   html{scroll-behavior:smooth;}
-  body{font-family:var(--font-body); background:var(--paper); color:var(--ink); line-height:1.75; overflow-x:hidden;}
+  body{font-family:var(--font-body); background:var(--paper); color:var(--ink); line-height:1.75; overflow-x:hidden; opacity:0; transition:opacity .4s ease;}
+
+  /* ظهور متلاشٍ تسلسلي عند التمرير */
+  .reveal{opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.visible{opacity:1; transform:translateY(0);}
   h1,h2,h3,.display{font-family:var(--font-display); font-weight:700; line-height:1.25;}
   a{color:inherit; text-decoration:none;}
   img{max-width:100%; display:block; border-radius:inherit;}
@@ -31,29 +35,19 @@
   .logo span{color:var(--clay-dark);}
   .nav-links{display:flex; gap:28px; font-weight:500; font-size:.95rem;}
   .nav-links a:hover{color:var(--clay-dark);}
+  .nav-cta{background:var(--ink); color:var(--white); padding:10px 22px; border-radius:30px; font-weight:700; font-size:.9rem;}
   .burger{display:none; font-size:1.6rem; background:none; border:none; color:var(--ink);}
   @media(max-width:820px){ .nav-links{display:none;} .burger{display:block;} }
-  .hero{position:relative; padding:100px 0 90px; overflow:hidden;}
-  .hero .container{display:flex; align-items:center; gap:0;}
-  .hero-text{flex:1.15; position:relative; z-index:2; margin-inline-end:-70px;}
+  .hero{position:relative; padding:100px 0 60px;}
+  .hero .container{display:flex; align-items:center; gap:60px;}
+  .hero-text{flex:1.1;}
   .hero-text h1{font-size:3.1rem; color:var(--ink); margin-bottom:22px;}
   .hero-text p{font-size:1.15rem; color:#4B5850; max-width:520px;}
-  .hero-ctas{display:flex; align-items:center; gap:18px; flex-wrap:wrap; margin-top:34px;}
-  .hero-visual{flex:1; position:relative; z-index:1; display:flex; justify-content:center; align-items:center; min-height:260px;}
-  .hero-visual img{position:relative; z-index:1; width:100%; max-width:480px; max-height:320px; object-fit:contain; -webkit-mask-image:radial-gradient(ellipse 60% 60% at center, #000 20%, rgba(0,0,0,.5) 48%, transparent 78%); mask-image:radial-gradient(ellipse 60% 60% at center, #000 20%, rgba(0,0,0,.5) 48%, transparent 78%);}
-  .hero-visual .dot{position:absolute; border-radius:50%; z-index:2; animation:heroFloat 4.5s ease-in-out infinite;}
-  .hero-visual .dot.d1{width:14px; height:14px; background:var(--clay); top:10%; right:10%;}
-  .hero-visual .dot.d2{width:10px; height:10px; background:var(--sage); bottom:14%; left:8%; animation-duration:5.5s; animation-direction:reverse;}
-  @keyframes heroFloat{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
-  @media(max-width:700px){ .hero-visual{min-height:auto;} .hero-visual img{max-height:210px;} .hero-visual .dot{transform:scale(.8);} }
-  @media(max-width:900px){
-    .hero{padding:70px 0 60px;}
-    .hero .container{flex-direction:column; text-align:center; gap:0;}
-    .hero-text{margin-inline-end:0; margin-bottom:-46px;}
-    .hero-text p{margin:0 auto;}
-    .hero-text h1{font-size:2.3rem;}
-    .hero-ctas{justify-content:center;}
-  }
+  .hero-visual{flex:1; display:flex; justify-content:center;}
+  .hero-visual img{border-radius:24px; box-shadow:var(--shadow); max-height:340px; object-fit:cover;}
+  @media(max-width:900px){ .hero .container{flex-direction:column; text-align:center;} .hero-text p{margin:0 auto;} .hero-text h1{font-size:2.3rem;} }
+  .cta-duo{padding:0 0 90px;}
+  .cta-duo .container{display:flex; align-items:center; justify-content:center; gap:22px; flex-wrap:wrap;}
   .btn-primary, .btn-secondary{display:inline-flex; align-items:center; gap:10px; border-radius:16px; font-weight:700; border:none; transition:transform .15s;}
   .btn-primary{background:var(--clay); color:var(--white); font-size:1.15rem; padding:22px 46px; box-shadow:var(--shadow);}
   .btn-primary:hover{transform:translateY(-2px);}
@@ -75,8 +69,6 @@
   .info-flex .col{flex:1;}
   .info-flex h2{font-size:2rem; margin-bottom:18px;}
   .info-flex p{color:#4B5850; font-size:1.05rem;}
-  .privacy-visual img{border-radius:22px; box-shadow:var(--shadow); width:100%; object-fit:cover;}
-  @media(max-width:700px){ .privacy-visual img{max-height:220px;} }
   .badge-lock{width:64px; height:64px; border-radius:50%; background:var(--paper); display:flex; align-items:center; justify-content:center; margin-bottom:20px; font-size:1.6rem;}
   @media(max-width:820px){ .info-flex, .info-flex.reverse{flex-direction:column; text-align:center;} }
   .steps-list{list-style:none; margin-top:18px;}
@@ -110,10 +102,6 @@
   .footer-col h4{color:#fff; font-size:1.05rem; margin-bottom:16px; font-family:var(--font-display);}
   .footer-col a{display:block; color:#C9CFC7; margin-bottom:10px; font-size:.92rem;}
   .footer-bottom{border-top:1px solid rgba(255,255,255,0.1); padding-top:22px; text-align:center; font-size:.85rem; color:#8B9389;}
-  /* ===== حركة الظهور التدريجي عند التمرير ===== */
-  [data-reveal]{opacity:0; transform:translateY(22px); transition:opacity .6s ease, transform .6s ease;}
-  [data-reveal].revealed{opacity:1; transform:translateY(0);}
-  @media(prefers-reduced-motion: reduce){ [data-reveal]{transition:none; opacity:1; transform:none;} }
 </style>
 </head>
 <body>
@@ -122,37 +110,43 @@
   <div class="nav">
     <div class="logo" id="siteName">عيادة <span>تحدث</span></div>
     <nav class="nav-links">
-      <a href="#counselors" data-section-link="counselors">المستشارون</a>
-      <a href="#faq" data-section-link="faq">الأسئلة الشائعة</a>
-      <a href="#hours" data-section-link="hours">أوقات العمل</a>
-      <a href="#contact" data-section-link="contact">تواصل معنا</a>
+      <a href="#counselors">المستشارون</a>
+      <a href="#faq">الأسئلة الشائعة</a>
+      <a href="#hours">أوقات العمل</a>
+      <a href="#contact">تواصل معنا</a>
     </nav>
+    <a href="/booking.html" class="nav-cta">احجز استشارتك</a>
     <button class="burger" aria-label="القائمة">☰</button>
   </div>
 </header>
 
 <section class="hero">
   <div class="container">
-    <div class="hero-text">
+    <div class="hero-text reveal">
       <div class="eyebrow">استشارات أسرية سرّية وموثوقة</div>
       <h1 id="heroTitle">مساحة آمنة… ليبدأ الحديث</h1>
       <p id="heroSubtitle"></p>
-      <div class="hero-ctas" id="booking">
-        <a href="/booking.html" class="btn-primary">احجز استشارتك</a>
-        <a href="/confirm.html" class="btn-secondary">لديك موعد استشارة عن بُعد؟ اضغط هنا</a>
-      </div>
     </div>
-    <div class="hero-visual" id="heroVisual">
-      <span class="dot d1"></span>
-      <span class="dot d2"></span>
-      <img src="/assets/hero.jpg" alt="عيادة تحدث - استشارات أسرية آمنة">
+    <div class="hero-visual reveal" id="heroVisual" style="transition-delay:.15s;">
+      <svg viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%; max-width:380px;">
+        <path d="M10 170 C 60 90, 110 90, 150 150 S 250 210, 300 130" stroke="#B8734F" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M20 210 C 80 140, 130 140, 170 190 S 270 240, 330 170" stroke="#7C8B7A" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.7"/>
+        <circle cx="300" cy="130" r="9" fill="#22322C"/><circle cx="20" cy="210" r="7" fill="#22322C" opacity="0.6"/><circle cx="150" cy="150" r="5" fill="#B8734F"/>
+      </svg>
     </div>
   </div>
 </section>
 
-<section id="counselors" data-section="counselors">
+<section class="cta-duo" id="booking">
+  <div class="container reveal">
+    <a href="/booking.html" class="btn-primary">احجز استشارتك</a>
+    <a href="/confirm.html" class="btn-secondary">لديك موعد استشارة عن بُعد؟ اضغط هنا</a>
+  </div>
+</section>
+
+<section id="counselors">
   <div class="container">
-    <div class="section-head" data-reveal>
+    <div class="section-head reveal">
       <div class="eyebrow" style="justify-content:center">فريقنا</div>
       <h2>مستشارون معتمدون بخبرة أسرية</h2>
     </div>
@@ -160,28 +154,32 @@
   </div>
 </section>
 
-<section class="info-alt" id="privacy" data-section="privacy">
+<section class="info-alt">
   <div class="container info-flex">
-    <div class="col" data-reveal>
-      <div class="badge-lock">🔒</div>
+    <div class="col reveal">
       <h2 id="privacyTitle"></h2>
       <p id="privacyBody"></p>
     </div>
-    <div class="col privacy-visual" data-reveal style="transition-delay:.1s">
-      <img id="privacyVisual" src="/assets/privacy.jpg" alt="خصوصية وسرية تامة لكل استشارة">
+    <div class="col reveal" style="transition-delay:.15s;">
+      <svg viewBox="0 0 300 220" width="100%" aria-hidden="true">
+        <rect x="20" y="20" width="260" height="180" rx="20" fill="#F8F6F1" stroke="#DAD5C8"/>
+        <circle cx="150" cy="95" r="34" fill="none" stroke="#B8734F" stroke-width="4"/>
+        <rect x="122" y="118" width="56" height="42" rx="8" fill="#22322C"/>
+        <path d="M136 118 v-16 a14 14 0 0 1 28 0 v16" fill="none" stroke="#22322C" stroke-width="5"/>
+      </svg>
     </div>
   </div>
 </section>
 
-<section id="firstSession" data-section="firstSession">
+<section>
   <div class="container info-flex reverse">
-    <div class="col" data-reveal>
+    <div class="col reveal">
       <div class="eyebrow">قبل أول موعد</div>
       <h2 id="firstTitle"></h2>
       <p id="firstBody"></p>
       <ul class="steps-list" id="stepsList"></ul>
     </div>
-    <div class="col" data-reveal style="transition-delay:.1s">
+    <div class="col reveal" style="transition-delay:.15s;">
       <svg viewBox="0 0 300 220" width="100%" aria-hidden="true">
         <circle cx="100" cy="110" r="46" fill="#F8F6F1" stroke="#DAD5C8"/><circle cx="200" cy="110" r="46" fill="#EFEDE6" stroke="#DAD5C8"/>
         <path d="M60 170 Q150 200 240 170" stroke="#B8734F" stroke-width="3" fill="none" stroke-dasharray="6 6"/>
@@ -190,33 +188,33 @@
   </div>
 </section>
 
-<section class="info-alt" id="faq" data-section="faq">
+<section class="info-alt" id="faq">
   <div class="container" style="max-width:800px;">
-    <div class="section-head" data-reveal><div class="eyebrow" style="justify-content:center">الأسئلة الشائعة</div><h2>كل ما تحتاج معرفته قبل الحجز</h2></div>
+    <div class="section-head reveal"><div class="eyebrow" style="justify-content:center">الأسئلة الشائعة</div><h2>كل ما تحتاج معرفته قبل الحجز</h2></div>
     <div class="faq-list" id="faqList"></div>
   </div>
 </section>
 
-<section class="info-alt2" id="hours" data-section="hours">
+<section class="info-alt2" id="hours">
   <div class="container hp-grid">
-    <div data-reveal><h3>أوقات العمل</h3><div id="hoursList"></div></div>
-    <div data-reveal style="transition-delay:.1s"><h3>طرق الدفع المقبولة</h3><div class="pay-tags" id="paymentsList"></div></div>
+    <div class="reveal"><h3>أوقات العمل</h3><div id="hoursList"></div></div>
+    <div class="reveal" style="transition-delay:.15s;"><h3>طرق الدفع المقبولة</h3><div class="pay-tags" id="paymentsList"></div></div>
   </div>
 </section>
 
-<section id="certifications" data-section="certifications">
+<section>
   <div class="container">
-    <div class="section-head" data-reveal><h2>الشهادات والاعتمادات</h2></div>
+    <div class="section-head reveal"><h2>الشهادات والاعتمادات</h2></div>
     <div class="certs-row" id="certsRow"></div>
   </div>
 </section>
 
-<section class="info-alt" id="contact" data-section="contact">
+<section class="info-alt" id="contact">
   <div class="container">
-    <div class="section-head" data-reveal><h2>تواصل معنا</h2></div>
+    <div class="section-head reveal"><h2>تواصل معنا</h2></div>
     <div class="contact-grid">
-      <ul class="contact-list" id="contactList"></ul>
-      <div class="map-box" data-reveal style="transition-delay:.15s">[موضع الخريطة التفاعلية — يُدرج لاحقًا]</div>
+      <ul class="contact-list reveal" id="contactList"></ul>
+      <div class="map-box reveal" style="transition-delay:.15s;">[موضع الخريطة التفاعلية — يُدرج لاحقًا]</div>
     </div>
   </div>
 </section>
@@ -227,7 +225,7 @@
   <div class="container">
     <div class="footer-grid">
       <div class="footer-col"><h4 id="footerName">عيادة تحدث</h4><p style="font-size:.9rem; max-width:220px;">مساحة آمنة للاستشارات الأسرية والزوجية عن بُعد.</p></div>
-      <div class="footer-col"><h4>روابط سريعة</h4><a href="#counselors" data-section-link="counselors">المستشارون</a><a href="#faq" data-section-link="faq">الأسئلة الشائعة</a><a href="#booking">احجز موعدك</a></div>
+      <div class="footer-col"><h4>روابط سريعة</h4><a href="#counselors">المستشارون</a><a href="#faq">الأسئلة الشائعة</a><a href="#booking">احجز موعدك</a></div>
       <div class="footer-col"><h4>تواصل</h4><a id="footerPhone" href="#"></a><a id="footerEmail" href="#"></a></div>
     </div>
     <div class="footer-bottom">© 2026 <span id="footerName2">عيادة تحدث</span>. جميع الحقوق محفوظة.</div>
@@ -262,26 +260,22 @@ async function loadContent(){
 
   document.getElementById('heroTitle').textContent = c.hero.title;
   document.getElementById('heroSubtitle').textContent = c.hero.subtitle;
-  if (c.hero.image) {
-    const heroImg = document.querySelector('#heroVisual img');
-    if (heroImg) heroImg.src = c.hero.image;
-  }
+  if (c.hero.image) document.getElementById('heroVisual').innerHTML = `<img src="${c.hero.image}" alt="${c.site.name}">`;
 
   document.getElementById('privacyTitle').textContent = c.privacy.title;
   document.getElementById('privacyBody').textContent = c.privacy.body;
-  if (c.privacy.image) document.getElementById('privacyVisual').src = c.privacy.image;
   document.getElementById('firstTitle').textContent = c.firstSession.title;
   document.getElementById('firstBody').textContent = c.firstSession.body;
   document.getElementById('stepsList').innerHTML = c.firstSession.steps.map((s,i)=>`<li><span class="num">${i+1}</span>${s}</li>`).join('');
 
   document.getElementById('counselorsGrid').innerHTML = c.counselors.map((co,i) => `
-    <div class="counselor-card" data-reveal style="transition-delay:${(i%3)*0.08}s">
+    <div class="counselor-card reveal" style="transition-delay:${i*0.1}s;">
       <div class="avatar">${co.image ? `<img src="${co.image}" alt="${co.name}">` : co.name.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>
       <h3>${co.name}</h3><div class="counselor-role">${co.role}</div><div class="counselor-cred">${co.credentials}</div>
     </div>`).join('');
 
   document.getElementById('faqList').innerHTML = c.faq.map((f,i) => `
-    <div class="faq-item ${i===0?'open':''}" data-reveal style="transition-delay:${Math.min(i,5)*0.06}s">
+    <div class="faq-item reveal ${i===0?'open':''}" style="transition-delay:${i*0.08}s;">
       <div class="faq-q"><span>${f.q}</span><span class="icon">＋</span></div>
       <div class="faq-a">${f.a}</div>
     </div>`).join('');
@@ -294,33 +288,30 @@ async function loadContent(){
 
   document.getElementById('hoursList').innerHTML = c.hours.map(h => `<div class="hours-row"><span>${h.label}</span><span>${h.value}</span></div>`).join('');
   document.getElementById('paymentsList').innerHTML = c.payments.map(p => `<span class="pay-tag">${p}</span>`).join('');
-  document.getElementById('certsRow').innerHTML = c.certifications.map((ct,i) => `<span class="cert-chip" data-reveal style="transition-delay:${(i%4)*0.07}s">${ct.image?`<img src="${ct.image}">`:'✅'} ${ct.label}</span>`).join('');
+  document.getElementById('certsRow').innerHTML = c.certifications.map((ct,i) => `<span class="cert-chip reveal" style="transition-delay:${i*0.08}s;">${ct.image?`<img src="${ct.image}">`:'✅'} ${ct.label}</span>`).join('');
 
   document.getElementById('contactList').innerHTML = `
-    <li data-reveal><span class="ic">📞</span> ${c.contact.phone}</li>
-    <li data-reveal style="transition-delay:.06s"><span class="ic">💬</span> واتساب: ${c.contact.whatsapp}</li>
-    <li data-reveal style="transition-delay:.12s"><span class="ic">✉️</span> ${c.contact.email}</li>
-    <li data-reveal style="transition-delay:.18s"><span class="ic">📍</span> ${c.contact.address}</li>`;
+    <li><span class="ic">📞</span> ${c.contact.phone}</li>
+    <li><span class="ic">💬</span> واتساب: ${c.contact.whatsapp}</li>
+    <li><span class="ic">✉️</span> ${c.contact.email}</li>
+    <li><span class="ic">📍</span> ${c.contact.address}</li>`;
   document.getElementById('footerPhone').textContent = c.contact.phone;
   document.getElementById('footerEmail').textContent = c.contact.email;
   document.getElementById('fabWhatsapp').href = 'https://wa.me/' + c.contact.whatsapp.replace(/[^0-9]/g,'');
 
-  // إظهار/إخفاء الأقسام حسب إعدادات الأدمن
-  const defaults = { counselors:true, privacy:true, firstSession:true, faq:true, hours:true, certifications:true, contact:true };
-  const sections = Object.assign(defaults, c.sections || {});
-  Object.keys(sections).forEach(key => {
-    const visible = sections[key] !== false;
-    document.querySelectorAll(`[data-section="${key}"]`).forEach(el => el.style.display = visible ? '' : 'none');
-    document.querySelectorAll(`[data-section-link="${key}"]`).forEach(el => el.style.display = visible ? '' : 'none');
-  });
+  // إظهار الصفحة بعد اكتمال التصميم (بدل ظهور المظهر الافتراضي القديم ثم التحديث)
+  document.body.style.opacity = 1;
 
-  // تفعيل حركة الظهور التدريجي عند التمرير لكل العناصر التي أُضيفت للتو
-  const revealObserver = new IntersectionObserver((entries) => {
+  // تفعيل حركة الظهور المتلاشي التسلسلي عند التمرير لكل العناصر (الثابتة والمُولَّدة)
+  const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) { entry.target.classList.add('revealed'); revealObserver.unobserve(entry.target); }
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
     });
-  }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
-  document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 }
 loadContent();
 </script>
