@@ -111,6 +111,7 @@
         <div class="img-upload">
           <img class="img-preview" id="heroImgPreview" src="" style="display:none">
           <input type="file" id="heroImgFile" accept="image/*">
+          <button type="button" class="btn-danger" id="removeHeroImgBtn" style="display:none;">إزالة الصورة</button>
         </div>
         <div class="hint">اختياري — إذا رفعت صورة ستحل محل الرسم التوضيحي في الصفحة الرئيسية.</div>
       </div>
@@ -368,12 +369,20 @@ function fillContent(){
   document.getElementById('siteName').value = CONTENT.site.name;
   document.getElementById('heroTitle').value = CONTENT.hero.title;
   document.getElementById('heroSubtitle').value = CONTENT.hero.subtitle;
-  if (CONTENT.hero.image) { document.getElementById('heroImgPreview').src = CONTENT.hero.image; document.getElementById('heroImgPreview').style.display='block'; }
+  if (CONTENT.hero.image) { document.getElementById('heroImgPreview').src = CONTENT.hero.image; document.getElementById('heroImgPreview').style.display='block'; document.getElementById('removeHeroImgBtn').style.display='inline-block'; }
+  document.getElementById('removeHeroImgBtn').onclick = () => {
+    CONTENT.hero.image = null;
+    document.getElementById('heroImgPreview').style.display = 'none';
+    document.getElementById('heroImgPreview').src = '';
+    document.getElementById('removeHeroImgBtn').style.display = 'none';
+    scheduleSave({ hero: { image: null } });
+  };
   document.getElementById('heroImgFile').addEventListener('change', async (e)=>{
     const file = e.target.files[0]; if (!file) return;
     const url = await uploadFile(file); if (!url) return;
     CONTENT.hero.image = url;
     document.getElementById('heroImgPreview').src = url; document.getElementById('heroImgPreview').style.display='block';
+    document.getElementById('removeHeroImgBtn').style.display = 'inline-block';
     scheduleSave({ hero: { image: url } });
   });
 
