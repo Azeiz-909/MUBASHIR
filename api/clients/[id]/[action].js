@@ -38,12 +38,19 @@ module.exports = async (req, res) => {
     const { date, time } = req.body || {};
     if (!date || !time) return res.status(400).json({ error: 'التاريخ والوقت مطلوبان' });
 
+    const { data: content } = await supabase.from('site_content').select('data').eq('id', 1).single();
+
+    // اليوم معطّل بالكامل؟
+    const blockedDays = content?.data?.blockedDays || [];
+    if (blockedDays.includes(date)) {
+      return res.status(400).json({ error: 'هذا اليوم معطّل بالكامل من جدولك' });
+    }
+
     const { data: taken } = await supabase.from('bookings').select('id').eq('counselor_id', client.counselor_id).eq('date', date).eq('time', time).limit(1);
     if (taken && taken.length) return res.status(400).json({ error: 'هذا الوقت محجوز بالفعل' });
     const { data: blocked } = await supabase.from('availability_blocks').select('id').eq('counselor_id', client.counselor_id).eq('date', date).eq('time', time).limit(1);
     if (blocked && blocked.length) return res.status(400).json({ error: 'أنت محدَّد كمشغول في هذا الوقت بجدولك' });
 
-    const { data: content } = await supabase.from('site_content').select('data').eq('id', 1).single();
     const counselor = (content?.data?.counselors || []).find(c => c.id === client.counselor_id);
     const booking = {
       id: crypto.randomBytes(5).toString('hex'), name: client.name, phone: client.phone,
