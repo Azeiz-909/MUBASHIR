@@ -7,7 +7,6 @@
 <style>
   :root{ --ink:#22322C; --paper:#EFEDE6; --card:#F8F6F1; --clay:#B8734F; --line:#DAD5C8; }
   *{box-sizing:border-box; margin:0; padding:0; font-family:'Tajawal',sans-serif;}
-  body{opacity:0; transition:opacity .25s ease;}
   body{background:var(--paper); color:var(--ink); min-height:100vh;}
   .topbar{display:flex; align-items:center; justify-content:space-between; background:#fff; padding:14px 26px; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:10;}
   .topbar h1{font-family:'Markazi Text',serif; font-size:1.4rem;}
@@ -23,7 +22,7 @@
   .panel.active{display:block;}
   .field{margin-bottom:18px;}
   .field label{display:block; font-weight:700; font-size:.88rem; margin-bottom:6px;}
-  .field input[type=text], .field input[type=email], .field input[type=tel], .field textarea, .field select{
+  .field input[type=text], .field input[type=email], .field input[type=tel], .field input[type=date], .field input[type=datetime-local], .field textarea, .field select{
     width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:.92rem; background:#fff; font-family:inherit;
   }
   .field textarea{min-height:90px; resize:vertical;}
@@ -62,10 +61,8 @@
     <button data-panel="design" class="active">🎨 التصميم</button>
     <button data-panel="content">📝 محتوى الصفحة</button>
     <button data-panel="counselors">👥 المستشارون</button>
-    <button data-panel="clients">🗂️ المراجعون</button>
-    <button data-panel="schedule">🗓️ المواعيد</button>
     <button data-panel="accounts" id="accountsTabBtn">🔑 الحسابات</button>
-    <button data-panel="bookings">📋 الحجوزات</button>
+    <button data-panel="bookings">📅 المواعيد</button>
   </div>
 
   <div class="content">
@@ -111,7 +108,6 @@
         <div class="img-upload">
           <img class="img-preview" id="heroImgPreview" src="" style="display:none">
           <input type="file" id="heroImgFile" accept="image/*">
-          <button type="button" class="btn-danger" id="removeHeroImgBtn" style="display:none;">إزالة الصورة</button>
         </div>
         <div class="hint">اختياري — إذا رفعت صورة ستحل محل الرسم التوضيحي في الصفحة الرئيسية.</div>
       </div>
@@ -170,51 +166,9 @@
     <div class="panel" id="panel-counselors">
       <div class="card-box">
         <h2 class="sec">بطاقات المستشارين</h2>
+        <p class="hint" style="margin-top:-4px;">هذه البيانات لا تُعرض حاليًا في قسم مستقل بالصفحة الرئيسية، لكنها تُستخدم داخليًا (مثل اسم المستشار الظاهر في تفاصيل الحجز).</p>
         <div id="counselorsEditor"></div>
         <button class="btn-outline" id="addCounselorBtn">+ إضافة مستشار</button>
-      </div>
-    </div>
-
-    <!-- ===== المراجعون ===== -->
-    <div class="panel" id="panel-clients">
-      <div class="card-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-          <h2 class="sec" style="margin:0;">المراجعون</h2>
-          <button class="btn" id="addClientBtn">+ إضافة مراجع</button>
-        </div>
-        <div id="addClientForm" style="display:none; margin-bottom:20px; padding:16px; background:var(--paper); border-radius:12px;">
-          <div class="row2">
-            <div class="field"><label>الاسم</label><input type="text" id="newClientName"></div>
-            <div class="field"><label>رقم الجوال</label><input type="tel" id="newClientPhone"></div>
-          </div>
-          <div class="field">
-            <label>التصنيف</label>
-            <input type="text" id="newClientCategory" list="categoryOptions" placeholder="مثال: زواج، شخصي، أسري">
-            <datalist id="categoryOptions"></datalist>
-          </div>
-          <div class="field"><label>ملاحظة (اختياري)</label><textarea id="newClientNote" placeholder="أي ملاحظة إضافية عن هذا المراجع" style="min-height:60px;"></textarea></div>
-          <button class="btn" id="saveClientBtn">حفظ المراجع</button>
-          <span class="hint" id="clientFormMsg" style="margin-right:10px;"></span>
-        </div>
-        <div id="clientsByCategory"></div>
-      </div>
-    </div>
-
-    <!-- ===== المواعيد (جدول الأوقات) ===== -->
-    <div class="panel" id="panel-schedule">
-      <div class="card-box">
-        <h2 class="sec">المواعيد</h2>
-        <div class="row2">
-          <div class="field" id="scheduleCounselorField" style="display:none;">
-            <label>المستشار</label><select id="scheduleCounselor"></select>
-          </div>
-          <div class="field"><label>التاريخ</label><input type="date" id="scheduleDate"></div>
-        </div>
-        <p class="hint">اضغط على أي وقت لتحديده "مشغول" فتُمنع إتاحته للحجز، واضغط عليه مجددًا لإعادة إتاحته. الأوقات المحجوزة فعليًا بموعد مؤكد لا يمكن تعديلها من هنا.</p>
-        <div style="display:flex; gap:16px; margin:14px 0 18px; font-size:.85rem;">
-          <span>⬜ متاح</span><span>🟨 محجوب يدويًا</span><span>🟥 محجوز (موعد فعلي)</span>
-        </div>
-        <div id="scheduleGrid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(92px,1fr)); gap:8px;"></div>
       </div>
     </div>
 
@@ -243,6 +197,28 @@
         <h2 class="sec">المواعيد المحجوزة</h2>
         <p id="bookingsNote" style="color:#6b7570; font-size:.92rem; margin-bottom:12px;"></p>
         <div id="bookingsList"></div>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">تعطيل يوم كامل</h2>
+        <p class="hint" style="margin-top:-4px;">اختر تاريخًا ليصبح غير متاح للحجز بالكامل (لن يتمكن أي أحد من حجز موعد في هذا اليوم). ملاحظة: هذا لا يلغي المواعيد المحجوزة مسبقًا في ذلك اليوم — إن وُجدت، تواصل مع المراجع مباشرة لإلغائها أو تعديلها.</p>
+        <div class="row2">
+          <div class="field"><label>التاريخ</label><input type="date" id="blockDayInput"></div>
+          <div class="field" style="display:flex; align-items:flex-end;"><button class="btn" id="blockDayBtn" style="width:100%;">تعطيل هذا اليوم بالكامل</button></div>
+        </div>
+        <div id="blockedDaysList"></div>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">تعطيل رابط مكالمة الفيديو خلال فترة (إجازة مثلًا)</h2>
+        <p class="hint" style="margin-top:-4px;">خلال هذه الفترة، لن يستطيع أي مراجع الدخول إلى جلسة الفيديو حتى لو حان وقت موعده — ستظهر له رسالة بدل زر الدخول. حدد "من" و"إلى" ثم احفظ. اترك الحقلين فارغين واضغط "إلغاء التعطيل" لإعادة تفعيل الفيديو بشكل طبيعي.</p>
+        <div class="row2">
+          <div class="field"><label>من</label><input type="datetime-local" id="videoBlockFrom"></div>
+          <div class="field"><label>إلى</label><input type="datetime-local" id="videoBlockTo"></div>
+        </div>
+        <button class="btn" id="saveVideoBlockBtn">حفظ فترة التعطيل</button>
+        <button class="btn-outline" id="clearVideoBlockBtn" style="margin-right:8px;">إلغاء التعطيل</button>
+        <div class="hint" id="videoBlockMsg" style="margin-top:12px; margin-bottom:0;"></div>
       </div>
     </div>
 
@@ -307,25 +283,14 @@ async function init(){
   if (meRes.status === 401) { location.href = '/admin/login.html'; return; }
   const me = await meRes.json();
   if (me.mustChangePassword) { location.href = '/admin/change-password.html'; return; }
+  if (me.role !== 'super_admin') document.getElementById('accountsTabBtn').style.display = 'none';
 
   const res = await fetch('/api/content');
   CONTENT = await res.json();
-
-  if (me.role === 'super_admin') {
-    fillDesign(); fillContent(); fillCounselors(); fillUsers();
-    bindGenericFields();
-  } else {
-    // حساب مستشار: إخفاء كل شيء ما عدا المراجعين والمواعيد والحجوزات
-    document.querySelectorAll('.sidebar button[data-panel]').forEach(btn => {
-      if (!['clients','schedule','bookings'].includes(btn.dataset.panel)) btn.style.display = 'none';
-    });
-    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-    document.getElementById('panel-clients').classList.add('active');
-  }
-  fillClients();
+  fillDesign(); fillContent(); fillCounselors();
+  if (me.role === 'super_admin') fillUsers();
   fillBookings();
-  fillSchedule(me);
-  document.body.style.opacity = 1;
+  bindGenericFields();
 }
 
 function addCustomFontOption(name){
@@ -369,20 +334,12 @@ function fillContent(){
   document.getElementById('siteName').value = CONTENT.site.name;
   document.getElementById('heroTitle').value = CONTENT.hero.title;
   document.getElementById('heroSubtitle').value = CONTENT.hero.subtitle;
-  if (CONTENT.hero.image) { document.getElementById('heroImgPreview').src = CONTENT.hero.image; document.getElementById('heroImgPreview').style.display='block'; document.getElementById('removeHeroImgBtn').style.display='inline-block'; }
-  document.getElementById('removeHeroImgBtn').onclick = () => {
-    CONTENT.hero.image = null;
-    document.getElementById('heroImgPreview').style.display = 'none';
-    document.getElementById('heroImgPreview').src = '';
-    document.getElementById('removeHeroImgBtn').style.display = 'none';
-    scheduleSave({ hero: { image: null } });
-  };
+  if (CONTENT.hero.image) { document.getElementById('heroImgPreview').src = CONTENT.hero.image; document.getElementById('heroImgPreview').style.display='block'; }
   document.getElementById('heroImgFile').addEventListener('change', async (e)=>{
     const file = e.target.files[0]; if (!file) return;
     const url = await uploadFile(file); if (!url) return;
     CONTENT.hero.image = url;
     document.getElementById('heroImgPreview').src = url; document.getElementById('heroImgPreview').style.display='block';
-    document.getElementById('removeHeroImgBtn').style.display = 'inline-block';
     scheduleSave({ hero: { image: url } });
   });
 
@@ -509,33 +466,15 @@ async function fillUsers(){
 
   const res = await fetch('/api/users'); const users = await res.json();
   document.getElementById('usersList').innerHTML = users.map(u => `
-    <div class="list-row" style="flex-direction:column; align-items:stretch; gap:8px;">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div><strong>${u.name}</strong> — ${u.email} <span style="color:#7C8B7A; font-size:.82rem;">(${u.role==='super_admin'?'مدير عام':'مستشار'})</span></div>
-        ${u.role!=='super_admin' ? `<button class="btn-danger" data-user-del="${u.id}">حذف</button>` : ''}
-      </div>
-      ${u.role!=='super_admin' ? `
-      <div style="display:flex; gap:8px; align-items:center;">
-        <select data-user-link="${u.id}" style="flex:1;">
-          <option value="">— بدون ربط —</option>
-          ${CONTENT.counselors.map(co=>`<option value="${co.id}" ${co.id===u.counselorId?'selected':''}>${co.name}</option>`).join('')}
-        </select>
-        <button class="btn-outline" data-user-save-link="${u.id}">حفظ الربط</button>
-      </div>` : ''}
+    <div class="list-row">
+      <div><strong>${u.name}</strong> — ${u.email} <span style="color:#7C8B7A; font-size:.82rem;">(${u.role==='super_admin'?'مدير عام':'مستشار'})</span></div>
+      ${u.role!=='super_admin' ? `<button class="btn-danger" data-user-del="${u.id}">حذف</button>` : ''}
     </div>`).join('');
   document.querySelectorAll('[data-user-del]').forEach(el => el.addEventListener('click', async e=>{
     if (!confirm('تأكيد حذف هذا الحساب؟')) return;
     await fetch('/api/users/' + e.target.dataset.userDel, { method:'DELETE' });
     fillUsers();
   }));
-  document.querySelectorAll('[data-user-save-link]').forEach(btn => btn.onclick = async () => {
-    const uid = btn.dataset.userSaveLink;
-    const counselorId = document.querySelector(`[data-user-link="${uid}"]`).value || null;
-    const res = await fetch('/api/users/' + uid, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ counselorId }) });
-    const original = btn.textContent;
-    btn.textContent = res.ok ? '✓ تم الربط' : 'تعذّر';
-    setTimeout(()=> btn.textContent = original, 1800);
-  });
   document.getElementById('addUserBtn').onclick = async ()=>{
     const name = document.getElementById('newUserName').value.trim();
     const email = document.getElementById('newUserEmail').value.trim();
@@ -551,15 +490,6 @@ async function fillUsers(){
   };
 }
 
-function formatTimeAr(t){
-  if (!t) return '';
-  const [hStr, mStr] = t.split(':');
-  let h = parseInt(hStr, 10);
-  const period = h >= 12 ? 'م' : 'ص';
-  let h12 = h % 12; if (h12 === 0) h12 = 12;
-  return `${String(h12).padStart(2,'0')}:${mStr} ${period}`;
-}
-
 async function fillBookings(){
   const res = await fetch('/api/bookings'); const data = await res.json();
   const bookings = data.bookings || [];
@@ -569,11 +499,73 @@ async function fillBookings(){
   document.getElementById('bookingsList').innerHTML = bookings.map(b => `
     <div class="list-row" style="flex-direction:column; align-items:stretch; gap:4px;">
       <div style="display:flex; justify-content:space-between; font-weight:700;">
-        <span>${escAttr(b.name)}</span><span style="color:#7C8B7A; font-weight:500;">${escAttr(b.date)} — ${formatTimeAr(b.time)}</span>
+        <span>${escAttr(b.name)}</span><span style="color:#7C8B7A; font-weight:500;">${escAttr(b.date)} — ${escAttr(b.time)}</span>
       </div>
       <div style="font-size:.85rem; color:#6b7570;">📞 ${escAttr(b.phone)} · المستشار: ${escAttr(b.counselorName || 'غير محدد')}</div>
       <a href="/confirm.html?id=${b.id}" target="_blank" style="font-size:.8rem; color:#B8734F;">رابط الموعد ↗</a>
     </div>`).join('');
+
+  renderBlockedDays();
+  bindBlockDayControls();
+  fillVideoBlock();
+}
+
+// ---------- تعطيل يوم كامل (يُحفظ داخل محتوى الموقع، لا حاجة لجدول منفصل) ----------
+function renderBlockedDays(){
+  const days = (CONTENT.blockedDays || []).slice().sort();
+  document.getElementById('blockedDaysList').innerHTML = days.length
+    ? days.map(d => `<div class="list-row"><span>${d}</span><button class="btn-danger" data-unblock-day="${escAttr(d)}">إلغاء التعطيل</button></div>`).join('')
+    : '<p class="hint" style="margin:12px 0 0;">لا توجد أيام معطّلة حاليًا.</p>';
+  document.querySelectorAll('[data-unblock-day]').forEach(btn => btn.addEventListener('click', e=>{
+    const d = e.target.dataset.unblockDay;
+    CONTENT.blockedDays = (CONTENT.blockedDays || []).filter(x => x !== d);
+    renderBlockedDays();
+    scheduleSave({ blockedDays: CONTENT.blockedDays });
+  }));
+}
+function bindBlockDayControls(){
+  const btn = document.getElementById('blockDayBtn');
+  if (btn.dataset.bound) return; // تجنّب ربط الحدث أكثر من مرة
+  btn.dataset.bound = '1';
+  btn.addEventListener('click', ()=>{
+    const input = document.getElementById('blockDayInput');
+    const d = input.value;
+    if (!d) return;
+    CONTENT.blockedDays = CONTENT.blockedDays || [];
+    if (!CONTENT.blockedDays.includes(d)) CONTENT.blockedDays.push(d);
+    input.value = '';
+    renderBlockedDays();
+    scheduleSave({ blockedDays: CONTENT.blockedDays });
+  });
+}
+
+// ---------- تعطيل رابط الفيديو خلال فترة ----------
+function fillVideoBlock(){
+  const fromInput = document.getElementById('videoBlockFrom');
+  const toInput = document.getElementById('videoBlockTo');
+  fromInput.value = (CONTENT.videoBlock && CONTENT.videoBlock.from) ? CONTENT.videoBlock.from : '';
+  toInput.value = (CONTENT.videoBlock && CONTENT.videoBlock.to) ? CONTENT.videoBlock.to : '';
+
+  const saveBtn = document.getElementById('saveVideoBlockBtn');
+  const clearBtn = document.getElementById('clearVideoBlockBtn');
+  if (saveBtn.dataset.bound) return; // تجنّب ربط الأحداث أكثر من مرة
+  saveBtn.dataset.bound = '1';
+
+  saveBtn.addEventListener('click', ()=>{
+    const from = fromInput.value, to = toInput.value;
+    const msg = document.getElementById('videoBlockMsg');
+    if (!from || !to) { msg.textContent = 'الرجاء تعبئة كلا الحقلين (من وإلى)'; msg.style.color = '#b23a3a'; return; }
+    CONTENT.videoBlock = { from, to };
+    scheduleSave({ videoBlock: { from, to } });
+    msg.textContent = '✓ تم الحفظ — سيكون الفيديو معطّلًا خلال هذه الفترة'; msg.style.color = '#2f8f4e';
+  });
+  clearBtn.addEventListener('click', ()=>{
+    fromInput.value = ''; toInput.value = '';
+    CONTENT.videoBlock = { from: null, to: null };
+    scheduleSave({ videoBlock: { from: null, to: null } });
+    const msg = document.getElementById('videoBlockMsg');
+    msg.textContent = '✓ تم إلغاء التعطيل'; msg.style.color = '#2f8f4e';
+  });
 }
 
 function bindGenericFields(){
@@ -590,260 +582,6 @@ function bindGenericFields(){
     });
   });
 }
-
-// ===== المراجعون =====
-let CLIENTS = [];
-
-async function fillClients(){
-  const res = await fetch('/api/clients');
-  CLIENTS = await res.json();
-  renderClientCategories();
-
-  document.getElementById('addClientBtn').onclick = () => {
-    document.getElementById('addClientForm').style.display = 'block';
-  };
-  document.getElementById('saveClientBtn').onclick = async () => {
-    const name = document.getElementById('newClientName').value.trim();
-    const phone = document.getElementById('newClientPhone').value.trim();
-    const category = document.getElementById('newClientCategory').value.trim();
-    const note = document.getElementById('newClientNote').value.trim();
-    const msg = document.getElementById('clientFormMsg');
-    if (!name || !phone) { msg.textContent = 'الاسم ورقم الجوال مطلوبان'; msg.style.color = '#b23a3a'; return; }
-    const res = await fetch('/api/clients', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, category, note }) });
-    const data = await res.json();
-    if (!res.ok) { msg.textContent = data.error; msg.style.color = '#b23a3a'; return; }
-    document.getElementById('newClientName').value = '';
-    document.getElementById('newClientPhone').value = '';
-    document.getElementById('newClientCategory').value = '';
-    document.getElementById('newClientNote').value = '';
-    document.getElementById('addClientForm').style.display = 'none';
-    msg.textContent = '';
-    fillClients();
-  };
-}
-
-function renderClientCategories(){
-  const activeClients = CLIENTS.filter(c => c.active !== false);
-  const inactiveClients = CLIENTS.filter(c => c.active === false);
-
-  const categories = {};
-  activeClients.forEach(c => { (categories[c.category] ||= []).push(c); });
-  document.getElementById('categoryOptions').innerHTML = Object.keys(categories).map(cat => `<option value="${escAttr(cat)}">`).join('');
-
-  function section(key, title, list, muted){
-    return `
-    <div class="card-box" style="padding:0; overflow:hidden; margin-bottom:14px;">
-      <div data-cat-toggle="${key}" style="cursor:pointer; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; font-weight:700; ${muted?'color:#8a8f87;':''}">
-        <span>${title} <span style="font-weight:500; color:#7C8B7A;">(${list.length})</span></span>
-        <span data-arrow="${key}">▾</span>
-      </div>
-      <div data-body="${key}" style="display:none; padding:0 20px 16px;">
-        ${list.length ? list.map(clientRowHtml).join('') : '<p class="hint">لا يوجد.</p>'}
-      </div>
-    </div>`;
-  }
-
-  const container = document.getElementById('clientsByCategory');
-  const catNames = Object.keys(categories);
-  let html = '';
-  html += catNames.length
-    ? catNames.map(cat => section('cat-'+cat, escAttr(cat), categories[cat], false)).join('')
-    : '<p class="hint">لا يوجد مراجعون نشطون حاليًا.</p>';
-  html += section('inactive', '🚫 مستخدمون غير نشيطين', inactiveClients, true);
-  container.innerHTML = html;
-
-  document.querySelectorAll('[data-cat-toggle]').forEach(header => {
-    header.addEventListener('click', () => {
-      const key = header.dataset.catToggle;
-      const body = document.querySelector(`[data-body="${key}"]`);
-      const arrow = document.querySelector(`[data-arrow="${key}"]`);
-      const open = body.style.display !== 'none';
-      body.style.display = open ? 'none' : 'block';
-      arrow.textContent = open ? '▾' : '▴';
-    });
-  });
-
-  bindClientRowEvents();
-}
-
-function clientRowHtml(c){
-  const isActive = c.active !== false;
-  return `
-    <div style="border-top:1px solid var(--line); padding:14px 0;">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
-        <strong>${escAttr(c.name)}</strong>
-        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-          <span title="${escAttr(c.phone)}">📱 ${escAttr(c.phone)}</span>
-          <a href="tel:${escAttr(c.phone)}" title="اتصال" style="text-decoration:none; font-size:1.1rem;">📞</a>
-          ${isActive ? `
-            <button class="btn-outline" data-toggle-notes="${c.id}" style="padding:6px 12px; font-size:.78rem;">📝 الملاحظات</button>
-            <button class="btn-outline" data-toggle-book="${c.id}" style="padding:6px 12px; font-size:.78rem;">📅 حجز موعد</button>
-            <button class="btn-outline" data-set-inactive="${c.id}" style="padding:6px 12px; font-size:.78rem;">🚫 نقل لغير النشطين</button>
-          ` : `
-            <button class="btn" data-set-active="${c.id}" style="padding:6px 12px; font-size:.78rem;">↩️ إعادة تنشيط</button>
-          `}
-          <button class="btn-danger" data-del-client="${c.id}">حذف نهائي</button>
-        </div>
-      </div>
-      ${isActive ? `
-      <div id="notes-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;"></div>
-      <div id="book-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;">
-        <div class="row2">
-          <div class="field"><label>التاريخ</label><input type="date" id="bookdate-${c.id}"></div>
-          <div class="field"><label>الوقت</label><input type="time" id="booktime-${c.id}"></div>
-        </div>
-        <button class="btn" data-confirm-book="${c.id}">تأكيد الحجز</button>
-        <span class="hint" id="bookmsg-${c.id}" style="margin-right:10px;"></span>
-      </div>` : ''}
-    </div>`;
-}
-
-function bindClientRowEvents(){
-  document.querySelectorAll('[data-toggle-notes]').forEach(btn => btn.onclick = () => toggleNotes(btn.dataset.toggleNotes));
-  document.querySelectorAll('[data-toggle-book]').forEach(btn => btn.onclick = () => {
-    const box = document.getElementById('book-' + btn.dataset.toggleBook);
-    box.style.display = box.style.display === 'none' ? 'block' : 'none';
-  });
-  document.querySelectorAll('[data-confirm-book]').forEach(btn => btn.onclick = () => confirmBooking(btn.dataset.confirmBook));
-  document.querySelectorAll('[data-del-client]').forEach(btn => btn.onclick = async () => {
-    if (!confirm('تأكيد حذف هذا المراجع نهائيًا؟ سيُحذف مع كل ملاحظاته.')) return;
-    await fetch('/api/clients/' + btn.dataset.delClient, { method:'DELETE' });
-    fillClients();
-  });
-  document.querySelectorAll('[data-set-inactive]').forEach(btn => btn.onclick = async () => {
-    if (!confirm('نقل هذا المراجع لغير النشطين سيحذف كل حجوزاته المقبلة تلقائيًا. متابعة؟')) return;
-    await fetch('/api/clients/' + btn.dataset.setInactive, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active:false }) });
-    fillClients();
-    fillBookings();
-  });
-  document.querySelectorAll('[data-set-active]').forEach(btn => btn.onclick = async () => {
-    await fetch('/api/clients/' + btn.dataset.setActive, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active:true }) });
-    fillClients();
-  });
-}
-
-async function toggleNotes(clientId){
-  const box = document.getElementById('notes-' + clientId);
-  if (box.style.display !== 'none') { box.style.display = 'none'; return; }
-  box.style.display = 'block';
-  await loadNotesInto(clientId);
-}
-
-async function loadNotesInto(clientId){
-  const box = document.getElementById('notes-' + clientId);
-  box.innerHTML = 'جارٍ التحميل…';
-  const res = await fetch('/api/clients/' + clientId + '/notes');
-  const notes = await res.json();
-  box.innerHTML = `
-    ${notes.length ? notes.map(n => `
-      <div style="margin-bottom:10px; padding-bottom:10px; border-bottom:1px solid var(--line);">
-        <strong>${escAttr(n.title)}</strong>
-        <div style="font-size:.88rem; color:#4B5850; margin-top:4px;">${escAttr(n.body)}</div>
-      </div>`).join('') : '<p class="hint" style="margin:0 0 10px;">لا توجد ملاحظات بعد.</p>'}
-    <input type="text" id="notetitle-${clientId}" placeholder="عنوان الملاحظة">
-    <textarea id="notebody-${clientId}" placeholder="نص الملاحظة" style="min-height:60px; margin-top:8px;"></textarea>
-    <button class="btn" data-add-note="${clientId}" style="margin-top:8px;">إضافة ملاحظة</button>`;
-  document.querySelector(`[data-add-note="${clientId}"]`).onclick = async () => {
-    const title = document.getElementById('notetitle-' + clientId).value.trim();
-    const body = document.getElementById('notebody-' + clientId).value.trim();
-    if (!title || !body) return;
-    await fetch('/api/clients/' + clientId + '/notes', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ title, body }) });
-    loadNotesInto(clientId);
-  };
-}
-
-async function confirmBooking(clientId){
-  const date = document.getElementById('bookdate-' + clientId).value;
-  const time = document.getElementById('booktime-' + clientId).value;
-  const msg = document.getElementById('bookmsg-' + clientId);
-  if (!date || !time) { msg.style.color = '#b23a3a'; msg.textContent = 'حدد التاريخ والوقت'; return; }
-  const res = await fetch('/api/clients/' + clientId + '/book', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ date, time }) });
-  const data = await res.json();
-  msg.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
-  msg.textContent = res.ok ? '✓ تم حجز الموعد بنجاح.' : (data.error || 'تعذّر الحجز');
-}
-
-// ===== المواعيد (جدول الأوقات) =====
-let SCHEDULE_ME = null;
-
-function generateTimeSlots(){
-  const slots = [];
-  for (let h = 8; h <= 21; h++){
-    slots.push(String(h).padStart(2,'0') + ':00');
-    slots.push(String(h).padStart(2,'0') + ':30');
-  }
-  return slots;
-}
-
-async function fillSchedule(me){
-  SCHEDULE_ME = me;
-  const dateInput = document.getElementById('scheduleDate');
-  dateInput.value = new Date().toISOString().slice(0,10);
-  dateInput.addEventListener('change', loadScheduleGrid);
-
-  if (me.role === 'super_admin') {
-    document.getElementById('scheduleCounselorField').style.display = 'block';
-    const sel = document.getElementById('scheduleCounselor');
-    sel.innerHTML = CONTENT.counselors.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    sel.addEventListener('change', loadScheduleGrid);
-  }
-  loadScheduleGrid();
-}
-
-function currentScheduleCounselorId(){
-  if (SCHEDULE_ME.role === 'super_admin') {
-    const sel = document.getElementById('scheduleCounselor');
-    return sel ? sel.value : null;
-  }
-  return SCHEDULE_ME.counselorId;
-}
-
-async function loadScheduleGrid(){
-  const counselorId = currentScheduleCounselorId();
-  const date = document.getElementById('scheduleDate').value;
-  const grid = document.getElementById('scheduleGrid');
-  if (!counselorId) { grid.innerHTML = '<p class="hint">لا يوجد مستشار مرتبط بهذا الحساب بعد.</p>'; return; }
-  if (!date) return;
-  grid.innerHTML = 'جارٍ التحميل…';
-  const res = await fetch(`/api/availability?counselorId=${encodeURIComponent(counselorId)}&date=${encodeURIComponent(date)}`);
-  const data = await res.json();
-  if (!res.ok) { grid.innerHTML = `<p class="hint">${data.error||'تعذّر التحميل'}</p>`; return; }
-  const bookedSet = new Set((data.bookings||[]).map(b=>b.time));
-  const blockedSet = new Set((data.blocks||[]).map(b=>b.time));
-
-  grid.innerHTML = generateTimeSlots().map(t => {
-    let status='free', label='⬜';
-    if (bookedSet.has(t)) { status='booked'; label='🟥'; }
-    else if (blockedSet.has(t)) { status='blocked'; label='🟨'; }
-    const disabled = status === 'booked';
-    return `<button type="button" class="btn-outline" data-slot-time="${t}" data-slot-status="${status}" ${disabled?'disabled':''} style="padding:9px 4px; font-size:.8rem; ${disabled?'opacity:.55; cursor:not-allowed;':''}">${label} ${t}</button>`;
-  }).join('');
-
-  document.querySelectorAll('[data-slot-time]').forEach(btn => {
-    if (btn.dataset.slotStatus === 'booked') return;
-    btn.onclick = () => toggleScheduleSlot(btn.dataset.slotTime, btn.dataset.slotStatus);
-  });
-}
-
-async function toggleScheduleSlot(time, status){
-  const counselorId = currentScheduleCounselorId();
-  const date = document.getElementById('scheduleDate').value;
-  const action = status === 'blocked' ? 'unblock' : 'block';
-  const res = await fetch('/api/availability', {
-    method:'POST', headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ counselorId, date, time, action })
-  });
-  if (!res.ok) { const d = await res.json(); alert(d.error || 'تعذّر تحديث الجدول'); }
-  loadScheduleGrid();
-}
-
-// فتح منتقي التاريخ/الوقت بضغطة واحدة بأي مكان في الحقل، بدل الإجبار على أيقونة التقويم
-document.addEventListener('click', (e) => {
-  const t = e.target;
-  if (t.tagName === 'INPUT' && (t.type === 'date' || t.type === 'time') && typeof t.showPicker === 'function') {
-    try { t.showPicker(); } catch (err) {}
-  }
-});
 
 function escAttr(s){ return (s||'').replace(/"/g,'&quot;'); }
 
