@@ -34,4 +34,32 @@ async function createDailyRoomForBooking(bookingId, startMs) {
   }
 }
 
-module.exports = { createDailyRoomForBooking };
+// تحديث صلاحية غرفة موجودة أصلًا (مدة إضافية بعد وقت الموعد)
+async function updateDailyRoomExpiry(existingUrl, newExpSec) {
+  const apiKey = process.env.DAILY_API_KEY;
+  if (!apiKey || !existingUrl) return null;
+  try {
+    const u = new URL(existingUrl);
+    const roomName = u.pathname.split('/').filter(Boolean).pop();
+    if (!roomName) return null;
+
+    await fetch(`https://api.daily.co/v1/rooms/${roomName}`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ properties: { exp: newExpSec } })
+    });
+
+    const tokenRes = await fetch('https://api.daily.co/v1/meeting-tokens', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ properties: { room_name: roomName, exp: newExpSec } })
+    });
+    const tokenData = await tokenRes.json();
+    if (!tokenRes.ok || !tokenData.token) return `${u.origin}${u.pathname}`;
+    return `${u.origin}${u.pathname}?t=${tokenData.token}`;
+  } catch (e) {
+    return null;
+  }
+}
+
+module.exports = { createDailyRoomForBooking, updateDailyRoomExpiry };
