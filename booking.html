@@ -18,6 +18,7 @@
   input:focus, select:focus{outline:2px solid var(--clay); border-color:transparent;}
   button{width:100%; padding:14px; background:var(--ink); color:#fff; border:none; border-radius:10px; font-weight:700; font-size:.98rem; cursor:pointer;}
   button:hover{background:var(--clay);}
+  button:disabled{background:#AAB2A4; cursor:not-allowed;}
   .msg{color:#b23a3a; font-size:.85rem; margin-bottom:14px; min-height:18px;}
   .hint{font-size:.8rem; color:#7C8B7A; margin-top:-10px; margin-bottom:16px;}
 </style>
@@ -51,7 +52,7 @@
     <label for="note">ملاحظة إضافية (اختياري)</label>
     <textarea id="note" rows="3" style="width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px; font-family:inherit; font-size:.94rem; resize:vertical; margin-bottom:16px;" placeholder="أي شيء تحب أن يعرفه المستشار قبل الجلسة"></textarea>
 
-    <button type="submit">تأكيد الحجز</button>
+    <button type="submit" id="submitBtn">تأكيد الحجز</button>
   </form>
 </div>
 <script>
@@ -74,8 +75,19 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// حماية من إرسال الحجز مرتين (مثلًا عند الضغط على الزر أكثر من مرة بسرعة)
+let isSubmitting = false;
+
 document.getElementById('bookingForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
+  if (isSubmitting) return; // تجاهل أي ضغطة إضافية أثناء إرسال الحجز الأول
+  isSubmitting = true;
+
+  const submitBtn = document.getElementById('submitBtn');
+  const originalLabel = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'جارٍ تأكيد الحجز…';
+
   const msg = document.getElementById('msg'); msg.textContent = '';
   const payload = {
     name: document.getElementById('name').value.trim(),
@@ -85,10 +97,23 @@ document.getElementById('bookingForm').addEventListener('submit', async (e)=>{
     note: document.getElementById('note').value.trim(),
     counselorId: COUNSELORS.length > 1 ? document.getElementById('counselor').value : (COUNSELORS[0]?.id || null)
   };
-  const res = await fetch('/api/bookings', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-  const data = await res.json();
-  if (!res.ok) { msg.textContent = data.error || 'حدث خطأ، حاول مجددًا'; return; }
-  location.href = '/confirm.html?id=' + data.booking.id;
+
+  try {
+    const res = await fetch('/api/bookings', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const data = await res.json();
+    if (!res.ok) {
+      msg.textContent = data.error || 'حدث خطأ، حاول مجددًا';
+      return;
+    }
+    location.href = '/confirm.html?id=' + data.booking.id;
+    return; // سننتقل لصفحة أخرى، لا داعي لإعادة تفعيل الزر
+  } catch (err) {
+    msg.textContent = 'تعذّر الاتصال بالخادم، تحقق من الإنترنت وحاول مجددًا';
+  }
+
+  isSubmitting = false;
+  submitBtn.disabled = false;
+  submitBtn.textContent = originalLabel;
 });
 </script>
 </body>

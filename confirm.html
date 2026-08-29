@@ -62,9 +62,25 @@ function renderLookup(msg){
 
 async function loadBooking(id){
   app.innerHTML = '<div class="card">جارٍ التحميل…</div>';
-  const res = await fetch('/api/bookings/' + encodeURIComponent(id));
-  if (!res.ok) { renderLookup('لم يتم العثور على حجز بهذا الرقم. تأكد من الرقم وحاول مجددًا.'); return; }
-  const b = await res.json();
+
+  const [bookingRes, contentRes] = await Promise.all([
+    fetch('/api/bookings/' + encodeURIComponent(id)),
+    fetch('/api/content')
+  ]);
+
+  if (!bookingRes.ok) { renderLookup('لم يتم العثور على حجز بهذا الرقم. تأكد من الرقم وحاول مجددًا.'); return; }
+  const b = await bookingRes.json();
+  const content = contentRes.ok ? await contentRes.json() : {};
+
+  // فترة تعطيل الفيديو التي يحددها المستشار (مثلًا إجازة)
+  const vb = content.videoBlock || {};
+  let videoBlockActive = false;
+  if (vb.from && vb.to) {
+    const now = new Date();
+    const from = new Date(vb.from), to = new Date(vb.to);
+    videoBlockActive = now >= from && now <= to;
+  }
+
   const target = new Date(b.date + 'T' + b.time);
   const joinWindowMs = (b.joinWindowMinutes || 20) * 60 * 1000;
 
@@ -86,10 +102,17 @@ async function loadBooking(id){
     </div>`;
 
   function tick(){
-    const now = new Date();
-    const diff = target - now;
     const box = document.getElementById('countdownBox');
     const btn = document.getElementById('joinBtn');
+
+    if (videoBlockActive) {
+      box.textContent = 'خدمة مكالمات الفيديو معطّلة مؤقتًا خلال هذه الفترة. سيتم التواصل معك بخصوص موعدك.';
+      btn.disabled = true; btn.classList.add('disabled'); btn.classList.remove('enabled');
+      return;
+    }
+
+    const now = new Date();
+    const diff = target - now;
     if (diff <= joinWindowMs) {
       box.textContent = diff > 0 ? 'يمكنك الآن الدخول إلى جلستك.' : 'موعدك جارٍ الآن.';
       btn.disabled = false; btn.classList.remove('disabled'); btn.classList.add('enabled');
