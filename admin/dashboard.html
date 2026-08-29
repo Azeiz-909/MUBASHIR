@@ -120,6 +120,12 @@
         <h2 class="sec">السرية والخصوصية</h2>
         <div class="field"><label>العنوان</label><input type="text" id="privacyTitle" data-key="privacy.title"></div>
         <div class="field"><label>النص</label><textarea id="privacyBody" data-key="privacy.body"></textarea></div>
+        <div class="img-upload">
+          <img class="img-preview" id="privacyImgPreview" src="" style="display:none">
+          <input type="file" id="privacyImgFile" accept="image/*">
+          <button type="button" class="btn-danger" id="removePrivacyImgBtn" style="display:none;">إزالة الصورة</button>
+        </div>
+        <div class="hint">اختياري — إذا رفعت صورة ستحل محل الرسم التوضيحي الافتراضي في قسم الخصوصية.</div>
       </div>
 
       <div class="card-box">
@@ -388,6 +394,22 @@ function fillContent(){
 
   document.getElementById('privacyTitle').value = CONTENT.privacy.title;
   document.getElementById('privacyBody').value = CONTENT.privacy.body;
+  if (CONTENT.privacy.image) { document.getElementById('privacyImgPreview').src = CONTENT.privacy.image; document.getElementById('privacyImgPreview').style.display='block'; document.getElementById('removePrivacyImgBtn').style.display='inline-block'; }
+  document.getElementById('removePrivacyImgBtn').onclick = () => {
+    CONTENT.privacy.image = null;
+    document.getElementById('privacyImgPreview').style.display = 'none';
+    document.getElementById('privacyImgPreview').src = '';
+    document.getElementById('removePrivacyImgBtn').style.display = 'none';
+    scheduleSave({ privacy: { image: null } });
+  };
+  document.getElementById('privacyImgFile').addEventListener('change', async (e)=>{
+    const file = e.target.files[0]; if (!file) return;
+    const url = await uploadFile(file); if (!url) return;
+    CONTENT.privacy.image = url;
+    document.getElementById('privacyImgPreview').src = url; document.getElementById('privacyImgPreview').style.display='block';
+    document.getElementById('removePrivacyImgBtn').style.display = 'inline-block';
+    scheduleSave({ privacy: { image: url } });
+  });
   document.getElementById('firstTitle').value = CONTENT.firstSession.title;
   document.getElementById('firstBody').value = CONTENT.firstSession.body;
   document.getElementById('firstSteps').value = CONTENT.firstSession.steps.join('\n');
