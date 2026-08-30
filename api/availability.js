@@ -37,6 +37,25 @@ module.exports = async (req, res) => {
 
   if (req.method === 'POST') {
     const { date, time, action } = req.body || {};
+
+    if (action === 'block_day') {
+      if (!date) return res.status(400).json({ error: 'التاريخ مطلوب' });
+      const slots = [];
+      for (let h = 8; h <= 21; h++) { slots.push(String(h).padStart(2,'0')+':00'); slots.push(String(h).padStart(2,'0')+':30'); }
+
+      const { data: bookedRows } = await supabase.from('bookings').select('time').eq('counselor_id', counselorId).eq('date', date);
+      const bookedTimes = new Set((bookedRows || []).map(b => b.time));
+      const toInsert = slots.filter(t => !bookedTimes.has(t)).map(t => ({
+        id: 'ab_' + Date.now() + '_' + crypto.randomBytes(3).toString('hex') + '_' + t.replace(':',''),
+        counselor_id: counselorId, date, time: t, created_at: Date.now()
+      }));
+      if (toInsert.length) {
+        const { error } = await supabase.from('availability_blocks').upsert(toInsert, { onConflict: 'counselor_id,date,time', ignoreDuplicates: true });
+        if (error) return res.status(500).json({ error: 'تعذّر تعطيل اليوم بالكامل' });
+      }
+      return res.status(200).json({ ok: true, blockedCount: toInsert.length });
+    }
+
     if (!date || !time) return res.status(400).json({ error: 'التاريخ والوقت مطلوبان' });
 
     if (action === 'unblock') {
