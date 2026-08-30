@@ -24,7 +24,14 @@
   .lookup input{width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px; margin-bottom:14px; font-size:.94rem;}
   .lookup button{width:100%; padding:13px; background:var(--ink); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;}
   .msg{color:#b23a3a; font-size:.85rem; margin-bottom:10px;}
-  .copy-link{font-size:.82rem; color:#6b7570; margin-top:18px; word-break:break-all; background:var(--paper); padding:10px; border-radius:8px;}
+  .access-box{margin-top:20px; text-align:right;}
+  .access-item{background:var(--paper); border-radius:12px; padding:14px 16px; margin-bottom:12px;}
+  .access-label{font-weight:700; font-size:.9rem; margin-bottom:8px;}
+  .access-value-row{display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px;}
+  .access-value-row code{flex:1; font-size:.85rem; color:var(--ink); word-break:break-all; direction:ltr; text-align:left;}
+  .copy-btn{flex-shrink:0; background:var(--clay); color:#fff; border:none; border-radius:6px; padding:6px 14px; font-size:.8rem; font-weight:700; cursor:pointer; white-space:nowrap;}
+  .copy-btn:hover{background:var(--ink);}
+  .access-hint{font-size:.78rem; color:#6b7570; margin-top:8px; line-height:1.6;}
 </style>
 </head>
 <body>
@@ -62,25 +69,9 @@ function renderLookup(msg){
 
 async function loadBooking(id){
   app.innerHTML = '<div class="card">جارٍ التحميل…</div>';
-
-  const [bookingRes, contentRes] = await Promise.all([
-    fetch('/api/bookings/' + encodeURIComponent(id)),
-    fetch('/api/content')
-  ]);
-
-  if (!bookingRes.ok) { renderLookup('لم يتم العثور على حجز بهذا الرقم. تأكد من الرقم وحاول مجددًا.'); return; }
-  const b = await bookingRes.json();
-  const content = contentRes.ok ? await contentRes.json() : {};
-
-  // فترة تعطيل الفيديو التي يحددها المستشار (مثلًا إجازة)
-  const vb = content.videoBlock || {};
-  let videoBlockActive = false;
-  if (vb.from && vb.to) {
-    const now = new Date();
-    const from = new Date(vb.from), to = new Date(vb.to);
-    videoBlockActive = now >= from && now <= to;
-  }
-
+  const res = await fetch('/api/bookings/' + encodeURIComponent(id));
+  if (!res.ok) { renderLookup('لم يتم العثور على حجز بهذا الرقم. تأكد من الرقم وحاول مجددًا.'); return; }
+  const b = await res.json();
   const target = new Date(b.date + 'T' + b.time);
   const joinWindowMs = (b.joinWindowMinutes || 20) * 60 * 1000;
 
@@ -98,21 +89,31 @@ async function loadBooking(id){
       <div id="videoContainer" style="display:none; margin-top:16px;">
         <iframe id="videoFrame" style="width:100%; height:480px; border:0; border-radius:12px;" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>
       </div>
-      <div class="copy-link">رقم حجزك: <strong>${b.id}</strong><br>الرابط: ${location.origin}/confirm.html?id=${b.id}</div>
+      <div class="access-box">
+        <div class="access-item">
+          <div class="access-label">🔑 كود حجزك</div>
+          <div class="access-value-row">
+            <code id="bookingCodeText">${b.id}</code>
+            <button class="copy-btn" data-copy-text="${b.id}">نسخ</button>
+          </div>
+          <p class="access-hint">احتفظ بهذا الكود. للعودة لموعدك لاحقًا، ادخل موقع العيادة واضغط "لديك موعد استشارة عن بُعد؟"، ثم الصق الكود.</p>
+        </div>
+        <div class="access-item">
+          <div class="access-label">🔗 رابط موعدك المباشر</div>
+          <div class="access-value-row">
+            <code id="bookingLinkText">${location.origin}/confirm.html?id=${b.id}</code>
+            <button class="copy-btn" data-copy-text="${location.origin}/confirm.html?id=${b.id}">نسخ</button>
+          </div>
+          <p class="access-hint">احفظ هذا الرابط. بمجرد الضغط عليه من أي مكان (رسالة، ملاحظات، إلخ) يفتح لك موعدك مباشرة دون أي خطوات إضافية.</p>
+        </div>
+      </div>
     </div>`;
 
   function tick(){
-    const box = document.getElementById('countdownBox');
-    const btn = document.getElementById('joinBtn');
-
-    if (videoBlockActive) {
-      box.textContent = 'خدمة مكالمات الفيديو معطّلة مؤقتًا خلال هذه الفترة. سيتم التواصل معك بخصوص موعدك.';
-      btn.disabled = true; btn.classList.add('disabled'); btn.classList.remove('enabled');
-      return;
-    }
-
     const now = new Date();
     const diff = target - now;
+    const box = document.getElementById('countdownBox');
+    const btn = document.getElementById('joinBtn');
     if (diff <= joinWindowMs) {
       box.textContent = diff > 0 ? 'يمكنك الآن الدخول إلى جلستك.' : 'موعدك جارٍ الآن.';
       btn.disabled = false; btn.classList.remove('disabled'); btn.classList.add('enabled');
@@ -139,6 +140,19 @@ async function loadBooking(id){
 }
 
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest('[data-copy-text]');
+  if (!btn) return;
+  try {
+    await navigator.clipboard.writeText(btn.dataset.copyText);
+    const original = btn.textContent;
+    btn.textContent = '✓ تم النسخ';
+    setTimeout(() => { btn.textContent = original; }, 1800);
+  } catch (err) {
+    alert('تعذّر النسخ التلقائي، انسخ النص يدويًا.');
+  }
+});
 </script>
 </body>
 </html>

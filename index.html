@@ -118,12 +118,10 @@
   <div class="nav">
     <div class="logo" id="siteName">عيادة <span>تحدث</span></div>
     <nav class="nav-links">
-      <a href="#counselors">المستشارون</a>
       <a href="#faq">الأسئلة الشائعة</a>
       <a href="#hours">أوقات العمل</a>
       <a href="#contact">تواصل معنا</a>
     </nav>
-    <a href="/booking.html" class="nav-cta">احجز استشارتك</a>
     <button class="burger" aria-label="القائمة">☰</button>
   </div>
 </header>
@@ -155,7 +153,7 @@
   </div>
 </section>
 
-<section id="counselors">
+<section id="counselors" style="display:none;">
   <div class="container">
     <div class="section-head reveal">
       <div class="eyebrow" style="justify-content:center">فريقنا</div>
@@ -168,7 +166,6 @@
 <section class="info-alt">
   <div class="container info-flex">
     <div class="col reveal">
-      <div class="badge-lock">🔒</div>
       <h2 id="privacyTitle"></h2>
       <p id="privacyBody"></p>
     </div>
@@ -226,7 +223,6 @@
   </div>
 </section>
 
-<a href="#" class="fab-whatsapp" id="fabWhatsapp" aria-label="تواصل عبر واتساب">💬</a>
 
 <footer>
   <div class="container">
@@ -315,7 +311,6 @@ async function loadContent(){
     <li><span class="ic">📍</span> ${c.contact.address}</li>`;
   document.getElementById('footerPhone').textContent = c.contact.phone;
   document.getElementById('footerEmail').textContent = c.contact.email;
-  document.getElementById('fabWhatsapp').href = 'https://wa.me/' + c.contact.whatsapp.replace(/[^0-9]/g,'');
 
   // إظهار الصفحة بعد اكتمال التصميم (بدل ظهور المظهر الافتراضي القديم ثم التحديث)
   document.body.style.opacity = 1;
