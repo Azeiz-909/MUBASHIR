@@ -752,10 +752,10 @@ function clientRowHtml(c){
       <div id="notes-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;"></div>
       <div id="book-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;">
         <div class="row2">
-          <div class="field"><label>التاريخ</label><input type="date" id="bookdate-${c.id}"></div>
-          <div class="field"><label>الوقت</label><input type="time" id="booktime-${c.id}"></div>
+          <div class="field"><label>التاريخ *</label><input type="date" id="bookdate-${c.id}" data-book-input="${c.id}"></div>
+          <div class="field"><label>الوقت *</label><input type="time" id="booktime-${c.id}" data-book-input="${c.id}"></div>
         </div>
-        <button class="btn" data-confirm-book="${c.id}">تأكيد الحجز</button>
+        <button class="btn" data-confirm-book="${c.id}" disabled style="opacity:.5; cursor:not-allowed;">تأكيد الحجز</button>
         <span class="hint" id="bookmsg-${c.id}" style="margin-right:10px;"></span>
       </div>
       <div id="expiry-${c.id}" style="display:none; margin-top:12px; background:var(--paper); border-radius:10px; padding:12px;">
@@ -792,6 +792,15 @@ function bindClientRowEvents(){
     msg.textContent = res.ok ? '✓ تم تحديث صلاحية رابط المكالمة.' : (data.error || 'تعذّر التحديث');
   });
   document.querySelectorAll('[data-confirm-book]').forEach(btn => btn.onclick = () => confirmBooking(btn.dataset.confirmBook));
+  document.querySelectorAll('[data-book-input]').forEach(input => input.addEventListener('input', () => {
+    const cid = input.dataset.bookInput;
+    const d = document.getElementById('bookdate-' + cid).value;
+    const t = document.getElementById('booktime-' + cid).value;
+    const btn = document.querySelector(`[data-confirm-book="${cid}"]`);
+    btn.disabled = !(d && t);
+    btn.style.opacity = btn.disabled ? '.5' : '1';
+    btn.style.cursor = btn.disabled ? 'not-allowed' : 'pointer';
+  }));
   document.querySelectorAll('[data-del-client]').forEach(btn => btn.onclick = async () => {
     if (!confirm('تأكيد حذف هذا المراجع نهائيًا؟ سيُحذف مع كل ملاحظاته.')) return;
     await fetch('/api/clients/' + btn.dataset.delClient, { method:'DELETE' });
