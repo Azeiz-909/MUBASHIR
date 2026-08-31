@@ -54,10 +54,9 @@ module.exports = async (req, res) => {
     if (error) return res.status(500).json({ error: 'تعذّر إنشاء الحجز' });
 
     const startMs = new Date(date + 'T' + time).getTime();
+    const callExpiresAt = Math.floor(startMs / 1000) + 4 * 3600;
     const videoRoomUrl = await createDailyRoomForBooking(booking.id, startMs);
-    if (videoRoomUrl) {
-      await supabase.from('bookings').update({ video_room_url: videoRoomUrl }).eq('id', booking.id);
-    }
+    await supabase.from('bookings').update({ video_room_url: videoRoomUrl, call_expires_at: callExpiresAt }).eq('id', booking.id);
 
     return res.status(200).json({ ok: true, booking: { id: booking.id, date, time }, joinWindowMinutes: JOIN_WINDOW_MINUTES });
   }
@@ -78,7 +77,7 @@ module.exports = async (req, res) => {
     const updatedUrl = await updateDailyRoomExpiry(latestBooking.video_room_url, newExpSec);
     if (!updatedUrl) return res.status(500).json({ error: 'تعذّر تحديث صلاحية رابط المكالمة (تحقق من إعداد Daily.co)' });
 
-    await supabase.from('bookings').update({ video_room_url: updatedUrl }).eq('id', latestBooking.id);
+    await supabase.from('bookings').update({ video_room_url: updatedUrl, call_expires_at: newExpSec }).eq('id', latestBooking.id);
     return res.status(200).json({ ok: true });
   }
 
