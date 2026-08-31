@@ -814,12 +814,14 @@ function bindClientRowEvents(){
   });
   document.querySelectorAll('[data-set-inactive]').forEach(btn => btn.onclick = async () => {
     if (!confirm('نقل هذا المراجع لغير النشطين سيحذف كل حجوزاته المقبلة تلقائيًا. متابعة؟')) return;
-    await fetch('/api/clients/' + btn.dataset.setInactive, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active:false }) });
+    const res = await fetch('/api/clients/' + btn.dataset.setInactive, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active:false }) });
+    if (!res.ok) { const d = await res.json().catch(()=>({})); alert('تعذّر نقل المراجع: ' + (d.error || 'خطأ غير معروف — تأكد أن عمود active مضاف بقاعدة البيانات (شغّل ملف supabase-schema-active.sql)')); return; }
     fillClients();
     fillBookings();
   });
   document.querySelectorAll('[data-set-active]').forEach(btn => btn.onclick = async () => {
-    await fetch('/api/clients/' + btn.dataset.setActive, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active:true }) });
+    const res = await fetch('/api/clients/' + btn.dataset.setActive, { method:'PATCH', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ active:true }) });
+    if (!res.ok) { const d = await res.json().catch(()=>({})); alert('تعذّر إعادة التنشيط: ' + (d.error || 'خطأ غير معروف')); return; }
     fillClients();
   });
 }
