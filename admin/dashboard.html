@@ -618,6 +618,7 @@ async function fillBookings(){
           <span>📱 ${escAttr(b.phone)}</span>
           <a href="tel:${escAttr(b.phone)}" title="اتصال" style="text-decoration:none; font-size:1.15rem;">📞</a>
           <a href="https://wa.me/${toWhatsAppNumber(b.phone)}" target="_blank" title="واتساب" style="text-decoration:none; font-size:1.15rem;">💬</a>
+          <button class="btn-danger" data-del-booking="${b.id}" style="margin-right:auto;">🗑️ حذف الحجز</button>
         </div>
       </div>
     </div>`).join('');
@@ -627,6 +628,11 @@ async function fillBookings(){
       const body = document.querySelector(`[data-booking-body="${header.dataset.bookingToggle}"]`);
       body.style.display = body.style.display === 'none' ? 'block' : 'none';
     });
+  });
+  document.querySelectorAll('[data-del-booking]').forEach(btn => btn.onclick = async () => {
+    if (!confirm('حذف هذا الحجز نهائيًا؟ المراجع نفسه يبقى في قائمة "المراجعون" ولن يُحذف.')) return;
+    await fetch('/api/bookings/' + btn.dataset.delBooking, { method: 'DELETE' });
+    fillBookings();
   });
 }
 
