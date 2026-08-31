@@ -58,10 +58,9 @@ module.exports = async (req, res) => {
     if (error) return res.status(500).json({ error: 'تعذّر إنشاء الحجز' });
 
     const startMs = new Date(date + 'T' + time).getTime();
+    const callExpiresAt = Math.floor(startMs / 1000) + 4 * 3600; // تنتهي صلاحية المكالمة بعد 4 ساعات من وقت الموعد افتراضيًا
     const videoRoomUrl = await createDailyRoomForBooking(booking.id, startMs);
-    if (videoRoomUrl) {
-      await supabase.from('bookings').update({ video_room_url: videoRoomUrl }).eq('id', booking.id);
-    }
+    await supabase.from('bookings').update({ video_room_url: videoRoomUrl, call_expires_at: callExpiresAt }).eq('id', booking.id);
 
     return res.status(200).json({
       ok: true,
@@ -73,6 +72,11 @@ module.exports = async (req, res) => {
   if (req.method === 'GET') {
     const user = await getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'يلزم تسجيل الدخول' });
+
+    // حذف تلقائي لأي حجز انتهت صلاحية رابط مكالمته
+    const nowSec = Math.floor(Date.now() / 1000);
+    await supabase.from('bookings').delete().lt('call_expires_at', nowSec);
+
     let query = supabase.from('bookings').select('*').order('created_at', { ascending: false });
     query = user.role !== 'super_admin'
       ? (user.counselor_id ? query.eq('counselor_id', user.counselor_id) : query.is('counselor_id', null))
