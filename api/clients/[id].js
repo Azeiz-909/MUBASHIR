@@ -11,6 +11,8 @@ module.exports = async (req, res) => {
     query = user.role !== 'super_admin' ? query.eq('counselor_id', user.counselor_id) : query;
     const { error } = await query;
     if (error) return res.status(500).json({ error: 'تعذّر حذف المراجع' });
+    // حذف حجوزاته تلقائيًا مع حذف حسابه
+    await supabase.from('bookings').delete().eq('client_id', id);
     return res.status(200).json({ ok: true });
   }
 
