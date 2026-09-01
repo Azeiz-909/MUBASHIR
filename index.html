@@ -36,8 +36,19 @@
   .nav-links{display:flex; gap:28px; font-weight:500; font-size:.95rem;}
   .nav-links a:hover{color:var(--clay-dark);}
   .nav-cta{background:var(--ink); color:var(--white); padding:10px 22px; border-radius:30px; font-weight:700; font-size:.9rem;}
-  .burger{display:none; font-size:1.6rem; background:none; border:none; color:var(--ink);}
-  @media(max-width:820px){ .nav-links{display:none;} .burger{display:block;} }
+  .hero-mobile-only, .cta-duo-mobile-only{display:none;}
+  @media(max-width:820px){ .nav-links{display:none;} }
+  @media(max-width:700px){
+    .hero > .container, section.cta-duo{display:none;}
+    .hero-mobile-only{display:block; position:relative; background:#e0dbc3;}
+    .hero-mobile-only .hero-mobile-img{width:100%; display:block;}
+    .hero-mobile-text{text-align:center; padding:20px 10px;}
+    .hero-mobile-text h1{font-size:2rem; margin-bottom:14px;}
+    .hero-mobile-text p{color:#4B5850; font-size:1rem;}
+    .cta-duo-mobile-only{display:block; background:#e0dbc3; padding:0 0 40px;}
+    .cta-duo-mobile-only .container{display:flex; flex-direction:column; gap:14px; padding:0 24px;}
+    .cta-duo-mobile-only .btn-primary, .cta-duo-mobile-only .btn-secondary{width:100%; text-align:center; justify-content:center;}
+  }
   .hero{position:relative; padding:100px 0 60px;}
   .hero .container{display:flex; align-items:center; gap:60px;}
   .hero-text{flex:1.1;}
@@ -122,7 +133,6 @@
       <a href="#hours">أوقات العمل</a>
       <a href="#contact">تواصل معنا</a>
     </nav>
-    <button class="burger" aria-label="القائمة">☰</button>
   </div>
 </header>
 
@@ -143,6 +153,26 @@
         <circle cx="300" cy="130" r="9" fill="#22322C"/><circle cx="20" cy="210" r="7" fill="#22322C" opacity="0.6"/><circle cx="150" cy="150" r="5" fill="#B8734F"/>
       </svg>
     </div>
+  </div>
+
+  <!-- تصميم خاص بالجوال فقط: صورة مقسومة لجزئين مع النص بينهما -->
+  <div class="hero-mobile-only">
+    <img src="/assets/hero-mobile-top.png" class="hero-mobile-img" alt="">
+    <div class="container">
+      <div class="hero-mobile-text reveal">
+        <div class="eyebrow" style="justify-content:center">استشارات أسرية سرّية وموثوقة</div>
+        <h1 id="heroTitleMobile">مساحة آمنة… ليبدأ الحديث</h1>
+        <p id="heroSubtitleMobile"></p>
+      </div>
+    </div>
+    <img src="/assets/hero-mobile-bottom.png" class="hero-mobile-img" alt="">
+  </div>
+</section>
+
+<section class="cta-duo-mobile-only" id="booking-mobile">
+  <div class="container reveal">
+    <a href="/booking.html" class="btn-primary">احجز استشارتك</a>
+    <a href="/confirm.html" class="btn-secondary">لديك موعد استشارة عن بُعد؟ اضغط هنا</a>
   </div>
 </section>
 
@@ -263,6 +293,8 @@ async function loadContent(){
 
   document.getElementById('heroTitle').textContent = c.hero.title;
   document.getElementById('heroSubtitle').textContent = c.hero.subtitle;
+  document.getElementById('heroTitleMobile').textContent = c.hero.title;
+  document.getElementById('heroSubtitleMobile').textContent = c.hero.subtitle;
   if (c.hero.image) {
     document.getElementById('heroImg').src = c.hero.image;
     document.getElementById('heroImg').style.display = 'block';
