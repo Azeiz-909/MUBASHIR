@@ -116,7 +116,8 @@
     <div class="panel" id="panel-content">
       <div class="card-box">
         <h2 class="sec">القسم الرئيسي (Hero)</h2>
-        <div class="field"><label>اسم العيادة</label><input type="text" id="siteName" data-key="site.name"></div>
+        <div class="field"><label>المسمى الوظيفي (يظهر أصغر فوق الاسم)</label><input type="text" id="siteRoleLabel" data-key="site.roleLabel" placeholder="مثال: المستشار الأسري"></div>
+        <div class="field"><label>اسم العيادة / المستشار</label><input type="text" id="siteName" data-key="site.name"></div>
         <div class="field"><label>العنوان الرئيسي</label><input type="text" id="heroTitle" data-key="hero.title"></div>
         <div class="field"><label>الوصف</label><textarea id="heroSubtitle" data-key="hero.subtitle"></textarea></div>
         <div class="img-upload">
@@ -385,6 +386,7 @@ function fillDesign(){
 
 function fillContent(){
   document.getElementById('siteName').value = CONTENT.site.name;
+  document.getElementById('siteRoleLabel').value = CONTENT.site.roleLabel || '';
   document.getElementById('heroTitle').value = CONTENT.hero.title;
   document.getElementById('heroSubtitle').value = CONTENT.hero.subtitle;
   if (CONTENT.hero.image) { document.getElementById('heroImgPreview').src = CONTENT.hero.image; document.getElementById('heroImgPreview').style.display='block'; document.getElementById('removeHeroImgBtn').style.display='inline-block'; }
