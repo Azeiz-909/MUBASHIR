@@ -40,6 +40,15 @@
   @media(max-width:820px){ .nav-links{display:none;} }
   @media(max-width:700px){
     .hero > .container, section.cta-duo{display:none !important;}
+    .hero{padding:0 !important;}
+    header{display:none !important;}
+    .hero-mobile-text{opacity:1 !important; transform:none !important;}
+    .hero-mobile-nav{display:flex; flex-direction:column; align-items:flex-end; gap:10px; padding:20px 24px 0;}
+    .hero-mobile-links{display:flex; gap:16px; font-size:.82rem; font-weight:500;}
+    .hero-mobile-links a{color:var(--ink);}
+    .hero-mobile-brand{text-align:left;}
+    .hero-mobile-role{font-size:.85rem; font-weight:600; color:var(--ink); opacity:.85;}
+    .hero-mobile-name{font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--ink); line-height:1.2;}
     .hero-mobile-only{display:block; position:relative; background:#e0dbc3;}
     .hero-mobile-only .hero-mobile-img{width:100%; display:block;}
     .hero-mobile-text{text-align:center; padding:20px 10px;}
@@ -158,6 +167,17 @@
 
   <!-- تصميم خاص بالجوال فقط: صورة مقسومة لجزئين مع النص بينهما -->
   <div class="hero-mobile-only">
+    <div class="hero-mobile-nav">
+      <nav class="hero-mobile-links">
+        <a href="#faq">الأسئلة الشائعة</a>
+        <a href="#hours">أوقات العمل</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+      <div class="hero-mobile-brand">
+        <div id="siteRoleLabelMobile" class="hero-mobile-role"></div>
+        <div id="siteNameMobile" class="hero-mobile-name"></div>
+      </div>
+    </div>
     <img src="/assets/hero-mobile-top.png" class="hero-mobile-img" alt="">
     <div class="container">
       <div class="hero-mobile-text reveal">
@@ -259,7 +279,7 @@
   <div class="container">
     <div class="footer-grid">
       <div class="footer-col"><h4 id="footerName">عيادة تحدث</h4><p style="font-size:.9rem; max-width:220px;">مساحة آمنة للاستشارات الأسرية والزوجية عن بُعد.</p></div>
-      <div class="footer-col"><h4>روابط سريعة</h4><a href="#counselors">المستشارون</a><a href="#faq">الأسئلة الشائعة</a><a href="#booking">احجز موعدك</a></div>
+      <div class="footer-col"><h4>روابط سريعة</h4><a href="#faq">الأسئلة الشائعة</a><a href="#booking">احجز موعدك</a></div>
       <div class="footer-col"><h4>تواصل</h4><a id="footerPhone" href="#"></a><a id="footerEmail" href="#"></a></div>
     </div>
     <div class="footer-bottom">© 2026 <span id="footerName2">عيادة تحدث</span>. جميع الحقوق محفوظة.</div>
@@ -289,6 +309,8 @@ async function loadContent(){
   root.setProperty('--font-body', `'${c.font.body}', sans-serif`);
 
   document.getElementById('siteName').innerHTML = c.site.name.replace(/تحدث/, '<span>تحدث</span>');
+  document.getElementById('siteNameMobile').textContent = c.site.name;
+  document.getElementById('siteRoleLabelMobile').textContent = c.site.roleLabel || '';
   document.getElementById('footerName').textContent = c.site.name;
   document.getElementById('footerName2').textContent = c.site.name;
 
