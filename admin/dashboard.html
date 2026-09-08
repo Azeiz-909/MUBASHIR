@@ -41,6 +41,10 @@
   .color-row{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
   .color-row input[type=color]{width:44px; height:34px; border:none; border-radius:8px; cursor:pointer;}
   .color-row span{font-size:.88rem; font-weight:600; width:150px;}
+  .size-row{display:flex; align-items:center; gap:12px; margin-bottom:16px;}
+  .size-row span{font-size:.88rem; font-weight:600; flex:1;}
+  .size-row input[type=range]{flex:1.4; max-width:220px; accent-color:var(--clay);}
+  .size-row output{font-size:.82rem; font-weight:700; color:var(--clay-dark); width:56px; text-align:left;}
   .img-upload{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
   .img-preview{width:64px; height:64px; border-radius:12px; background:var(--paper); object-fit:cover; border:1px solid var(--line);}
   .btn{background:var(--ink); color:#fff; border:none; padding:9px 18px; border-radius:10px; cursor:pointer; font-weight:700; font-size:.85rem;}
@@ -84,11 +88,54 @@
     <!-- ===== التصميم ===== -->
     <div class="panel active" id="panel-design">
       <div class="card-box">
-        <h2 class="sec">الألوان</h2>
+        <h2 class="sec">الألوان الأساسية</h2>
         <div class="color-row"><input type="color" id="colorInk" data-key="colors.ink"><span>لون النصوص الأساسي</span></div>
         <div class="color-row"><input type="color" id="colorBg" data-key="colors.background"><span>لون الخلفية</span></div>
+        <div class="color-row"><input type="color" id="colorCard" data-key="colors.card"><span>لون البطاقات</span></div>
         <div class="color-row"><input type="color" id="colorClay" data-key="colors.clay"><span>اللون البارز (الأزرار)</span></div>
+        <div class="color-row"><input type="color" id="colorClayDark" data-key="colors.clayDark"><span>اللون البارز الغامق</span></div>
         <div class="color-row"><input type="color" id="colorSage" data-key="colors.sage"><span>اللون الثانوي</span></div>
+        <div class="color-row"><input type="color" id="colorLine" data-key="colors.line"><span>لون الخطوط الفاصلة</span></div>
+        <div class="color-row"><input type="color" id="colorWhite" data-key="colors.white"><span>اللون الأبيض</span></div>
+        <div class="color-row"><input type="color" id="colorMuted" data-key="colors.muted"><span>لون النصوص الفرعية</span></div>
+      </div>
+      <div class="card-box">
+        <h2 class="sec">ألوان الأزرار</h2>
+        <div class="color-row"><input type="color" id="colorNavCtaBg" data-key="colors.navCtaBg"><span>زر القائمة العلوية — خلفية</span></div>
+        <div class="color-row"><input type="color" id="colorNavCtaText" data-key="colors.navCtaText"><span>زر القائمة العلوية — نص</span></div>
+        <div class="color-row"><input type="color" id="colorBtnPrimaryBg" data-key="colors.btnPrimaryBg"><span>الزر الرئيسي — خلفية</span></div>
+        <div class="color-row"><input type="color" id="colorBtnPrimaryText" data-key="colors.btnPrimaryText"><span>الزر الرئيسي — نص</span></div>
+        <div class="color-row"><input type="color" id="colorBtnSecondaryBg" data-key="colors.btnSecondaryBg"><span>الزر الثانوي — خلفية</span></div>
+        <div class="color-row"><input type="color" id="colorBtnSecondaryText" data-key="colors.btnSecondaryText"><span>الزر الثانوي — نص</span></div>
+        <div class="color-row"><input type="color" id="colorBtnSecondaryBorder" data-key="colors.btnSecondaryBorder"><span>الزر الثانوي — الإطار</span></div>
+        <div class="color-row"><input type="color" id="colorBtnSecondaryMobileBg" data-key="colors.btnSecondaryMobileBg"><span>زر الجوال الثانوي — خلفية</span></div>
+        <div class="color-row"><input type="color" id="colorBtnSecondaryMobileText" data-key="colors.btnSecondaryMobileText"><span>زر الجوال الثانوي — نص</span></div>
+        <div class="color-row"><input type="color" id="colorWhatsapp" data-key="colors.whatsapp"><span>زر واتساب العائم</span></div>
+      </div>
+      <div class="card-box">
+        <h2 class="sec">ألوان التذييل (Footer)</h2>
+        <div class="color-row"><input type="color" id="colorFooterBg" data-key="colors.footerBg"><span>خلفية التذييل</span></div>
+        <div class="color-row"><input type="color" id="colorFooterHeading" data-key="colors.footerHeading"><span>عناوين التذييل</span></div>
+        <div class="color-row"><input type="color" id="colorFooterText" data-key="colors.footerText"><span>نص التذييل</span></div>
+        <div class="color-row"><input type="color" id="colorFooterLine" data-key="colors.footerLine"><span>الخط السفلي للتذييل</span></div>
+      </div>
+      <div class="card-box">
+        <h2 class="sec">حجم النصوص</h2>
+        <div class="size-row"><span>عنوان الهيرو (الرئيسي، شاشات كبيرة)</span><input type="range" min="2" max="4.5" step="0.1" data-key="sizes.heroTitle" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>3.1rem</output></div>
+        <div class="size-row"><span>عنوان الهيرو (الجوال)</span><input type="range" min="1.3" max="2.8" step="0.1" data-key="sizes.heroTitleMobile" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.9rem</output></div>
+        <div class="size-row"><span>عناوين الأقسام</span><input type="range" min="1.4" max="3" step="0.1" data-key="sizes.sectionTitle" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>2.2rem</output></div>
+        <div class="size-row"><span>حجم نص الفقرات</span><input type="range" min="0.85" max="1.5" step="0.05" data-key="sizes.body" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.15rem</output></div>
+        <div class="size-row"><span>حجم روابط القائمة العلوية</span><input type="range" min="0.75" max="1.3" step="0.05" data-key="sizes.navLink" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>0.95rem</output></div>
+        <div class="size-row"><span>حجم نص الأزرار</span><input type="range" min="0.85" max="1.6" step="0.05" data-key="sizes.button" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.15rem</output></div>
+        <div class="hint">اسحب المؤشر لتغيير الحجم — التغيير يظهر في الموقع بعد الحفظ.</div>
+      </div>
+      <div class="card-box">
+        <h2 class="sec">المسافات والفراغات</h2>
+        <div class="size-row"><span>المسافة العمودية بين الأقسام (شاشات كبيرة)</span><input type="range" min="30" max="160" step="2" data-key="sizes.sectionGap" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>88px</output></div>
+        <div class="size-row"><span>المسافة العمودية بين الأقسام (الجوال)</span><input type="range" min="20" max="120" step="2" data-key="sizes.sectionGapMobile" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>56px</output></div>
+        <div class="size-row"><span>المسافة بين نص الهيرو وصورته</span><input type="range" min="10" max="120" step="2" data-key="sizes.heroGap" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>60px</output></div>
+        <div class="size-row"><span>الهامش الجانبي للمحتوى</span><input type="range" min="10" max="60" step="1" data-key="sizes.containerPx" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>24px</output></div>
+        <div class="hint">هذه القيم تتحكم في الفراغات الظاهرة بين أقسام الموقع — أي تغيير يُطبَّق فورًا على الموقع بعد الحفظ.</div>
       </div>
       <div class="card-box">
         <h2 class="sec">الخطوط</h2>
@@ -360,10 +407,52 @@ function addCustomFontOption(name){
 }
 
 function fillDesign(){
-  document.getElementById('colorInk').value = CONTENT.colors.ink;
-  document.getElementById('colorBg').value = CONTENT.colors.background;
-  document.getElementById('colorClay').value = CONTENT.colors.clay;
-  document.getElementById('colorSage').value = CONTENT.colors.sage;
+  if (!CONTENT.colors) CONTENT.colors = {};
+  if (!CONTENT.sizes) CONTENT.sizes = {};
+  const col = CONTENT.colors, sz = CONTENT.sizes;
+  const setColor = (id, key, fallback) => { document.getElementById(id).value = col[key] || fallback; };
+  setColor('colorInk','ink','#22322C');
+  setColor('colorBg','background','#EFEDE6');
+  setColor('colorCard','card','#F8F6F1');
+  setColor('colorClay','clay','#B8734F');
+  setColor('colorClayDark','clayDark','#9C5D3C');
+  setColor('colorSage','sage','#7C8B7A');
+  setColor('colorLine','line','#DAD5C8');
+  setColor('colorWhite','white','#FFFFFF');
+  setColor('colorMuted','muted','#4B5850');
+  setColor('colorNavCtaBg','navCtaBg','#22322C');
+  setColor('colorNavCtaText','navCtaText','#FFFFFF');
+  setColor('colorBtnPrimaryBg','btnPrimaryBg','#B8734F');
+  setColor('colorBtnPrimaryText','btnPrimaryText','#FFFFFF');
+  setColor('colorBtnSecondaryBg','btnSecondaryBg','#F8F6F1');
+  setColor('colorBtnSecondaryText','btnSecondaryText','#22322C');
+  setColor('colorBtnSecondaryBorder','btnSecondaryBorder','#DAD5C8');
+  setColor('colorBtnSecondaryMobileBg','btnSecondaryMobileBg','#DCB8A0');
+  setColor('colorBtnSecondaryMobileText','btnSecondaryMobileText','#4A2E1D');
+  setColor('colorWhatsapp','whatsapp','#25D366');
+  setColor('colorFooterBg','footerBg','#1A2622');
+  setColor('colorFooterHeading','footerHeading','#FFFFFF');
+  setColor('colorFooterText','footerText','#C9CFC7');
+  setColor('colorFooterLine','footerLine','#8B9389');
+
+  const setSize = (key, fallbackNum) => {
+    const el = document.querySelector(`[data-key="sizes.${key}"]`);
+    if (!el) return;
+    const raw = sz[key];
+    const num = raw ? parseFloat(raw) : fallbackNum;
+    el.value = num;
+    el.nextElementSibling.textContent = num + (el.dataset.unit || '');
+  };
+  setSize('heroTitle', 3.1);
+  setSize('heroTitleMobile', 1.9);
+  setSize('sectionTitle', 2.2);
+  setSize('body', 1.15);
+  setSize('navLink', .95);
+  setSize('button', 1.15);
+  setSize('sectionGap', 88);
+  setSize('sectionGapMobile', 56);
+  setSize('heroGap', 60);
+  setSize('containerPx', 24);
 
   if (CONTENT.font.customFontName) {
     addCustomFontOption(CONTENT.font.customFontName);
@@ -641,13 +730,13 @@ async function fillBookings(){
 function bindGenericFields(){
   document.querySelectorAll('[data-key]').forEach(el => {
     el.addEventListener(el.tagName === 'SELECT' || el.type === 'color' ? 'input' : 'input', ()=>{
-      setPath(CONTENT, el.dataset.key, el.value);
-      const patch = {}; setPath(patch, el.dataset.key, el.value);
+      const val = el.dataset.unit ? (el.value + el.dataset.unit) : el.value;
+      setPath(CONTENT, el.dataset.key, val);
       // إعادة بناء الكائن الجزئي بشكل صحيح متداخل
       const keys = el.dataset.key.split('.');
       let obj = {}; let cur = obj;
       for(let i=0;i<keys.length-1;i++){ cur[keys[i]] = {}; cur = cur[keys[i]]; }
-      cur[keys[keys.length-1]] = el.value;
+      cur[keys[keys.length-1]] = val;
       scheduleSave(obj);
     });
   });
