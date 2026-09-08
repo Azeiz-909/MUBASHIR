@@ -123,6 +123,7 @@
         <h2 class="sec">حجم النصوص</h2>
         <div class="size-row"><span>عنوان الهيرو (الرئيسي، شاشات كبيرة)</span><input type="range" min="2" max="4.5" step="0.1" data-key="sizes.heroTitle" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>3.1rem</output></div>
         <div class="size-row"><span>عنوان الهيرو (الجوال)</span><input type="range" min="1.3" max="2.8" step="0.1" data-key="sizes.heroTitleMobile" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.9rem</output></div>
+        <div class="size-row"><span>نص وصف الهيرو الطويل (الجوال)</span><input type="range" min="0.6" max="1.3" step="0.05" data-key="sizes.heroSubtitleMobile" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>0.95rem</output></div>
         <div class="size-row"><span>عناوين الأقسام</span><input type="range" min="1.4" max="3" step="0.1" data-key="sizes.sectionTitle" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>2.2rem</output></div>
         <div class="size-row"><span>حجم نص الفقرات</span><input type="range" min="0.85" max="1.5" step="0.05" data-key="sizes.body" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.15rem</output></div>
         <div class="size-row"><span>حجم روابط القائمة العلوية</span><input type="range" min="0.75" max="1.3" step="0.05" data-key="sizes.navLink" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>0.95rem</output></div>
@@ -135,7 +136,8 @@
         <div class="size-row"><span>المسافة العمودية بين الأقسام (الجوال)</span><input type="range" min="20" max="120" step="2" data-key="sizes.sectionGapMobile" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>56px</output></div>
         <div class="size-row"><span>المسافة بين نص الهيرو وصورته</span><input type="range" min="10" max="120" step="2" data-key="sizes.heroGap" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>60px</output></div>
         <div class="size-row"><span>الهامش الجانبي للمحتوى</span><input type="range" min="10" max="60" step="1" data-key="sizes.containerPx" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>24px</output></div>
-        <div class="hint">هذه القيم تتحكم في الفراغات الظاهرة بين أقسام الموقع — أي تغيير يُطبَّق فورًا على الموقع بعد الحفظ.</div>
+        <div class="size-row"><span>إزاحة نص الهيرو (الجوال) يمين/يسار</span><input type="range" min="-60" max="60" step="2" data-key="sizes.heroOverlayShiftX" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        <div class="hint">هذه القيم تتحكم في الفراغات الظاهرة بين أقسام الموقع — أي تغيير يُطبَّق فورًا على الموقع بعد الحفظ. إزاحة نص الهيرو تحرّك عنوان ووصف قسم "مساحة آمنة… ليبدأ الحديث" في نسخة الجوال يمينًا أو يسارًا (قيمة سالبة = يسار) حتى لا يلامس رسمة الخيط.</div>
       </div>
       <div class="card-box">
         <h2 class="sec">الخطوط</h2>
@@ -445,6 +447,7 @@ function fillDesign(){
   };
   setSize('heroTitle', 3.1);
   setSize('heroTitleMobile', 1.9);
+  setSize('heroSubtitleMobile', .95);
   setSize('sectionTitle', 2.2);
   setSize('body', 1.15);
   setSize('navLink', .95);
@@ -453,6 +456,7 @@ function fillDesign(){
   setSize('sectionGapMobile', 56);
   setSize('heroGap', 60);
   setSize('containerPx', 24);
+  setSize('heroOverlayShiftX', 0);
 
   if (CONTENT.font.customFontName) {
     addCustomFontOption(CONTENT.font.customFontName);
