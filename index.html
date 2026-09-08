@@ -42,18 +42,18 @@
     .desktop-hero-block, section.cta-duo{display:none !important;}
     .hero{padding:0 !important;}
     header{display:none !important;}
-    .hero-mobile-text{opacity:1 !important; transform:none !important;}
-    .hero-mobile-nav{display:flex; flex-direction:column; align-items:flex-end; gap:10px; padding:20px 24px 28px;}
-    .hero-mobile-links{display:flex; gap:16px; font-size:.82rem; font-weight:500;}
+    .hero-mobile-nav{display:flex; flex-direction:row; justify-content:space-between; align-items:flex-start; gap:10px; padding:20px 24px 20px;}
+    .hero-mobile-links{display:flex; flex-wrap:wrap; gap:12px; font-size:.78rem; font-weight:500; max-width:45%;}
     .hero-mobile-links a{color:var(--ink);}
-    .hero-mobile-brand{text-align:left;}
-    .hero-mobile-role{font-size:.85rem; font-weight:600; color:var(--ink); opacity:.85;}
-    .hero-mobile-name{font-family:var(--font-display); font-size:1.6rem; font-weight:700; color:var(--ink); line-height:1.2;}
+    .hero-mobile-brand{text-align:right; font-family:var(--font-display);}
+    .hero-mobile-role{font-size:1rem; font-weight:600; color:var(--ink);}
+    .hero-mobile-name{font-size:1.7rem; font-weight:700; color:var(--ink); line-height:1.15;}
     .hero-mobile-only{display:block; position:relative; background:#e0dbc3;}
-    .hero-mobile-only .hero-mobile-img{width:100%; display:block;}
-    .hero-mobile-text{text-align:center; padding:20px 10px;}
-    .hero-mobile-text h1{font-size:2rem; margin-bottom:14px;}
-    .hero-mobile-text p{color:#4B5850; font-size:1rem;}
+    .hero-mobile-photo-wrap{position:relative;}
+    .hero-mobile-full-img{width:100%; display:block;}
+    .hero-mobile-text-overlay{position:absolute; top:34.5%; left:0; right:0; text-align:center; padding:0 20px; opacity:1 !important; transform:none !important;}
+    .hero-mobile-text-overlay h1{font-size:1.9rem; margin-bottom:12px; line-height:1.25;}
+    .hero-mobile-text-overlay p{color:#4B5850; font-size:.95rem; line-height:1.7;}
     .cta-duo-mobile-only{display:block; background:#e0dbc3; padding:0 0 40px;}
     .cta-duo-mobile-only .container{display:flex; flex-direction:column; gap:14px; padding:0 24px;}
     .cta-duo-mobile-only .btn-primary, .cta-duo-mobile-only .btn-secondary{width:100%; text-align:center; justify-content:center; border-radius:16px; font-size:1rem; padding:18px; border:none;}
@@ -179,15 +179,14 @@
         <div id="siteNameMobile" class="hero-mobile-name"></div>
       </div>
     </div>
-    <img src="/assets/hero-mobile-top.png" class="hero-mobile-img" alt="">
-    <div class="container">
-      <div class="hero-mobile-text reveal">
+    <div class="hero-mobile-photo-wrap">
+      <img src="/assets/hero-mobile-full.png" class="hero-mobile-full-img" alt="">
+      <div class="hero-mobile-text-overlay reveal">
         <div class="eyebrow" style="justify-content:center">استشارات أسرية سرّية وموثوقة</div>
         <h1 id="heroTitleMobile">مساحة آمنة… ليبدأ الحديث</h1>
         <p id="heroSubtitleMobile"></p>
       </div>
     </div>
-    <img src="/assets/hero-mobile-bottom.png" class="hero-mobile-img" alt="">
   </div>
 </section>
 
@@ -311,7 +310,7 @@ async function loadContent(){
 
   document.getElementById('siteName').innerHTML = c.site.name.replace(/تحدث/, '<span>تحدث</span>');
   document.getElementById('siteNameMobile').textContent = c.site.name;
-  document.getElementById('siteRoleLabelMobile').textContent = c.site.roleLabel || '';
+  document.getElementById('siteRoleLabelMobile').textContent = c.site.roleLabel ? (c.site.roleLabel.trim().replace(/:?\s*$/, '') + ' :') : '';
   document.getElementById('footerName').textContent = c.site.name;
   document.getElementById('footerName2').textContent = c.site.name;
 
