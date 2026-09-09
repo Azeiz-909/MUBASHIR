@@ -6,7 +6,8 @@
 <title>عيادة تحدث | استشارات أسرية</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link id="fontsLink" href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@500;600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link id="fontsLinkDisplay" href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link id="fontsLinkBody" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --ink:#22322C; --paper:#EFEDE6; --card:#F8F6F1; --clay:#B8734F; --clay-dark:#9C5D3C;
@@ -219,7 +220,7 @@
   </div>
 </section>
 
-<section class="info-alt">
+<section class="info-alt" id="privacySection">
   <div class="container info-flex">
     <div class="col reveal">
       <h2 id="privacyTitle"></h2>
@@ -237,7 +238,7 @@
   </div>
 </section>
 
-<section>
+<section id="firstSessionSection">
   <div class="container">
     <div class="col reveal" style="max-width:640px; margin:0 auto; text-align:center;">
       <div class="eyebrow" style="justify-content:center">قبل أول موعد</div>
@@ -262,7 +263,7 @@
   </div>
 </section>
 
-<section>
+<section id="certsSection">
   <div class="container">
     <div class="section-head reveal"><h2>الشهادات والاعتمادات</h2></div>
     <div class="certs-row" id="certsRow"></div>
@@ -346,16 +347,21 @@ async function loadContent(){
   setS('--name-x', 'nameOffsetX', '0px');
   setS('--name-y', 'nameOffsetY', '0px');
 
-  const families = [c.font.display, c.font.body].filter(Boolean);
-  let googleFamilies = families.filter(f => f !== c.font.customFontName).map(f => f.replace(/ /g,'+') + ':wght@400;500;600;700;900');
-  if (googleFamilies.length) document.getElementById('fontsLink').href = 'https://fonts.googleapis.com/css2?family=' + googleFamilies.join('&family=') + '&display=swap';
+  const fontDisplayName = c.font.display || 'Markazi Text';
+  const fontBodyName = c.font.body || 'Tajawal';
+  if (fontDisplayName !== c.font.customFontName) {
+    document.getElementById('fontsLinkDisplay').href = 'https://fonts.googleapis.com/css2?family=' + fontDisplayName.replace(/ /g,'+') + ':wght@400;500;600;700&display=swap';
+  }
+  if (fontBodyName !== c.font.customFontName) {
+    document.getElementById('fontsLinkBody').href = 'https://fonts.googleapis.com/css2?family=' + fontBodyName.replace(/ /g,'+') + ':wght@400;500;700&display=swap';
+  }
   if (c.font.customFontUrl && c.font.customFontName) {
     const style = document.createElement('style');
     style.textContent = `@font-face{font-family:'${c.font.customFontName}'; src:url('${c.font.customFontUrl}');}`;
     document.head.appendChild(style);
   }
-  root.setProperty('--font-display', `'${c.font.display}', serif`);
-  root.setProperty('--font-body', `'${c.font.body}', sans-serif`);
+  root.setProperty('--font-display', `'${fontDisplayName}', serif`);
+  root.setProperty('--font-body', `'${fontBodyName}', sans-serif`);
 
   document.getElementById('siteName').innerHTML = c.site.name.replace(/تحدث/, '<span>تحدث</span>');
   document.getElementById('siteNameMobile').textContent = c.site.name;
@@ -428,6 +434,11 @@ async function loadContent(){
   if (heroSubMobileEl) heroSubMobileEl.style.display = vis.heroSubtitleMobile === false ? 'none' : '';
   const footerLinksCol = document.getElementById('footerLinksCol');
   if (footerLinksCol) footerLinksCol.style.display = vis.footerLinks === false ? 'none' : '';
+  const sectionToggles = { sectionPrivacy:'privacySection', sectionFirstSession:'firstSessionSection', sectionFaq:'faq', sectionHours:'hours', sectionCerts:'certsSection', sectionContact:'contact', sectionBooking:'booking' };
+  Object.entries(sectionToggles).forEach(([key, id]) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = vis[key] === false ? 'none' : '';
+  });
   document.getElementById('footerPhone').textContent = c.contact.phone;
   document.getElementById('footerPhone').href = 'tel:' + phoneDigits;
   document.getElementById('footerEmail').textContent = c.contact.email;
