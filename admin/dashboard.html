@@ -140,6 +140,26 @@
         <div class="hint">هذه القيم تتحكم في الفراغات الظاهرة بين أقسام الموقع — أي تغيير يُطبَّق فورًا على الموقع بعد الحفظ. إزاحة نص الهيرو تحرّك عنوان ووصف قسم "مساحة آمنة… ليبدأ الحديث" في نسخة الجوال يمينًا أو يسارًا (قيمة سالبة = يسار) حتى لا يلامس رسمة الخيط.</div>
       </div>
       <div class="card-box">
+        <h2 class="sec">موضع اسم المستشار (الجوال)</h2>
+        <div class="size-row"><span>حجم "المستشار الأسري :"</span><input type="range" min="0.6" max="1.8" step="0.05" data-key="sizes.roleSize" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1rem</output></div>
+        <div class="size-row"><span>تحريك "المستشار الأسري :" يمين/يسار</span><input type="range" min="-100" max="100" step="2" data-key="sizes.roleOffsetX" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        <div class="size-row"><span>تحريك "المستشار الأسري :" أعلى/أسفل</span><input type="range" min="-100" max="100" step="2" data-key="sizes.roleOffsetY" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        <div class="size-row"><span>حجم اسم المستشار (مثال: مبشر الحربي)</span><input type="range" min="1" max="3" step="0.05" data-key="sizes.nameSize" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.55rem</output></div>
+        <div class="size-row"><span>تحريك اسم المستشار يمين/يسار</span><input type="range" min="-100" max="100" step="2" data-key="sizes.nameOffsetX" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        <div class="size-row"><span>تحريك اسم المستشار أعلى/أسفل</span><input type="range" min="-100" max="100" step="2" data-key="sizes.nameOffsetY" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        <div class="hint">"المستشار الأسري :" والاسم (مثل "مبشر الحربي") كل واحد له تحكم مستقل بالحجم والموضع — قيمة سالبة بالإزاحة الأفقية = يسار، وبالإزاحة الرأسية = أعلى.</div>
+      </div>
+      <div class="card-box">
+        <h2 class="sec">الإظهار والإخفاء</h2>
+        <div class="color-row"><input type="checkbox" id="visHeroSubtitle" data-key="visibility.heroSubtitleMobile" style="width:20px; height:20px;"><span>نص الهيرو الفرعي (الوصف الطويل) — الجوال</span></div>
+        <div class="color-row"><input type="checkbox" id="visContactPhone" data-key="visibility.contactPhone" style="width:20px; height:20px;"><span>خانة الهاتف في "تواصل معنا"</span></div>
+        <div class="color-row"><input type="checkbox" id="visContactWhatsapp" data-key="visibility.contactWhatsapp" style="width:20px; height:20px;"><span>خانة واتساب في "تواصل معنا"</span></div>
+        <div class="color-row"><input type="checkbox" id="visContactEmail" data-key="visibility.contactEmail" style="width:20px; height:20px;"><span>خانة الإيميل في "تواصل معنا"</span></div>
+        <div class="color-row"><input type="checkbox" id="visContactAddress" data-key="visibility.contactAddress" style="width:20px; height:20px;"><span>خانة العنوان في "تواصل معنا"</span></div>
+        <div class="color-row"><input type="checkbox" id="visFooterLinks" data-key="visibility.footerLinks" style="width:20px; height:20px;"><span>عمود "روابط سريعة" في الفوتر</span></div>
+        <div class="hint">ألغِ التحديد لإخفاء أي خانة من الموقع للعامة دون حذف بياناتها.</div>
+      </div>
+      <div class="card-box">
         <h2 class="sec">الخطوط</h2>
         <div class="row2">
           <div class="field"><label>خط العناوين</label>
@@ -218,6 +238,14 @@
         <h2 class="sec">الشهادات والاعتمادات</h2>
         <div id="certsEditor"></div>
         <button class="btn-outline" id="addCertBtn">+ إضافة شهادة</button>
+      </div>
+
+      <div class="card-box">
+        <h2 class="sec">الفوتر (تذييل الصفحة)</h2>
+        <div class="field"><label>نص الوصف أسفل الاسم</label><textarea id="footerDescInput" data-key="footer.description" placeholder="مساحة آمنة للاستشارات الأسرية والزوجية عن بُعد."></textarea></div>
+        <label style="font-size:.85rem; font-weight:700; margin-top:10px; display:block;">روابط "روابط سريعة"</label>
+        <div id="footerLinksEditor"></div>
+        <button class="btn-outline" id="addFooterLinkBtn">+ إضافة رابط</button>
       </div>
 
       <div class="card-box">
@@ -329,29 +357,29 @@ function setPath(obj, pathStr, val){
   cur[keys[keys.length-1]] = val;
 }
 
+let DIRTY = false;
+
 function scheduleSave(patch){
-  clearTimeout(saveTimer);
+  DIRTY = true;
   const indicator = document.getElementById('saveIndicator');
-  indicator.style.color = '#7C8B7A';
-  indicator.textContent = 'جارٍ الحفظ…';
-  saveTimer = setTimeout(async ()=>{
-    const res = await fetch('/api/content', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(patch) });
-    indicator.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
-    indicator.textContent = res.ok ? '✓ تم الحفظ تلقائيًا' : 'تعذّر الحفظ — تحقق من الاتصال';
-    setTimeout(()=> indicator.textContent='', 2500);
-  }, 500);
+  indicator.style.color = '#B8734F';
+  indicator.textContent = '● تغييرات غير محفوظة — اضغط "حفظ الآن"';
 }
 
 async function saveNow(){
-  clearTimeout(saveTimer);
   const indicator = document.getElementById('saveIndicator');
   indicator.style.color = '#7C8B7A';
   indicator.textContent = 'جارٍ حفظ كل التعديلات…';
   const res = await fetch('/api/content', { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(CONTENT) });
   indicator.style.color = res.ok ? '#2f8f4e' : '#b23a3a';
   indicator.textContent = res.ok ? '✓ تم حفظ كل التعديلات بنجاح' : 'تعذّر الحفظ — تحقق من الاتصال';
+  if (res.ok) DIRTY = false;
   setTimeout(()=> indicator.textContent='', 3500);
 }
+
+window.addEventListener('beforeunload', (e)=>{
+  if (DIRTY) { e.preventDefault(); e.returnValue = ''; }
+});
 
 async function uploadFile(file){
   const dataBase64 = await new Promise((resolve, reject) => {
@@ -457,6 +485,22 @@ function fillDesign(){
   setSize('heroGap', 60);
   setSize('containerPx', 24);
   setSize('heroOverlayShiftX', 0);
+  setSize('roleSize', 1);
+  setSize('roleOffsetX', 0);
+  setSize('roleOffsetY', 0);
+  setSize('nameSize', 1.55);
+  setSize('nameOffsetX', 0);
+  setSize('nameOffsetY', 0);
+
+  if (!CONTENT.visibility) CONTENT.visibility = {};
+  const vis = CONTENT.visibility;
+  const setVis = (id, key) => { document.getElementById(id).checked = vis[key] !== false; };
+  setVis('visHeroSubtitle', 'heroSubtitleMobile');
+  setVis('visContactPhone', 'contactPhone');
+  setVis('visContactWhatsapp', 'contactWhatsapp');
+  setVis('visContactEmail', 'contactEmail');
+  setVis('visContactAddress', 'contactAddress');
+  setVis('visFooterLinks', 'footerLinks');
 
   if (CONTENT.font.customFontName) {
     addCustomFontOption(CONTENT.font.customFontName);
@@ -527,6 +571,14 @@ function fillContent(){
 
   renderFaq(); renderHours(); renderPayments(); renderCerts();
 
+  if (!CONTENT.footer) CONTENT.footer = { description:'', links: [] };
+  document.getElementById('footerDescInput').value = CONTENT.footer.description || '';
+  renderFooterLinks();
+  document.getElementById('addFooterLinkBtn').addEventListener('click', ()=>{
+    CONTENT.footer.links.push({label:'رابط جديد', href:'#'});
+    renderFooterLinks(); scheduleSave({footer: CONTENT.footer});
+  });
+
   document.getElementById('contactPhone').value = CONTENT.contact.phone;
   document.getElementById('contactWhatsapp').value = CONTENT.contact.whatsapp;
   document.getElementById('contactEmail').value = CONTENT.contact.email;
@@ -541,6 +593,24 @@ function fillContent(){
       CONTENT.payments.push(e.target.value.trim()); e.target.value=''; renderPayments(); scheduleSave({payments: CONTENT.payments});
     }
   });
+}
+
+function renderFooterLinks(){
+  if (!CONTENT.footer) CONTENT.footer = { description:'', links: [] };
+  if (!CONTENT.footer.links) CONTENT.footer.links = [];
+  document.getElementById('footerLinksEditor').innerHTML = CONTENT.footer.links.map((l,i)=>`
+    <div class="list-row">
+      <input type="text" value="${escAttr(l.label)}" data-flink="${i}" data-field="label" placeholder="نص الرابط" style="flex:1;">
+      <input type="text" value="${escAttr(l.href)}" data-flink="${i}" data-field="href" placeholder="#section أو رابط" style="flex:1;">
+      <button class="btn-danger" data-flink-del="${i}">حذف</button>
+    </div>`).join('');
+  document.querySelectorAll('[data-flink]').forEach(el => el.addEventListener('input', e=>{
+    const i = +e.target.dataset.flink, field = e.target.dataset.field;
+    CONTENT.footer.links[i][field] = e.target.value; scheduleSave({footer: CONTENT.footer});
+  }));
+  document.querySelectorAll('[data-flink-del]').forEach(el => el.addEventListener('click', e=>{
+    CONTENT.footer.links.splice(+e.target.dataset.flinkDel,1); renderFooterLinks(); scheduleSave({footer: CONTENT.footer});
+  }));
 }
 
 function renderFaq(){
@@ -733,8 +803,10 @@ async function fillBookings(){
 
 function bindGenericFields(){
   document.querySelectorAll('[data-key]').forEach(el => {
-    el.addEventListener(el.tagName === 'SELECT' || el.type === 'color' ? 'input' : 'input', ()=>{
-      const val = el.dataset.unit ? (el.value + el.dataset.unit) : el.value;
+    el.addEventListener('input', ()=>{
+      let val;
+      if (el.type === 'checkbox') val = el.checked;
+      else val = el.dataset.unit ? (el.value + el.dataset.unit) : el.value;
       setPath(CONTENT, el.dataset.key, val);
       // إعادة بناء الكائن الجزئي بشكل صحيح متداخل
       const keys = el.dataset.key.split('.');
