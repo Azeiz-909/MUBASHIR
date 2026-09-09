@@ -160,6 +160,17 @@
         <div class="hint">ألغِ التحديد لإخفاء أي خانة من الموقع للعامة دون حذف بياناتها.</div>
       </div>
       <div class="card-box">
+        <h2 class="sec">إخفاء أقسام كاملة</h2>
+        <div class="color-row"><input type="checkbox" id="visSectionPrivacy" data-key="visibility.sectionPrivacy" style="width:20px; height:20px;"><span>قسم "السرية والخصوصية"</span></div>
+        <div class="color-row"><input type="checkbox" id="visSectionFirstSession" data-key="visibility.sectionFirstSession" style="width:20px; height:20px;"><span>قسم "قبل أول موعد"</span></div>
+        <div class="color-row"><input type="checkbox" id="visSectionFaq" data-key="visibility.sectionFaq" style="width:20px; height:20px;"><span>قسم "الأسئلة الشائعة" بالكامل</span></div>
+        <div class="color-row"><input type="checkbox" id="visSectionHours" data-key="visibility.sectionHours" style="width:20px; height:20px;"><span>قسم "أوقات العمل وطرق الدفع" بالكامل</span></div>
+        <div class="color-row"><input type="checkbox" id="visSectionCerts" data-key="visibility.sectionCerts" style="width:20px; height:20px;"><span>قسم "الشهادات والاعتمادات" بالكامل</span></div>
+        <div class="color-row"><input type="checkbox" id="visSectionContact" data-key="visibility.sectionContact" style="width:20px; height:20px;"><span>قسم "تواصل معنا" بالكامل</span></div>
+        <div class="color-row"><input type="checkbox" id="visSectionBooking" data-key="visibility.sectionBooking" style="width:20px; height:20px;"><span>قسم أزرار الحجز (سطح المكتب)</span></div>
+        <div class="hint">هذه تخفي القسم كاملًا بعنوانه وكل محتواه — مفيدة إذا ما تبي قسم يظهر إطلاقًا حاليًا.</div>
+      </div>
+      <div class="card-box">
         <h2 class="sec">الخطوط</h2>
         <div class="row2">
           <div class="field"><label>خط العناوين</label>
@@ -501,13 +512,29 @@ function fillDesign(){
   setVis('visContactEmail', 'contactEmail');
   setVis('visContactAddress', 'contactAddress');
   setVis('visFooterLinks', 'footerLinks');
+  setVis('visSectionPrivacy', 'sectionPrivacy');
+  setVis('visSectionFirstSession', 'sectionFirstSession');
+  setVis('visSectionFaq', 'sectionFaq');
+  setVis('visSectionHours', 'sectionHours');
+  setVis('visSectionCerts', 'sectionCerts');
+  setVis('visSectionContact', 'sectionContact');
+  setVis('visSectionBooking', 'sectionBooking');
 
   if (CONTENT.font.customFontName) {
     addCustomFontOption(CONTENT.font.customFontName);
     document.getElementById('customFontStatus').textContent = 'الخط المرفوع حاليًا: ' + CONTENT.font.customFontName + ' — يمكنك اختياره من القائمتين أعلاه.';
   }
-  document.getElementById('fontDisplay').value = CONTENT.font.display;
-  document.getElementById('fontBody').value = CONTENT.font.body;
+  document.getElementById('fontDisplay').value = CONTENT.font.display || 'Markazi Text';
+  document.getElementById('fontBody').value = CONTENT.font.body || 'Tajawal';
+  // ضمان مضاعف لحفظ خط العناوين وخط النصوص كل واحد لحاله بشكل مستقل تمامًا
+  ['fontDisplay','fontBody'].forEach(id => {
+    const sel = document.getElementById(id);
+    const key = id === 'fontDisplay' ? 'display' : 'body';
+    ['input','change'].forEach(evt => sel.addEventListener(evt, ()=>{
+      CONTENT.font[key] = sel.value;
+      scheduleSave({ font: { [key]: sel.value } });
+    }));
+  });
 
   document.getElementById('customFontFile').addEventListener('change', async (e)=>{
     const file = e.target.files[0]; if (!file) return;
