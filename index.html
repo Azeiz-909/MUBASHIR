@@ -45,15 +45,7 @@
   .eyebrow::before{content:""; width:22px; height:2px; background:var(--clay); display:inline-block;}
   section{padding:var(--section-gap) 0;}
   @media(max-width:700px){ section{padding:var(--section-gap-mobile) 0;} }
-  header{position:sticky; top:0; z-index:50; background:rgba(239,237,230,0.9); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
-  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:1140px; margin:0 auto;}
-  .logo{font-family:var(--font-display); font-size:1.7rem; font-weight:700; color:var(--ink);}
-  .logo span{color:var(--clay-dark);}
-  .nav-links{display:flex; gap:28px; font-weight:500; font-size:var(--fs-nav-link);}
-  .nav-links a:hover{color:var(--clay-dark);}
-  .nav-cta{background:var(--nav-cta-bg); color:var(--nav-cta-text); padding:10px 22px; border-radius:30px; font-weight:700; font-size:.9rem;}
   .hero-mobile-only{display:none;}
-  @media(max-width:820px){ .nav-links{display:none;} }
   @media(max-width:700px){
     .desktop-hero-block, section.cta-duo{display:none !important;}
     .hero{padding:0 !important;}
@@ -75,22 +67,33 @@
     .hero-mobile-cta-overlay .btn-primary, .hero-mobile-cta-overlay .btn-secondary{width:auto; text-align:center; justify-content:center; border-radius:16px; font-size:1rem; padding:18px; border:none;}
     .hero-mobile-cta-overlay .btn-secondary{background:var(--btn-secondary-mobile-bg); color:var(--btn-secondary-mobile-text);}
   }
-  .hero{position:relative; padding:100px 0 60px;}
-  .hero .container{display:flex; align-items:center; gap:var(--hero-gap);}
-  .hero-text{flex:1.1;}
-  .hero-text h1{font-size:var(--fs-hero-title); color:var(--ink); margin-bottom:22px;}
-  .hero-text p{font-size:var(--fs-body); color:var(--muted); max-width:520px;}
-  .hero-visual{flex:1; display:flex; justify-content:center; position:relative;}
-  .hero-visual img{position:relative; z-index:1; width:100%; max-width:420px; max-height:320px; object-fit:contain; -webkit-mask-image:radial-gradient(ellipse 60% 60% at center, #000 20%, rgba(0,0,0,.5) 48%, transparent 78%); mask-image:radial-gradient(ellipse 60% 60% at center, #000 20%, rgba(0,0,0,.5) 48%, transparent 78%);}
-  .hero-visual .dot{position:absolute; border-radius:50%; z-index:2; animation:heroFloat 4.5s ease-in-out infinite;}
-  .hero-visual .dot.d1{width:14px; height:14px; background:var(--clay); top:10%; right:10%;}
-  .hero-visual .dot.d2{width:10px; height:10px; background:var(--sage); bottom:14%; left:8%; animation-duration:5.5s; animation-direction:reverse;}
-  @keyframes heroFloat{ 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
-  @media(max-width:700px){ .hero-visual img{max-height:210px;} .hero-visual .dot{transform:scale(.8);} }
-  .privacy-visual img{border-radius:22px; box-shadow:var(--shadow); width:100%; object-fit:cover;}
+  .hero{position:relative; padding:0;}
+  .hero .container.desktop-hero-block{max-width:1671px; padding:0; margin:0 auto;}
+  .hero-desktop-photo-wrap{position:relative;}
+  .hero-desktop-full-img{width:100%; display:block;}
+  .hero-desktop-links{position:absolute; top:4.5%; left:7%; display:flex; gap:26px; font-weight:500; font-size:.95rem; z-index:2;}
+  .hero-desktop-links a{color:var(--ink);}
+  .hero-desktop-links a:hover{color:var(--clay-dark);}
+  .hero-desktop-brand-overlay{position:absolute; top:3.5%; right:5%; text-align:right; font-family:var(--font-display); z-index:2;}
+  .hero-desktop-brand-overlay .hero-desktop-role{font-size:1.05rem; font-weight:600; color:var(--ink);}
+  .hero-desktop-brand-overlay .hero-desktop-name{font-size:2rem; font-weight:700; color:var(--ink); line-height:1.15;}
+  .hero-desktop-text-overlay{position:absolute; top:27%; left:50%; transform:translateX(-50%); text-align:center; width:42%; min-width:400px; z-index:2;}
+  .hero-desktop-text-overlay .eyebrow{justify-content:center;}
+  .hero-desktop-text-overlay h1{font-size:var(--fs-hero-title); color:var(--ink); margin-bottom:18px; line-height:1.2;}
+  .hero-desktop-text-overlay p{font-size:1.05rem; color:var(--muted); margin-bottom:26px;}
+  .hero-desktop-cta{display:flex; align-items:center; justify-content:center; gap:16px;}
+  .hero-desktop-cta .btn-primary, .hero-desktop-cta .btn-secondary{padding:16px 30px; font-size:1rem; white-space:nowrap;}
+  @media(max-width:1150px){
+    .hero-desktop-text-overlay{width:56%; min-width:0;}
+    .hero-desktop-links{gap:14px; font-size:.78rem; left:4%;}
+    .hero-desktop-brand-overlay .hero-desktop-name{font-size:1.5rem;}
+    .hero-desktop-brand-overlay .hero-desktop-role{font-size:.85rem;}
+    .hero-desktop-text-overlay h1{font-size:2.1rem;}
+    .hero-desktop-text-overlay p{font-size:.9rem; margin-bottom:16px;}
+    .hero-desktop-cta .btn-primary, .hero-desktop-cta .btn-secondary{padding:12px 20px; font-size:.85rem;}
+  }
+  .privacy-visual img{border-radius:22px; box-shadow:var(--shadow); width:100%; object-fit:cover; max-height:340px;}
   @media(max-width:700px){ .privacy-visual img{max-height:220px;} }
-  .hero-visual img{border-radius:24px; box-shadow:var(--shadow); max-height:340px; object-fit:cover;}
-  @media(max-width:900px){ .hero .container{flex-direction:column; text-align:center;} .hero-text p{margin:0 auto;} .hero-text h1{font-size:2.3rem;} }
   .cta-duo{padding:0 0 90px;}
   .cta-duo .container{display:flex; align-items:center; justify-content:center; gap:22px; flex-wrap:wrap;}
   .btn-primary, .btn-secondary{display:inline-flex; align-items:center; gap:10px; border-radius:16px; font-weight:700; border:none; transition:transform .15s;}
@@ -151,34 +154,30 @@
 </head>
 <body>
 
-<header>
-  <div class="nav">
-    <div class="logo" id="siteName">عيادة <span>تحدث</span></div>
-    <nav class="nav-links">
-      <a href="#faq">الأسئلة الشائعة</a>
-      <a href="#hours">أوقات العمل</a>
-      <a href="#contact">تواصل معنا</a>
-    </nav>
-  </div>
-</header>
-
 <!-- MOBILE-FIX-MARKER-V3 -->
 <section class="hero">
   <div class="container desktop-hero-block">
-    <div class="hero-text reveal">
-      <div class="eyebrow" id="heroEyebrowDesktop">استشارات أسرية سرّية وموثوقة</div>
-      <h1 id="heroTitle">مساحة آمنة… ليبدأ الحديث</h1>
-      <p id="heroSubtitle"></p>
-    </div>
-    <div class="hero-visual reveal" id="heroVisual" style="transition-delay:.15s;">
-      <span class="dot d1" id="heroDot1" style="display:none;"></span>
-      <span class="dot d2" id="heroDot2" style="display:none;"></span>
-      <img id="heroImg" alt="" style="display:none;">
-      <svg id="heroDefaultSvg" viewBox="0 0 360 260" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width:100%; max-width:380px;">
-        <path d="M10 170 C 60 90, 110 90, 150 150 S 250 210, 300 130" stroke="#B8734F" stroke-width="4" fill="none" stroke-linecap="round"/>
-        <path d="M20 210 C 80 140, 130 140, 170 190 S 270 240, 330 170" stroke="#7C8B7A" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.7"/>
-        <circle cx="300" cy="130" r="9" fill="#22322C"/><circle cx="20" cy="210" r="7" fill="#22322C" opacity="0.6"/><circle cx="150" cy="150" r="5" fill="#B8734F"/>
-      </svg>
+    <div class="hero-desktop-photo-wrap">
+      <img src="/assets/hero-desktop-full.png" class="hero-desktop-full-img" alt="">
+      <nav class="hero-desktop-links">
+        <a href="/">الرئيسية</a>
+        <a href="#faq">الأسئلة الشائعة</a>
+        <a href="#hours">أوقات العمل</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+      <div class="hero-desktop-brand-overlay">
+        <div id="siteRoleLabelDesktopHero" class="hero-desktop-role"></div>
+        <div id="siteNameDesktopHero" class="hero-desktop-name"></div>
+      </div>
+      <div class="hero-desktop-text-overlay reveal">
+        <div class="eyebrow" id="heroEyebrowDesktop" style="justify-content:center">استشارات أسرية سرّية وموثوقة</div>
+        <h1 id="heroTitle">مساحة آمنة… ليبدأ الحديث</h1>
+        <p id="heroSubtitle"></p>
+        <div class="hero-desktop-cta">
+          <a href="/booking.html" class="btn-secondary">احجز استشارتك</a>
+          <a href="/confirm.html" class="btn-primary">ابدأ موعدك</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -383,9 +382,10 @@ async function loadContent(){
   root.setProperty('--font-display', `'${fontDisplayName}', serif`);
   root.setProperty('--font-body', `'${fontBodyName}', sans-serif`);
 
-  document.getElementById('siteName').innerHTML = c.site.name.replace(/تحدث/, '<span>تحدث</span>');
   document.getElementById('siteNameMobile').textContent = c.site.name;
   document.getElementById('siteRoleLabelMobile').textContent = c.site.roleLabel ? (c.site.roleLabel.trim().replace(/:?\s*$/, '') + ' :') : '';
+  document.getElementById('siteNameDesktopHero').textContent = c.site.name;
+  document.getElementById('siteRoleLabelDesktopHero').textContent = c.site.roleLabel ? (c.site.roleLabel.trim().replace(/:?\s*$/, '') + ' :') : '';
   document.getElementById('footerName').textContent = c.site.name;
   document.getElementById('footerName2').textContent = c.site.name;
   document.getElementById('footerDescription').textContent = (c.footer && c.footer.description) || 'مساحة آمنة للاستشارات الأسرية والزوجية عن بُعد.';
@@ -403,13 +403,6 @@ async function loadContent(){
     el.textContent = eyebrowText || 'استشارات أسرية سرّية وموثوقة';
     el.style.display = eyebrowIsHidden ? 'none' : '';
   });
-  if (c.hero.image) {
-    document.getElementById('heroImg').src = c.hero.image;
-    document.getElementById('heroImg').style.display = 'block';
-    document.getElementById('heroDefaultSvg').style.display = 'none';
-    document.getElementById('heroDot1').style.display = 'block';
-    document.getElementById('heroDot2').style.display = 'block';
-  }
 
   document.getElementById('privacyTitle').textContent = c.privacy.title;
   document.getElementById('privacyBody').textContent = c.privacy.body;
