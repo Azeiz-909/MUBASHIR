@@ -23,13 +23,15 @@
     --fs-hero-title: 3.1rem; --fs-hero-title-mobile: 1.9rem; --fs-hero-subtitle-mobile: .95rem; --fs-section-title: 2.2rem;
     --fs-body: 1.15rem; --fs-nav-link: .95rem; --fs-button: 1.15rem;
     --section-gap: 88px; --section-gap-mobile: 56px; --hero-gap: 60px; --container-px: 24px;
-    --hero-overlay-shift: 0px;
+    --eyebrow-size: .85rem; --eyebrow-x: 0px; --eyebrow-y: 0px;
+    --title-x: 0px; --title-y: 0px;
+    --subtitle-x: 0px; --subtitle-y: 0px;
     --role-size: 1rem; --role-x: 0px; --role-y: 0px;
     --name-size: 1.55rem; --name-x: 0px; --name-y: 0px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
-  html{scroll-behavior:smooth;}
-  body{font-family:var(--font-body); background:var(--paper); color:var(--ink); line-height:1.75; overflow-x:hidden; opacity:0; transition:opacity .4s ease;}
+  html{scroll-behavior:smooth; overflow-x:hidden; width:100%;}
+  body{font-family:var(--font-body); background:var(--paper); color:var(--ink); line-height:1.75; overflow-x:hidden; width:100%; opacity:0; transition:opacity .4s ease;}
 
   /* ظهور متلاشٍ تسلسلي عند التمرير */
   .reveal{opacity:0; transform:translateY(26px); transition:opacity .7s ease, transform .7s ease;}
@@ -55,17 +57,19 @@
     .desktop-hero-block, section.cta-duo{display:none !important;}
     .hero{padding:0 !important;}
     header{display:none !important;}
-    .hero-mobile-links{display:flex; flex-wrap:nowrap; justify-content:center; gap:16px; font-size:.74rem; font-weight:500; padding:18px 20px 10px;}
-    .hero-mobile-links a{color:var(--ink); white-space:nowrap;}
+    .hero-mobile-links{display:flex; flex-wrap:nowrap; justify-content:center; gap:10px; font-size:.68rem; font-weight:500; padding:18px 14px 10px; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+    .hero-mobile-links::-webkit-scrollbar{display:none;}
+    .hero-mobile-links a{color:var(--ink); white-space:nowrap; flex-shrink:0;}
     .hero-mobile-only{display:block; position:relative; background:#E4DDC6;}
     .hero-mobile-photo-wrap{position:relative;}
     .hero-mobile-full-img{width:100%; display:block;}
     .hero-mobile-brand-overlay{position:absolute; top:16%; left:50%; right:20px; text-align:right; font-family:var(--font-display); z-index:2;}
     .hero-mobile-brand-overlay .hero-mobile-role{font-size:var(--role-size); font-weight:600; color:var(--ink); transform:translate(var(--role-x), var(--role-y));}
     .hero-mobile-brand-overlay .hero-mobile-name{font-size:var(--name-size); font-weight:700; color:var(--ink); line-height:1.15; transform:translate(var(--name-x), var(--name-y));}
-    .hero-mobile-text-overlay{position:absolute; top:34.5%; left:0; right:0; text-align:center; padding:0 20px; opacity:1 !important; transform:translateX(var(--hero-overlay-shift, 0px)) !important;}
-    .hero-mobile-text-overlay h1{font-size:var(--fs-hero-title-mobile); margin-bottom:12px; line-height:1.25;}
-    .hero-mobile-text-overlay p{color:var(--muted); font-size:var(--fs-hero-subtitle-mobile); line-height:1.7;}
+    .hero-mobile-text-overlay{position:absolute; top:34.5%; left:0; right:0; text-align:center; padding:0 20px; opacity:1 !important;}
+    .hero-mobile-text-overlay .eyebrow{font-size:var(--eyebrow-size); transform:translate(var(--eyebrow-x), var(--eyebrow-y));}
+    .hero-mobile-text-overlay h1{font-size:var(--fs-hero-title-mobile); margin-bottom:12px; line-height:1.25; transform:translate(var(--title-x), var(--title-y));}
+    .hero-mobile-text-overlay p{color:var(--muted); font-size:var(--fs-hero-subtitle-mobile); line-height:1.7; transform:translate(var(--subtitle-x), var(--subtitle-y));}
     .hero-mobile-cta-overlay{position:absolute; top:70%; left:20px; right:54%; display:flex; flex-direction:column; gap:14px; z-index:2;}
     .hero-mobile-cta-overlay .btn-primary, .hero-mobile-cta-overlay .btn-secondary{width:auto; text-align:center; justify-content:center; border-radius:16px; font-size:1rem; padding:18px; border:none;}
     .hero-mobile-cta-overlay .btn-secondary{background:var(--btn-secondary-mobile-bg); color:var(--btn-secondary-mobile-text);}
@@ -161,7 +165,7 @@
 <section class="hero">
   <div class="container desktop-hero-block">
     <div class="hero-text reveal">
-      <div class="eyebrow">استشارات أسرية سرّية وموثوقة</div>
+      <div class="eyebrow" id="heroEyebrowDesktop">استشارات أسرية سرّية وموثوقة</div>
       <h1 id="heroTitle">مساحة آمنة… ليبدأ الحديث</h1>
       <p id="heroSubtitle"></p>
     </div>
@@ -191,7 +195,7 @@
         <div id="siteNameMobile" class="hero-mobile-name"></div>
       </div>
       <div class="hero-mobile-text-overlay reveal">
-        <div class="eyebrow" style="justify-content:center">استشارات أسرية سرّية وموثوقة</div>
+        <div class="eyebrow" id="heroEyebrowMobile" style="justify-content:center">استشارات أسرية سرّية وموثوقة</div>
         <h1 id="heroTitleMobile">مساحة آمنة… ليبدأ الحديث</h1>
         <p id="heroSubtitleMobile"></p>
       </div>
@@ -339,7 +343,13 @@ async function loadContent(){
   setS('--section-gap-mobile', 'sectionGapMobile', '56px');
   setS('--hero-gap', 'heroGap', '60px');
   setS('--container-px', 'containerPx', '24px');
-  setS('--hero-overlay-shift', 'heroOverlayShiftX', '0px');
+  setS('--eyebrow-size', 'eyebrowSize', '.85rem');
+  setS('--eyebrow-x', 'eyebrowOffsetX', '0px');
+  setS('--eyebrow-y', 'eyebrowOffsetY', '0px');
+  setS('--title-x', 'titleOffsetX', '0px');
+  setS('--title-y', 'titleOffsetY', '0px');
+  setS('--subtitle-x', 'subtitleOffsetX', '0px');
+  setS('--subtitle-y', 'subtitleOffsetY', '0px');
   setS('--role-size', 'roleSize', '1rem');
   setS('--role-x', 'roleOffsetX', '0px');
   setS('--role-y', 'roleOffsetY', '0px');
@@ -347,17 +357,23 @@ async function loadContent(){
   setS('--name-x', 'nameOffsetX', '0px');
   setS('--name-y', 'nameOffsetY', '0px');
 
+  const customFonts = c.font.customFonts || [];
+  const customNames = new Set(customFonts.map(f => f.name));
+  if (c.font.customFontName && c.font.customFontUrl && !customNames.has(c.font.customFontName)) {
+    customFonts.push({ name: c.font.customFontName, url: c.font.customFontUrl });
+    customNames.add(c.font.customFontName);
+  }
   const fontDisplayName = c.font.display || 'Markazi Text';
   const fontBodyName = c.font.body || 'Tajawal';
-  if (fontDisplayName !== c.font.customFontName) {
+  if (!customNames.has(fontDisplayName)) {
     document.getElementById('fontsLinkDisplay').href = 'https://fonts.googleapis.com/css2?family=' + fontDisplayName.replace(/ /g,'+') + ':wght@400;500;600;700&display=swap';
   }
-  if (fontBodyName !== c.font.customFontName) {
+  if (!customNames.has(fontBodyName)) {
     document.getElementById('fontsLinkBody').href = 'https://fonts.googleapis.com/css2?family=' + fontBodyName.replace(/ /g,'+') + ':wght@400;500;700&display=swap';
   }
-  if (c.font.customFontUrl && c.font.customFontName) {
+  if (customFonts.length) {
     const style = document.createElement('style');
-    style.textContent = `@font-face{font-family:'${c.font.customFontName}'; src:url('${c.font.customFontUrl}');}`;
+    style.textContent = customFonts.map(f => `@font-face{font-family:'${f.name}'; src:url('${f.url}');}`).join('\n');
     document.head.appendChild(style);
   }
   root.setProperty('--font-display', `'${fontDisplayName}', serif`);
@@ -376,6 +392,13 @@ async function loadContent(){
   document.getElementById('heroSubtitle').textContent = c.hero.subtitle;
   document.getElementById('heroTitleMobile').textContent = c.hero.title;
   document.getElementById('heroSubtitleMobile').textContent = c.hero.subtitle;
+  const eyebrowText = c.hero.eyebrow;
+  const eyebrowIsHidden = eyebrowText === '';
+  [document.getElementById('heroEyebrowDesktop'), document.getElementById('heroEyebrowMobile')].forEach(el => {
+    if (!el) return;
+    el.textContent = eyebrowText || 'استشارات أسرية سرّية وموثوقة';
+    el.style.display = eyebrowIsHidden ? 'none' : '';
+  });
   if (c.hero.image) {
     document.getElementById('heroImg').src = c.hero.image;
     document.getElementById('heroImg').style.display = 'block';
