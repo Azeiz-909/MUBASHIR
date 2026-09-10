@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>موعدك | عيادة تحدث</title>
-<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@600;700&family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Markazi+Text:wght@600;700&display=swap" rel="stylesheet">
+<link id="fontsLinkForms" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{ --ink:#22322C; --paper:#EFEDE6; --clay:#B8734F; --line:#DAD5C8; }
-  *{box-sizing:border-box; margin:0; padding:0; font-family:'Tajawal',sans-serif;}
+  :root{ --ink:#22322C; --paper:#EFEDE6; --clay:#B8734F; --line:#DAD5C8; --font-forms:'Tajawal',sans-serif; }
+  *{box-sizing:border-box; margin:0; padding:0; font-family:var(--font-forms);}
   body{background:var(--paper); color:var(--ink); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
   .wrap{width:100%; max-width:480px;}
   a.back{display:inline-block; margin-bottom:16px; color:#6b7570; font-size:.88rem;}
@@ -44,6 +45,24 @@
 const params = new URLSearchParams(location.search);
 const bookingId = params.get('id');
 const app = document.getElementById('app');
+
+(async function applyFormsFont(){
+  try {
+    const res = await fetch('/api/content'); const c = await res.json();
+    const fontsCfg = c.font || {};
+    const customFonts = fontsCfg.customFonts || [];
+    const formsFontName = fontsCfg.forms || 'Tajawal';
+    const customMatch = customFonts.find(f => f.name === formsFontName);
+    if (customMatch) {
+      const style = document.createElement('style');
+      style.textContent = `@font-face{font-family:'${customMatch.name}'; src:url('${customMatch.url}');}`;
+      document.head.appendChild(style);
+    } else {
+      document.getElementById('fontsLinkForms').href = 'https://fonts.googleapis.com/css2?family=' + formsFontName.replace(/ /g,'+') + ':wght@400;500;700&display=swap';
+    }
+    document.documentElement.style.setProperty('--font-forms', `'${formsFontName}', sans-serif`);
+  } catch (err) {}
+})();
 
 if (!bookingId) {
   renderLookup();

@@ -26,6 +26,7 @@
     --eyebrow-size: .85rem; --eyebrow-x: 0px; --eyebrow-y: 0px;
     --title-x: 0px; --title-y: 0px;
     --subtitle-x: 0px; --subtitle-y: 0px;
+    --mobile-nav-size: .68rem; --mobile-nav-x: 0px; --mobile-nav-y: 0px;
     --role-size: 1rem; --role-x: 0px; --role-y: 0px;
     --name-size: 1.55rem; --name-x: 0px; --name-y: 0px;
   }
@@ -57,7 +58,7 @@
     .desktop-hero-block, section.cta-duo{display:none !important;}
     .hero{padding:0 !important;}
     header{display:none !important;}
-    .hero-mobile-links{display:flex; flex-wrap:nowrap; justify-content:center; gap:10px; font-size:.68rem; font-weight:500; padding:18px 14px 10px; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none;}
+    .hero-mobile-links{display:flex; flex-wrap:nowrap; justify-content:center; gap:10px; font-size:var(--mobile-nav-size); font-weight:500; padding:18px 14px 10px; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; transform:translate(var(--mobile-nav-x), var(--mobile-nav-y));}
     .hero-mobile-links::-webkit-scrollbar{display:none;}
     .hero-mobile-links a{color:var(--ink); white-space:nowrap; flex-shrink:0;}
     .hero-mobile-only{display:block; position:relative; background:#E4DDC6;}
@@ -350,6 +351,9 @@ async function loadContent(){
   setS('--title-y', 'titleOffsetY', '0px');
   setS('--subtitle-x', 'subtitleOffsetX', '0px');
   setS('--subtitle-y', 'subtitleOffsetY', '0px');
+  setS('--mobile-nav-size', 'mobileNavSize', '.68rem');
+  setS('--mobile-nav-x', 'mobileNavOffsetX', '0px');
+  setS('--mobile-nav-y', 'mobileNavOffsetY', '0px');
   setS('--role-size', 'roleSize', '1rem');
   setS('--role-x', 'roleOffsetX', '0px');
   setS('--role-y', 'roleOffsetY', '0px');
@@ -467,8 +471,19 @@ async function loadContent(){
   document.getElementById('footerEmail').textContent = c.contact.email;
   document.getElementById('footerEmail').href = 'mailto:' + c.contact.email;
 
-  // إظهار الصفحة بعد اكتمال التصميم (بدل ظهور المظهر الافتراضي القديم ثم التحديث)
-  document.body.style.opacity = 1;
+  // إظهار الصفحة بعد اكتمال التصميم وتحميل الخطوط المختارة فعليًا (لمنع ظهور الخط القديم قبل التحديث)
+  const revealPage = () => { document.body.style.opacity = 1; };
+  if (document.fonts && document.fonts.load) {
+    Promise.race([
+      Promise.all([
+        document.fonts.load(`700 1rem "${fontDisplayName}"`).catch(()=>{}),
+        document.fonts.load(`400 1rem "${fontBodyName}"`).catch(()=>{})
+      ]),
+      new Promise(resolve => setTimeout(resolve, 1200))
+    ]).then(revealPage);
+  } else {
+    revealPage();
+  }
 
   // تفعيل حركة الظهور المتلاشي التسلسلي عند التمرير لكل العناصر (الثابتة والمُولَّدة)
   const observer = new IntersectionObserver((entries) => {
