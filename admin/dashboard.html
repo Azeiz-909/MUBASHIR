@@ -185,9 +185,14 @@
               <option>Tajawal</option><option>Cairo</option><option>IBM Plex Sans Arabic</option><option>Almarai</option><option>Noto Kufi Arabic</option>
             </select>
           </div>
+          <div class="field"><label>خط بيانات صفحتي الحجز وتأكيد الموعد (النماذج والحقول فقط — لا يؤثر على شكل الأزرار في الصفحة الرئيسية)</label>
+            <select id="fontForms" data-key="font.forms">
+              <option>Tajawal</option><option>Cairo</option><option>IBM Plex Sans Arabic</option><option>Almarai</option><option>Noto Kufi Arabic</option>
+            </select>
+          </div>
         </div>
         <div class="field">
-          <label>رفع خط مخصص (ارفع خط للعناوين وخط ثاني مختلف للنصوص إذا تبي)</label>
+          <label>رفع خط مخصص (ارفع خطًا مختلفًا لكل من: العناوين، النصوص، بيانات الحجز)</label>
           <div class="row2">
             <input type="text" id="customFontNameInput" placeholder="اسم الخط (مثال: خط العيادة)">
             <input type="file" id="customFontFile" accept=".woff2,.woff,.ttf,.otf">
@@ -203,6 +208,12 @@
     <div class="panel" id="panel-content">
       <div class="card-box">
         <h2 class="sec">القسم الرئيسي (Hero)</h2>
+        <label style="font-size:.85rem; font-weight:700; display:block; margin-bottom:4px;">روابط القائمة العلوية (الجوال) — الأسئلة الشائعة / أوقات العمل / تواصل معنا</label>
+        <div class="mover-controls">
+          <div class="mover-item"><span>الحجم</span><input type="range" min="0.5" max="1.2" step="0.02" data-key="sizes.mobileNavSize" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>0.68rem</output></div>
+          <div class="mover-item"><span>يمين/يسار</span><input type="range" min="-80" max="80" step="2" data-key="sizes.mobileNavOffsetX" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+          <div class="mover-item"><span>أعلى/أسفل</span><input type="range" min="-40" max="40" step="2" data-key="sizes.mobileNavOffsetY" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        </div>
         <div class="field"><label>المسمى الوظيفي (يظهر أصغر فوق الاسم)</label><input type="text" id="siteRoleLabel" data-key="site.roleLabel" placeholder="مثال: المستشار الأسري"></div>
         <div class="field"><label>اسم العيادة / المستشار</label><input type="text" id="siteName" data-key="site.name"></div>
 
@@ -471,7 +482,7 @@ function renderCustomFonts(){
     const i = +e.target.dataset.cfontDel;
     const removed = CONTENT.font.customFonts.splice(i,1)[0];
     if (removed) {
-      ['fontDisplay','fontBody'].forEach(id=>{
+      ['fontDisplay','fontBody','fontForms'].forEach(id=>{
         const sel = document.getElementById(id);
         const opt = Array.from(sel.options).find(o=>o.value===removed.name);
         if (opt) opt.remove();
@@ -485,7 +496,7 @@ function renderCustomFonts(){
 }
 
 function addCustomFontOption(name){
-  [document.getElementById('fontDisplay'), document.getElementById('fontBody')].forEach(sel => {
+  [document.getElementById('fontDisplay'), document.getElementById('fontBody'), document.getElementById('fontForms')].forEach(sel => {
     const already = Array.from(sel.options).some(o => o.value === name);
     if (!already) {
       const opt = document.createElement('option');
@@ -551,6 +562,9 @@ function fillDesign(){
   setSize('titleOffsetY', 0);
   setSize('subtitleOffsetX', 0);
   setSize('subtitleOffsetY', 0);
+  setSize('mobileNavSize', .68);
+  setSize('mobileNavOffsetX', 0);
+  setSize('mobileNavOffsetY', 0);
   setSize('roleSize', 1);
   setSize('roleOffsetX', 0);
   setSize('roleOffsetY', 0);
@@ -585,10 +599,12 @@ function fillDesign(){
   CONTENT.font.customFonts.forEach(f => addCustomFontOption(f.name));
   document.getElementById('fontDisplay').value = CONTENT.font.display || 'Markazi Text';
   document.getElementById('fontBody').value = CONTENT.font.body || 'Tajawal';
-  // ضمان مضاعف لحفظ خط العناوين وخط النصوص كل واحد لحاله بشكل مستقل تمامًا
-  ['fontDisplay','fontBody'].forEach(id => {
+  document.getElementById('fontForms').value = CONTENT.font.forms || 'Tajawal';
+  // ضمان مضاعف لحفظ كل خط (العناوين / النصوص / بيانات الحجز) كل واحد لحاله بشكل مستقل تمامًا
+  const fontKeyMap = { fontDisplay:'display', fontBody:'body', fontForms:'forms' };
+  Object.keys(fontKeyMap).forEach(id => {
     const sel = document.getElementById(id);
-    const key = id === 'fontDisplay' ? 'display' : 'body';
+    const key = fontKeyMap[id];
     ['input','change'].forEach(evt => sel.addEventListener(evt, ()=>{
       CONTENT.font[key] = sel.value;
       scheduleSave({ font: { [key]: sel.value } });
