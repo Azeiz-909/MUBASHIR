@@ -45,6 +45,11 @@
   .size-row span{font-size:.88rem; font-weight:600; flex:1;}
   .size-row input[type=range]{flex:1.4; max-width:220px; accent-color:var(--clay);}
   .size-row output{font-size:.82rem; font-weight:700; color:var(--clay-dark); width:56px; text-align:left;}
+  .mover-controls{display:flex; flex-wrap:wrap; gap:10px 18px; background:var(--card, #F8F6F1); border:1px solid var(--line, #DAD5C8); border-radius:10px; padding:10px 14px; margin:-6px 0 16px;}
+  .mover-item{display:flex; align-items:center; gap:8px;}
+  .mover-item span{font-size:.78rem; font-weight:600; color:#5C685F;}
+  .mover-item input[type=range]{width:100px; accent-color:var(--clay);}
+  .mover-item output{font-size:.76rem; font-weight:700; color:var(--clay-dark); width:44px;}
   .img-upload{display:flex; align-items:center; gap:14px; margin-bottom:14px;}
   .img-preview{width:64px; height:64px; border-radius:12px; background:var(--paper); object-fit:cover; border:1px solid var(--line);}
   .btn{background:var(--ink); color:#fff; border:none; padding:9px 18px; border-radius:10px; cursor:pointer; font-weight:700; font-size:.85rem;}
@@ -122,8 +127,6 @@
       <div class="card-box">
         <h2 class="sec">حجم النصوص</h2>
         <div class="size-row"><span>عنوان الهيرو (الرئيسي، شاشات كبيرة)</span><input type="range" min="2" max="4.5" step="0.1" data-key="sizes.heroTitle" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>3.1rem</output></div>
-        <div class="size-row"><span>عنوان الهيرو (الجوال)</span><input type="range" min="1.3" max="2.8" step="0.1" data-key="sizes.heroTitleMobile" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.9rem</output></div>
-        <div class="size-row"><span>نص وصف الهيرو الطويل (الجوال)</span><input type="range" min="0.6" max="1.3" step="0.05" data-key="sizes.heroSubtitleMobile" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>0.95rem</output></div>
         <div class="size-row"><span>عناوين الأقسام</span><input type="range" min="1.4" max="3" step="0.1" data-key="sizes.sectionTitle" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>2.2rem</output></div>
         <div class="size-row"><span>حجم نص الفقرات</span><input type="range" min="0.85" max="1.5" step="0.05" data-key="sizes.body" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.15rem</output></div>
         <div class="size-row"><span>حجم روابط القائمة العلوية</span><input type="range" min="0.75" max="1.3" step="0.05" data-key="sizes.navLink" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>0.95rem</output></div>
@@ -136,8 +139,7 @@
         <div class="size-row"><span>المسافة العمودية بين الأقسام (الجوال)</span><input type="range" min="20" max="120" step="2" data-key="sizes.sectionGapMobile" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>56px</output></div>
         <div class="size-row"><span>المسافة بين نص الهيرو وصورته</span><input type="range" min="10" max="120" step="2" data-key="sizes.heroGap" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>60px</output></div>
         <div class="size-row"><span>الهامش الجانبي للمحتوى</span><input type="range" min="10" max="60" step="1" data-key="sizes.containerPx" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>24px</output></div>
-        <div class="size-row"><span>إزاحة نص الهيرو (الجوال) يمين/يسار</span><input type="range" min="-60" max="60" step="2" data-key="sizes.heroOverlayShiftX" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
-        <div class="hint">هذه القيم تتحكم في الفراغات الظاهرة بين أقسام الموقع — أي تغيير يُطبَّق فورًا على الموقع بعد الحفظ. إزاحة نص الهيرو تحرّك عنوان ووصف قسم "مساحة آمنة… ليبدأ الحديث" في نسخة الجوال يمينًا أو يسارًا (قيمة سالبة = يسار) حتى لا يلامس رسمة الخيط.</div>
+        <div class="hint">هذه القيم تتحكم في الفراغات الظاهرة بين أقسام الموقع — أي تغيير يُطبَّق فورًا على الموقع بعد الحفظ. أدوات تحريك نصوص الهيرو نفسها انتقلت لتبويب "المحتوى" أسفل كل نص مباشرة.</div>
       </div>
       <div class="card-box">
         <h2 class="sec">موضع اسم المستشار (الجوال)</h2>
@@ -185,9 +187,14 @@
           </div>
         </div>
         <div class="field">
-          <label>رفع خط مخصص (اختياري)</label>
-          <input type="file" id="customFontFile" accept=".woff2,.woff,.ttf,.otf">
-          <div class="hint" id="customFontStatus">لا يوجد خط مخصص مرفوع حاليًا.</div>
+          <label>رفع خط مخصص (ارفع خط للعناوين وخط ثاني مختلف للنصوص إذا تبي)</label>
+          <div class="row2">
+            <input type="text" id="customFontNameInput" placeholder="اسم الخط (مثال: خط العيادة)">
+            <input type="file" id="customFontFile" accept=".woff2,.woff,.ttf,.otf">
+          </div>
+          <button type="button" class="btn-outline" id="uploadCustomFontBtn" style="margin-top:8px;">+ رفع هذا الخط</button>
+          <div class="hint" id="customFontStatus">لا يوجد أي خط مخصص مرفوع حاليًا.</div>
+          <div id="customFontsEditor" style="margin-top:10px;"></div>
         </div>
       </div>
     </div>
@@ -198,8 +205,28 @@
         <h2 class="sec">القسم الرئيسي (Hero)</h2>
         <div class="field"><label>المسمى الوظيفي (يظهر أصغر فوق الاسم)</label><input type="text" id="siteRoleLabel" data-key="site.roleLabel" placeholder="مثال: المستشار الأسري"></div>
         <div class="field"><label>اسم العيادة / المستشار</label><input type="text" id="siteName" data-key="site.name"></div>
+
+        <div class="field"><label>السطر فوق العنوان (اتركه فارغًا لإخفائه)</label><input type="text" id="heroEyebrow" data-key="hero.eyebrow" placeholder="استشارات أسرية سرّية وموثوقة"></div>
+        <div class="mover-controls">
+          <div class="mover-item"><span>الحجم</span><input type="range" min="0.6" max="1.4" step="0.05" data-key="sizes.eyebrowSize" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>0.85rem</output></div>
+          <div class="mover-item"><span>يمين/يسار</span><input type="range" min="-80" max="80" step="2" data-key="sizes.eyebrowOffsetX" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+          <div class="mover-item"><span>أعلى/أسفل</span><input type="range" min="-80" max="80" step="2" data-key="sizes.eyebrowOffsetY" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        </div>
+
         <div class="field"><label>العنوان الرئيسي</label><input type="text" id="heroTitle" data-key="hero.title"></div>
+        <div class="mover-controls">
+          <div class="mover-item"><span>الحجم (الجوال)</span><input type="range" min="1.3" max="2.8" step="0.1" data-key="sizes.heroTitleMobile" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>1.9rem</output></div>
+          <div class="mover-item"><span>يمين/يسار</span><input type="range" min="-100" max="100" step="2" data-key="sizes.titleOffsetX" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+          <div class="mover-item"><span>أعلى/أسفل</span><input type="range" min="-100" max="100" step="2" data-key="sizes.titleOffsetY" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        </div>
+
         <div class="field"><label>الوصف</label><textarea id="heroSubtitle" data-key="hero.subtitle"></textarea></div>
+        <div class="mover-controls">
+          <div class="mover-item"><span>الحجم (الجوال)</span><input type="range" min="0.6" max="1.3" step="0.05" data-key="sizes.heroSubtitleMobile" data-unit="rem" oninput="this.nextElementSibling.textContent=this.value+'rem'"><output>0.95rem</output></div>
+          <div class="mover-item"><span>يمين/يسار</span><input type="range" min="-100" max="100" step="2" data-key="sizes.subtitleOffsetX" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+          <div class="mover-item"><span>أعلى/أسفل</span><input type="range" min="-100" max="100" step="2" data-key="sizes.subtitleOffsetY" data-unit="px" oninput="this.nextElementSibling.textContent=this.value+'px'"><output>0px</output></div>
+        </div>
+        <div class="hint">أدوات الحجم والتحريك هذي خاصة بنسخة الجوال، وتظهر الآن أسفل كل نص مباشرة بدل تجميعها في تبويب التصميم.</div>
         <div class="img-upload">
           <img class="img-preview" id="heroImgPreview" src="" style="display:none">
           <input type="file" id="heroImgFile" accept="image/*">
@@ -435,6 +462,28 @@ async function init(){
   document.body.style.opacity = 1;
 }
 
+function renderCustomFonts(){
+  const list = CONTENT.font.customFonts || [];
+  document.getElementById('customFontsEditor').innerHTML = list.map((f,i)=>`
+    <div class="list-row"><span style="flex:1;">🎨 ${f.name}</span><button class="btn-danger" data-cfont-del="${i}">حذف</button></div>`).join('') ||
+    '<div class="hint">لا يوجد أي خط مخصص مرفوع حاليًا.</div>';
+  document.querySelectorAll('[data-cfont-del]').forEach(el => el.addEventListener('click', e=>{
+    const i = +e.target.dataset.cfontDel;
+    const removed = CONTENT.font.customFonts.splice(i,1)[0];
+    if (removed) {
+      ['fontDisplay','fontBody'].forEach(id=>{
+        const sel = document.getElementById(id);
+        const opt = Array.from(sel.options).find(o=>o.value===removed.name);
+        if (opt) opt.remove();
+        if (sel.value === removed.name) sel.value = id==='fontDisplay' ? 'Markazi Text' : 'Tajawal';
+      });
+      if (CONTENT.font.customFontName === removed.name) { CONTENT.font.customFontName = null; CONTENT.font.customFontUrl = null; }
+    }
+    renderCustomFonts();
+    scheduleSave({ font: CONTENT.font });
+  }));
+}
+
 function addCustomFontOption(name){
   [document.getElementById('fontDisplay'), document.getElementById('fontBody')].forEach(sel => {
     const already = Array.from(sel.options).some(o => o.value === name);
@@ -495,7 +544,13 @@ function fillDesign(){
   setSize('sectionGapMobile', 56);
   setSize('heroGap', 60);
   setSize('containerPx', 24);
-  setSize('heroOverlayShiftX', 0);
+  setSize('eyebrowSize', .85);
+  setSize('eyebrowOffsetX', 0);
+  setSize('eyebrowOffsetY', 0);
+  setSize('titleOffsetX', 0);
+  setSize('titleOffsetY', 0);
+  setSize('subtitleOffsetX', 0);
+  setSize('subtitleOffsetY', 0);
   setSize('roleSize', 1);
   setSize('roleOffsetX', 0);
   setSize('roleOffsetY', 0);
@@ -520,10 +575,14 @@ function fillDesign(){
   setVis('visSectionContact', 'sectionContact');
   setVis('visSectionBooking', 'sectionBooking');
 
-  if (CONTENT.font.customFontName) {
-    addCustomFontOption(CONTENT.font.customFontName);
-    document.getElementById('customFontStatus').textContent = 'الخط المرفوع حاليًا: ' + CONTENT.font.customFontName + ' — يمكنك اختياره من القائمتين أعلاه.';
+  // خطوط مخصصة مرفوعة من المستخدم (يدعم أكثر من خط: واحد للعناوين وآخر مختلف للنصوص)
+  if (!CONTENT.font.customFonts) CONTENT.font.customFonts = [];
+  // توافق مع الإصدار القديم (خط مخصص واحد فقط) — نقله إلى القائمة الجديدة
+  if (CONTENT.font.customFontName && CONTENT.font.customFontUrl && !CONTENT.font.customFonts.some(f=>f.name===CONTENT.font.customFontName)) {
+    CONTENT.font.customFonts.push({ name: CONTENT.font.customFontName, url: CONTENT.font.customFontUrl });
   }
+  renderCustomFonts();
+  CONTENT.font.customFonts.forEach(f => addCustomFontOption(f.name));
   document.getElementById('fontDisplay').value = CONTENT.font.display || 'Markazi Text';
   document.getElementById('fontBody').value = CONTENT.font.body || 'Tajawal';
   // ضمان مضاعف لحفظ خط العناوين وخط النصوص كل واحد لحاله بشكل مستقل تمامًا
@@ -536,15 +595,22 @@ function fillDesign(){
     }));
   });
 
-  document.getElementById('customFontFile').addEventListener('change', async (e)=>{
-    const file = e.target.files[0]; if (!file) return;
+  document.getElementById('uploadCustomFontBtn').addEventListener('click', async ()=>{
+    const file = document.getElementById('customFontFile').files[0];
+    if (!file) { alert('اختر ملف الخط أولًا (woff2, woff, ttf أو otf).'); return; }
+    const nameInput = document.getElementById('customFontNameInput');
+    const name = (nameInput.value || '').trim() || file.name.replace(/\.[^.]+$/, '');
+    if (CONTENT.font.customFonts.some(f => f.name === name)) { alert('يوجد خط مرفوع بنفس الاسم — اختر اسمًا آخر.'); return; }
+    document.getElementById('customFontStatus').textContent = 'جارٍ رفع الخط…';
     const url = await uploadFile(file);
-    if (!url) return;
-    const name = 'خط-مخصص-' + Date.now();
-    CONTENT.font.customFontUrl = url; CONTENT.font.customFontName = name;
+    if (!url) { document.getElementById('customFontStatus').textContent = 'تعذّر رفع الخط.'; return; }
+    CONTENT.font.customFonts.push({ name, url });
     addCustomFontOption(name);
-    document.getElementById('customFontStatus').textContent = '✓ تم رفع الخط بنجاح — اختره الآن من قائمة "خط العناوين" أو "خط النصوص" أعلاه لتطبيقه.';
-    scheduleSave({ font: { customFontUrl: url, customFontName: name } });
+    renderCustomFonts();
+    nameInput.value = '';
+    document.getElementById('customFontFile').value = '';
+    document.getElementById('customFontStatus').textContent = '✓ تم رفع "' + name + '" — اختره الآن من قائمة "خط العناوين" أو "خط النصوص" أعلاه لتطبيقه.';
+    scheduleSave({ font: { customFonts: CONTENT.font.customFonts } });
   });
 }
 
