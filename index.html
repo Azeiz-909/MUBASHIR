@@ -47,7 +47,7 @@
   @media(max-width:700px){ section{padding:var(--section-gap-mobile) 0;} }
   .hero-mobile-only{display:none;}
   @media(max-width:700px){
-    .desktop-hero-block, section.cta-duo{display:none !important;}
+    .desktop-hero-block{display:none !important;}
     .hero{padding:0 !important;}
     header{display:none !important;}
     .hero-mobile-links{display:flex; flex-wrap:nowrap; justify-content:center; gap:10px; font-size:var(--mobile-nav-size); font-weight:500; padding:18px 14px 10px; max-width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; transform:translate(var(--mobile-nav-x), var(--mobile-nav-y));}
@@ -77,14 +77,14 @@
   .hero-desktop-brand-overlay{position:absolute; top:3.5%; right:5%; text-align:right; font-family:var(--font-display); z-index:2;}
   .hero-desktop-brand-overlay .hero-desktop-role{font-size:1.05rem; font-weight:600; color:var(--ink);}
   .hero-desktop-brand-overlay .hero-desktop-name{font-size:2rem; font-weight:700; color:var(--ink); line-height:1.15;}
-  .hero-desktop-text-overlay{position:absolute; top:27%; left:50%; transform:translateX(-50%); text-align:center; width:42%; min-width:400px; z-index:2;}
+  .hero-desktop-text-overlay{position:absolute; top:27%; left:0; right:0; text-align:center; padding:0 16%; z-index:2;}
   .hero-desktop-text-overlay .eyebrow{justify-content:center;}
   .hero-desktop-text-overlay h1{font-size:var(--fs-hero-title); color:var(--ink); margin-bottom:18px; line-height:1.2;}
   .hero-desktop-text-overlay p{font-size:1.05rem; color:var(--muted); margin-bottom:26px;}
   .hero-desktop-cta{display:flex; align-items:center; justify-content:center; gap:16px;}
   .hero-desktop-cta .btn-primary, .hero-desktop-cta .btn-secondary{padding:16px 30px; font-size:1rem; white-space:nowrap;}
   @media(max-width:1150px){
-    .hero-desktop-text-overlay{width:56%; min-width:0;}
+    .hero-desktop-text-overlay{padding:0 8%;}
     .hero-desktop-links{gap:14px; font-size:.78rem; left:4%;}
     .hero-desktop-brand-overlay .hero-desktop-name{font-size:1.5rem;}
     .hero-desktop-brand-overlay .hero-desktop-role{font-size:.85rem;}
@@ -94,8 +94,6 @@
   }
   .privacy-visual img{border-radius:22px; box-shadow:var(--shadow); width:100%; object-fit:cover; max-height:340px;}
   @media(max-width:700px){ .privacy-visual img{max-height:220px;} }
-  .cta-duo{padding:0 0 90px;}
-  .cta-duo .container{display:flex; align-items:center; justify-content:center; gap:22px; flex-wrap:wrap;}
   .btn-primary, .btn-secondary{display:inline-flex; align-items:center; gap:10px; border-radius:16px; font-weight:700; border:none; transition:transform .15s;}
   .btn-primary{background:var(--btn-primary-bg); color:var(--btn-primary-text); font-size:var(--fs-button); padding:22px 46px; box-shadow:var(--shadow);}
   .btn-primary:hover{transform:translateY(-2px);}
@@ -155,7 +153,7 @@
 <body>
 
 <!-- MOBILE-FIX-MARKER-V3 -->
-<section class="hero">
+<section class="hero" id="booking">
   <div class="container desktop-hero-block">
     <div class="hero-desktop-photo-wrap">
       <img src="/assets/hero-desktop-full.png" class="hero-desktop-full-img" alt="">
@@ -204,13 +202,6 @@
         <a href="/confirm.html" class="btn-secondary">لديك موعد استشارة عن بُعد؟ اضغط هنا</a>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="cta-duo" id="booking">
-  <div class="container reveal">
-    <a href="/booking.html" class="btn-primary">احجز استشارتك</a>
-    <a href="/confirm.html" class="btn-secondary">لديك موعد استشارة عن بُعد؟ اضغط هنا</a>
   </div>
 </section>
 
