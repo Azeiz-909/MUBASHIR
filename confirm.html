@@ -25,7 +25,14 @@
   .lookup input{width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:10px; margin-bottom:14px; font-size:.94rem;}
   .lookup button{width:100%; padding:13px; background:var(--ink); color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;}
   .msg{color:#b23a3a; font-size:.85rem; margin-bottom:10px;}
-  .access-box{margin-top:20px; text-align:right;}
+  .session-label{font-family:var(--font-forms); font-size:.95rem; font-weight:600; color:var(--clay); text-align:center; margin-bottom:12px;}
+  .accordion{margin-top:22px; border:1px solid var(--line); border-radius:14px; overflow:hidden; text-align:right;}
+  .accordion-toggle{width:100%; display:flex; align-items:center; justify-content:space-between; background:var(--paper); border:none; padding:14px 18px; font-weight:700; font-size:.92rem; color:var(--ink); cursor:pointer; font-family:var(--font-forms);}
+  .accordion-toggle .chev{transition:transform .2s ease; font-size:.8rem;}
+  .accordion-toggle.open .chev{transform:rotate(180deg);}
+  .accordion-body{padding:6px 18px 18px;}
+  .accordion-body .detail-row:last-of-type{border-bottom:none;}
+  .access-box{margin-top:10px; text-align:right;}
   .access-item{background:var(--paper); border-radius:12px; padding:14px 16px; margin-bottom:12px;}
   .access-label{font-weight:700; font-size:.9rem; margin-bottom:8px;}
   .access-value-row{display:flex; align-items:center; gap:8px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 10px;}
@@ -45,11 +52,20 @@
 const params = new URLSearchParams(location.search);
 const bookingId = params.get('id');
 const app = document.getElementById('app');
+let SITE_CONTENT = {};
 
-(async function applyFormsFont(){
+(async function init(){
   try {
-    const res = await fetch('/api/content'); const c = await res.json();
-    const fontsCfg = c.font || {};
+    const res = await fetch('/api/content');
+    SITE_CONTENT = await res.json();
+  } catch (err) { SITE_CONTENT = {}; }
+  applyFormsFont();
+  if (!bookingId) { renderLookup(); } else { loadBooking(bookingId); }
+})();
+
+function applyFormsFont(){
+  try {
+    const fontsCfg = SITE_CONTENT.font || {};
     const customFonts = fontsCfg.customFonts || [];
     const formsFontName = fontsCfg.forms || 'Tajawal';
     const customMatch = customFonts.find(f => f.name === formsFontName);
@@ -62,12 +78,6 @@ const app = document.getElementById('app');
     }
     document.documentElement.style.setProperty('--font-forms', `'${formsFontName}', sans-serif`);
   } catch (err) {}
-})();
-
-if (!bookingId) {
-  renderLookup();
-} else {
-  loadBooking(bookingId);
 }
 
 function renderLookup(msg){
@@ -99,34 +109,54 @@ async function loadBooking(id){
       <div class="check">✓</div>
       <h1>تم تأكيد موعدك</h1>
       <p class="sub">احتفظ برقم الحجز أدناه للوصول إلى جلستك لاحقًا.</p>
-      <div class="detail-row"><span>الاسم</span><span>${escapeHtml(b.name)}</span></div>
-      <div class="detail-row"><span>المستشار</span><span>${escapeHtml(b.counselorName || 'غير محدد')}</span></div>
-      <div class="detail-row"><span>التاريخ</span><span>${escapeHtml(b.date)}</span></div>
-      <div class="detail-row"><span>الوقت</span><span>${escapeHtml(b.time)}</span></div>
       <div class="countdown" id="countdownBox"></div>
       <button class="join-btn disabled" id="joinBtn" disabled>دخول الجلسة</button>
       <div id="videoContainer" style="display:none; margin-top:16px;">
+        <div class="session-label" id="sessionLabel"></div>
         <iframe id="videoFrame" style="width:100%; height:480px; border:0; border-radius:12px;" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>
       </div>
-      <div class="access-box">
-        <div class="access-item">
-          <div class="access-label">🔑 كود حجزك</div>
-          <div class="access-value-row">
-            <code id="bookingCodeText">${b.id}</code>
-            <button class="copy-btn" data-copy-text="${b.id}">نسخ</button>
+      <div class="accordion">
+        <button class="accordion-toggle" id="invoiceToggle" type="button">
+          <span>فاتورة الحجز</span><span class="chev">⌄</span>
+        </button>
+        <div class="accordion-body" id="invoiceBody" style="display:none;">
+          <div class="detail-row"><span>الاسم</span><span>${escapeHtml(b.name)}</span></div>
+          <div class="detail-row"><span>المستشار</span><span>${escapeHtml(b.counselorName || 'غير محدد')}</span></div>
+          <div class="detail-row"><span>التاريخ</span><span>${escapeHtml(b.date)}</span></div>
+          <div class="detail-row"><span>الوقت</span><span>${escapeHtml(b.time)}</span></div>
+          <div class="access-box">
+            <div class="access-item">
+              <div class="access-label">🔑 كود حجزك</div>
+              <div class="access-value-row">
+                <code id="bookingCodeText">${b.id}</code>
+                <button class="copy-btn" data-copy-text="${b.id}">نسخ</button>
+              </div>
+              <p class="access-hint">احتفظ بهذا الكود. للعودة لموعدك لاحقًا، ادخل موقع العيادة واضغط "لديك موعد استشارة عن بُعد؟"، ثم الصق الكود.</p>
+            </div>
+            <div class="access-item">
+              <div class="access-label">🔗 رابط موعدك المباشر</div>
+              <div class="access-value-row">
+                <code id="bookingLinkText">${location.origin}/confirm.html?id=${b.id}</code>
+                <button class="copy-btn" data-copy-text="${location.origin}/confirm.html?id=${b.id}">نسخ</button>
+              </div>
+              <p class="access-hint">احفظ هذا الرابط. بمجرد الضغط عليه من أي مكان (رسالة، ملاحظات، إلخ) يفتح لك موعدك مباشرة دون أي خطوات إضافية.</p>
+            </div>
           </div>
-          <p class="access-hint">احتفظ بهذا الكود. للعودة لموعدك لاحقًا، ادخل موقع العيادة واضغط "لديك موعد استشارة عن بُعد؟"، ثم الصق الكود.</p>
-        </div>
-        <div class="access-item">
-          <div class="access-label">🔗 رابط موعدك المباشر</div>
-          <div class="access-value-row">
-            <code id="bookingLinkText">${location.origin}/confirm.html?id=${b.id}</code>
-            <button class="copy-btn" data-copy-text="${location.origin}/confirm.html?id=${b.id}">نسخ</button>
-          </div>
-          <p class="access-hint">احفظ هذا الرابط. بمجرد الضغط عليه من أي مكان (رسالة، ملاحظات، إلخ) يفتح لك موعدك مباشرة دون أي خطوات إضافية.</p>
         </div>
       </div>
     </div>`;
+
+  const sessionLabelEl = document.getElementById('sessionLabel');
+  sessionLabelEl.textContent = (SITE_CONTENT.confirm && SITE_CONTENT.confirm.sessionLabel) || 'الحوار بداية الحل';
+  sessionLabelEl.style.color = (SITE_CONTENT.colors && SITE_CONTENT.colors.confirmSessionLabel) || 'var(--clay)';
+
+  const invoiceToggle = document.getElementById('invoiceToggle');
+  const invoiceBody = document.getElementById('invoiceBody');
+  invoiceToggle.addEventListener('click', ()=>{
+    const isOpen = invoiceBody.style.display !== 'none';
+    invoiceBody.style.display = isOpen ? 'none' : 'block';
+    invoiceToggle.classList.toggle('open', !isOpen);
+  });
 
   function tick(){
     const now = new Date();
