@@ -207,6 +207,12 @@
     <!-- ===== المحتوى ===== -->
     <div class="panel" id="panel-content">
       <div class="card-box">
+        <h2 class="sec">صفحة تأكيد الموعد (أثناء الجلسة)</h2>
+        <div class="field"><label>النص الذي يظهر فوق تبويت الفيديو عند دخول الجلسة</label><input type="text" id="confirmSessionLabel" data-key="confirm.sessionLabel" placeholder="الحوار بداية الحل"></div>
+        <div class="color-row"><input type="color" id="colorConfirmSessionLabel" data-key="colors.confirmSessionLabel"><span>لون هذا النص</span></div>
+        <div class="hint">هذا النص يستخدم نفس "خط بيانات صفحتي الحجز وتأكيد الموعد" أعلاه، ويظهر فقط بعد أن يضغط الشخص "دخول الجلسة".</div>
+      </div>
+      <div class="card-box">
         <h2 class="sec">القسم الرئيسي (Hero)</h2>
         <label style="font-size:.85rem; font-weight:700; display:block; margin-bottom:4px;">روابط القائمة العلوية (الجوال) — الأسئلة الشائعة / أوقات العمل / تواصل معنا</label>
         <div class="mover-controls">
@@ -243,7 +249,7 @@
           <input type="file" id="heroImgFile" accept="image/*">
           <button type="button" class="btn-danger" id="removeHeroImgBtn" style="display:none;">إزالة الصورة</button>
         </div>
-        <div class="hint">اختياري — إذا رفعت صورة ستحل محل الرسم التوضيحي في الصفحة الرئيسية.</div>
+        <div class="hint">هذا الرفع كان يُستخدم للرسم التوضيحي القديم في هيرو سطح المكتب، وبعد التحديث الجديد لمنظور الكمبيوتر لم يعد له تأثير على الموقع — يمكنك تجاهله.</div>
       </div>
 
       <div class="card-box">
@@ -631,6 +637,9 @@ function fillDesign(){
 }
 
 function fillContent(){
+  if (!CONTENT.confirm) CONTENT.confirm = {};
+  document.getElementById('confirmSessionLabel').value = CONTENT.confirm.sessionLabel || '';
+  document.getElementById('colorConfirmSessionLabel').value = (CONTENT.colors && CONTENT.colors.confirmSessionLabel) || '#B8734F';
   document.getElementById('siteName').value = CONTENT.site.name;
   document.getElementById('siteRoleLabel').value = CONTENT.site.roleLabel || '';
   document.getElementById('heroTitle').value = CONTENT.hero.title;
