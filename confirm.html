@@ -9,7 +9,8 @@
   :root{ --ink:#22322C; --paper:#EFEDE6; --clay:#B8734F; --line:#DAD5C8; --font-forms:'Tajawal',sans-serif; }
   *{box-sizing:border-box; margin:0; padding:0; font-family:var(--font-forms);}
   body{background:var(--paper); color:var(--ink); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;}
-  .wrap{width:100%; max-width:480px;}
+  .wrap{width:100%; max-width:480px; transition:max-width .2s ease;}
+  .wrap.in-call{max-width:720px;}
   a.back{display:inline-block; margin-bottom:16px; color:#6b7570; font-size:.88rem;}
   .card{background:#fff; padding:36px 30px; border-radius:20px; box-shadow:0 20px 50px rgba(34,50,44,.1); text-align:center;}
   h1{font-family:'Markazi Text',serif; font-size:1.8rem; margin-bottom:6px;}
@@ -31,6 +32,7 @@
   .accordion-toggle .chev{transition:transform .2s ease; font-size:.8rem;}
   .accordion-toggle.open .chev{transform:rotate(180deg);}
   .accordion-body{padding:6px 18px 18px;}
+  .invoice-notice{background:#FBF3E9; border:1px solid #E8D5B8; color:#8a6420; font-size:.85rem; padding:10px 14px; border-radius:10px; margin-bottom:14px; line-height:1.6; text-align:right;}
   .accordion-body .detail-row:last-of-type{border-bottom:none;}
   .access-box{margin-top:10px; text-align:right;}
   .access-item{background:var(--paper); border-radius:12px; padding:14px 16px; margin-bottom:12px;}
@@ -108,18 +110,18 @@ async function loadBooking(id){
     <div class="card">
       <div class="check">✓</div>
       <h1>تم تأكيد موعدك</h1>
-      <p class="sub">احتفظ برقم الحجز أدناه للوصول إلى جلستك لاحقًا.</p>
       <div class="countdown" id="countdownBox"></div>
       <button class="join-btn disabled" id="joinBtn" disabled>دخول الجلسة</button>
       <div id="videoContainer" style="display:none; margin-top:16px;">
         <div class="session-label" id="sessionLabel"></div>
-        <iframe id="videoFrame" style="width:100%; height:480px; border:0; border-radius:12px;" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>
+        <iframe id="videoFrame" style="width:100%; border:0; border-radius:12px;" allow="camera; microphone; fullscreen; display-capture; autoplay"></iframe>
       </div>
       <div class="accordion">
         <button class="accordion-toggle" id="invoiceToggle" type="button">
           <span>فاتورة الحجز</span><span class="chev">⌄</span>
         </button>
         <div class="accordion-body" id="invoiceBody" style="display:none;">
+          <p class="invoice-notice">احتفظ برقم الحجز أدناه للوصول إلى جلستك لاحقًا.</p>
           <div class="detail-row"><span>الاسم</span><span>${escapeHtml(b.name)}</span></div>
           <div class="detail-row"><span>المستشار</span><span>${escapeHtml(b.counselorName || 'غير محدد')}</span></div>
           <div class="detail-row"><span>التاريخ</span><span>${escapeHtml(b.date)}</span></div>
@@ -182,11 +184,28 @@ async function loadBooking(id){
     if (document.getElementById('joinBtn').disabled) return;
     if (!b.videoRoomUrl) { alert('لم تُنشأ غرفة الفيديو بعد. حدّث الصفحة بعد قليل، أو تواصل مع العيادة إن استمرت المشكلة.'); return; }
     document.getElementById('joinBtn').style.display = 'none';
+    document.querySelector('.wrap').classList.add('in-call');
     const container = document.getElementById('videoContainer');
     container.style.display = 'block';
-    document.getElementById('videoFrame').src = b.videoRoomUrl;
+    let roomUrl = b.videoRoomUrl;
+    try {
+      const u = new URL(roomUrl);
+      u.searchParams.set('lang', 'ar');
+      roomUrl = u.toString();
+    } catch (err) {}
+    document.getElementById('videoFrame').src = roomUrl;
+    requestAnimationFrame(sizeVideoFrame);
   });
 }
+
+function sizeVideoFrame(){
+  const iframe = document.getElementById('videoFrame');
+  if (!iframe || iframe.closest('#videoContainer').style.display === 'none') return;
+  const top = iframe.getBoundingClientRect().top;
+  const available = window.innerHeight - top - 24;
+  iframe.style.height = Math.max(360, Math.min(available, 760)) + 'px';
+}
+window.addEventListener('resize', sizeVideoFrame);
 
 function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
